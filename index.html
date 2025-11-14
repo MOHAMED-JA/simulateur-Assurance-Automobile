@@ -1,0 +1,3289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur Assurance Automobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1a2a40;
+            --bg-secondary: #253a55;
+            --bg-card: rgba(37, 58, 85, 0.85);
+            --text-primary: #eef7ff;
+            --text-secondary: #8fa9c9;
+            --border-color: rgba(0, 168, 255, 0.3);
+            --primary-color: #00a8ff;
+            --secondary-color: #ff4b5c;
+            --orange-highlight: #ff8c00;
+            --accent-color: #2f87ff;
+        }
+
+        body.light-mode {
+            --bg-primary: #f7fbff;
+            --bg-secondary: #eaf2fa;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #0a2147;
+            --text-secondary: #516487;
+            --border-color: rgba(0, 168, 255, 0.25);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1.5rem 0;
+        }
+
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-container {
+            flex: 1;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0.3rem 0 0 0;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .usage-field {
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+            background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: rgbBorder 3s linear infinite;
+        }
+
+        @keyframes rgbBorder {
+            0% {
+                background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000);
+            }
+            50% {
+                background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(90deg, #00ff00, #0000ff, #ff0000, #00ff00);
+            }
+            100% {
+                background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000);
+            }
+        }
+
+        .usage-field:hover {
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3), 0 0 10px rgba(0, 255, 0, 0.3), 0 0 5px rgba(0, 0, 255, 0.3);
+        }
+
+        /* ----------------------------
+         * Barre de progression
+         * ---------------------------- */
+        #progressBar {
+            display: none; /* affichée lorsqu'on démarre la simulation */
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            max-width: 900px;
+        }
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 4px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        .progress-step.step-active {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* ----------------------------
+         * Responsivité mobile
+         * ---------------------------- */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            /* Empiler les champs verticalement pour éviter les dépassements sur mobile */
+            .card-content {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            input[type="number"], input[type="text"], select, .usage-field {
+                width: 100% !important;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .title-container {
+                text-align: center;
+            }
+            #progressBar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .progress-step {
+                border: none;
+                border-left: 4px solid var(--border-color);
+                padding: 0.5rem 0.5rem;
+            }
+            .progress-step.step-active {
+                border-left-color: var(--primary-color);
+            }
+            .main-action-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        h1 {
+            font-size: 2rem;
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            letter-spacing: 2px;
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            -webkit-text-fill-color: unset !important;
+            background-clip: unset !important;
+        }
+
+        .main-title span {
+            color: inherit;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 168, 255, 0.1);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(0, 168, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #ff4b5c, #00a8ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 0 20px rgba(255, 75, 92, 0.3), 0 0 15px rgba(0, 168, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        input[type="number"],
+        input[type="date"],
+        select {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(0, 168, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 168, 255, 0.3);
+        }
+
+        select option {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 0.5rem;
+        }
+
+        body.light-mode select option {
+            background: #f7fbff;
+            color: #0a2147;
+        }
+
+        .garanties-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        .garanties-table th,
+        .garanties-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .garanties-table th {
+            background: rgba(0, 168, 255, 0.1);
+            font-weight: 600;
+        }
+
+        .garanties-table input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .garantie-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /*
+         * Boutons de sélection de la formule
+         * Ces styles transforment les options basique/personnalisée en deux boutons
+         * modernes plutôt qu'en cases radio.  Les boutons occupent toute la
+         * largeur du conteneur et partagent un dégradé identique au reste de
+         * l'application.  Le bouton sélectionné bénéficie d'une ombre pour
+         * indiquer l'état actif.
+         */
+        .formula-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .formula-button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            /* Utilise le même dégradé que les cartes pour rester cohérent */
+            color: var(--text-primary);
+            border: 2px solid transparent;
+            background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #ff4b5c, #00a8ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            transition: all 0.3s ease;
+        }
+
+        .formula-button.selected {
+            /* Met en évidence le bouton sélectionné avec une ombre colorée */
+            box-shadow: 0 0 20px rgba(255, 75, 92, 0.3), 0 0 20px rgba(0, 168, 255, 0.3);
+            /* Préserve les couleurs et l'opacité du bouton actif */
+            filter: none;
+            opacity: 1;
+        }
+
+        /*
+         * Lorsque le bouton n'est pas sélectionné, il apparaît grisé afin
+         * de souligner le choix actif.  L'opacité et la teinte sont
+         * réduites, mais le bouton reste cliquable pour permettre
+         * l'alternance de formule.
+         */
+        .formula-button:not(.selected) {
+            filter: grayscale(100%);
+            opacity: 0.6;
+        }
+
+        .formula-button:hover {
+            transform: translateY(-2px);
+        }
+
+	        .garantie-mandatory {
+	            color: var(--secondary-color);
+	            font-size: 0.75rem;
+	            margin-left: 0.5rem;
+	        }
+	
+	        .info-message {
+	            display: block;
+	            color: var(--orange-highlight);
+	            font-size: 0.75rem;
+	            margin-top: 0.25rem;
+	            font-weight: 500;
+	        }
+
+        
+
+        .garantie-desc {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.35rem;
+            line-height: 1.35;
+        }
+.results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            background: rgba(0, 168, 255, 0.1);
+            font-weight: 600;
+        }
+
+        .results-table th.numeric {
+            text-align: right;
+        }
+
+        .results-table td:nth-child(n+2) {
+            text-align: right;
+        }
+
+        /* -------------------------------------------------------------------
+         * Curseur de sélection du taux de réduction
+         *
+         * Nous remplaçons la liste déroulante par un slider horizontal qui
+         * s’étend sur toute la largeur du panneau des garanties.  Le slider
+         * utilise un dégradé orange/rouge pour son rail et un pouce rond
+         * entouré d’un contour orange pour être cohérent avec la charte
+         * graphique.  Les styles spécifiques aux navigateurs WebKit et
+         * Firefox sont définis pour garantir un rendu homogène.
+         */
+        #reductionSlider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: linear-gradient(90deg, #ff4b5c, #ff9500);
+            border-radius: 4px;
+            outline: none;
+        }
+        #reductionSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid #ff9500;
+            cursor: pointer;
+            margin-top: -5px; /* alignement vertical avec la piste */
+        }
+        #reductionSlider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid #ff9500;
+            cursor: pointer;
+        }
+
+        .couts-box {
+            background: rgba(0, 168, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .couts-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .cout-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 168, 255, 0.2);
+        }
+
+        .cout-line.final {
+            border-bottom: none;
+            padding-top: 1rem;
+            padding-bottom: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .cout-line.final .value {
+            color: var(--secondary-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+        }
+
+        /*
+         * Styles spécifiques à l'impression. Lorsque l'utilisateur imprime l'offre
+         * d'assurance depuis le modal, nous voulons masquer le reste de la page
+         * et n'afficher que le contenu du modal sous une forme unique et non
+         * répétée. La classe `no-print` continue de cacher les boutons
+         * interactifs (Fermer/Imprimer) tandis que nous masquons
+         * l'ensemble du document puis rendons visible le contenu du modal.
+         */
+        @media print {
+            /*
+             * N'appliquer ces règles de masquage que si le corps ne possède pas
+             * la classe 'print-only'. Cette classe est utilisée lorsqu'une
+             * impression s'effectue via une fenêtre dédiée. Cela évite que
+             * l'ensemble du contenu ne soit masqué dans cette nouvelle
+             * fenêtre.
+             */
+            body:not(.print-only) * {
+                display: none !important;
+            }
+            /* Afficher le modal et son contenu uniquement pour la page principale */
+            body:not(.print-only) #offreAssuranceModal,
+            body:not(.print-only) #offreAssuranceModal * {
+                display: block !important;
+            }
+            /* Adapter le modal pour l'impression uniquement dans la page principale */
+            body:not(.print-only) #offreAssuranceModal {
+                position: static !important;
+                overflow: visible !important;
+                height: auto !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: none !important;
+                box-shadow: none !important;
+            }
+            /* Cacher les éléments marqués comme non imprimables dans le modal principal */
+            body:not(.print-only) #offreAssuranceModal .no-print {
+                display: none !important;
+            }
+
+            /*
+             * Forcer la couleur du texte en noir lors de l'impression.  Certaines
+             * couleurs utilisées pour le mode sombre apparaissent trop
+             * claires à l'impression (gris clair).  Cette règle garantit
+             * que tout le texte est imprimé en noir pour une meilleure
+             * lisibilité.
+             */
+            body, body * {
+                color: #000 !important;
+            }
+        }
+    </style>
+    <!-- Styles additionnels pour l'écran d'accueil, la navigation étape par étape et le comparateur -->
+    <style>
+        /* Page d’accueil pleine page */
+        .home-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            /* Use full viewport height to ensure vertical centering works as expected */
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 2000;
+            padding: 2rem;
+        }
+        .home-intro h1 {
+            /* Augmenter la taille pour donner une impression de plus grande application */
+            font-size: 3rem;
+            /* Supprimer la marge supérieure par défaut pour centrer verticalement */
+            margin: 0 0 1rem;
+        }
+        .intro-icons {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .intro-icon {
+            /* Rendre les icônes plus grandes pour augmenter l'impact visuel */
+            font-size: 4rem;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        .home-intro button {
+            background: linear-gradient(135deg, #00a8ff, #ff4b5c);
+            color: white;
+            border: none;
+            /* Agrandir le bouton pour qu'il soit plus visible */
+            padding: 1.2rem 2.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 168, 255, 0.3);
+        }
+        .home-intro button:hover {
+            box-shadow: 0 0 25px rgba(255, 75, 92, 0.5), 0 0 15px rgba(0, 168, 255, 0.5);
+        }
+
+        /* Conteneur interne pour centrer verticalement le contenu de l'écran d'accueil */
+        .intro-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        /* Couleurs personnalisées pour le texte BH (rouge) et ASSURANCE (bleu) */
+        .bh-text {
+            color: #ff4757;
+        }
+        .assurance-text {
+            color: #00a8ff;
+        }
+        /* Style pour la photo dans l'écran d'accueil */
+        /* intro image style removed */
+        /* Section d'information du développeur sous le bouton de démarrage */
+        .dev-info {
+            margin-top: 1rem;
+            /* Agrandir légèrement la taille du texte informatif */
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        .dev-info a {
+            color: #00a8ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .dev-info a:hover {
+            text-decoration: underline;
+        }
+        /* Navigation des étapes */
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            gap: 1rem;
+        }
+        .step-navigation .step-button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .step-navigation .btn-next {
+            background: linear-gradient(135deg, #00a8ff, #ff4b5c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 168, 255, 0.3);
+        }
+        .step-navigation .btn-prev {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            color: #2c3e50;
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+        }
+        .step-navigation .btn-finish {
+            background: linear-gradient(135deg, #2ecc71, #00a8ff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        .step-navigation .step-button:hover {
+            transform: translateY(-2px);
+        }
+        /* Tableau comparatif */
+        .comparison-table th,
+        .comparison-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .comparison-table td:first-child {
+            text-align: left;
+        }
+        .comparison-table th {
+            text-align: center;
+            background: rgba(142, 68, 173, 0.1);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .comparison-table td {
+            text-align: center;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Écran d’introduction : affiche un message de bienvenue avec icônes et bouton animé -->
+    <div id="homeIntro" class="home-intro">
+        <div class="intro-content">
+            <!-- Photo de présentation en haut de l'écran d'accueil -->
+            
+            <h1>Simulateur <span style="color: #ff4b5c; font-weight: 700;">Assurance</span> <span style="color: #00a8ff; font-weight: 700;">Automobile</span></h1>
+            <div class="intro-icons">
+                <span class="intro-icon">🚗</span>
+                <span class="intro-icon">🛡️</span>
+                <span class="intro-icon">💼</span>
+            </div>
+            <button id="startSimulationBtn">Commencer la simulation</button>
+            <!-- Information sur le développeur -->
+            <p class="dev-info">Application développée par <a href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank">Mohamed Aziz Jaouadi</a></p>
+        </div>
+    </div>
+    <header>
+        <div class="header-content">
+            <div class="title-container">
+                <h1 class="main-title">Simulateur <span style="color: #ff4b5c; font-weight: 700;">Assurance</span> <span style="color: #00a8ff; font-weight: 700;">Automobile</span></h1>
+                <p class="subtitle">Votre simulateur Assurance Automobile, simple, visuel et immédiatement opérationnel</p>
+            </div>
+            <button class="theme-toggle" id="themeIcon" onclick="toggleTheme()">☀️</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Barre de progression pour visualiser l’avancement des étapes -->
+        <div id="progressBar">
+            <div class="progress-step" data-step="1">1. Véhicule</div>
+            <div class="progress-step" data-step="2">2. Garanties</div>
+            <div class="progress-step" data-step="3">3. Résumé</div>
+        </div>
+
+        <!-- Boutons pour ouvrir les modals. Ces boutons sont masqués par défaut et seront affichés dans la dernière étape via JavaScript -->
+        <div class="main-action-buttons" style="text-align: center; margin-bottom: 2rem; display: none; gap: 1rem; justify-content: center;">
+            <!-- Bouton pour remplir le formulaire proposant -->
+            <button onclick="openUserForm()" style="
+                background: linear-gradient(135deg, #ff4b5c, #00a8ff);
+                color: white;
+                border: none;
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(255, 75, 92, 0.3);
+            " onmouseover="this.style.boxShadow='0 0 25px rgba(255, 75, 92, 0.5), 0 0 15px rgba(0, 168, 255, 0.5)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(255, 75, 92, 0.3)'">
+                👤 Remplir Formulaire Proposant
+            </button>
+            <!-- Le bouton d'offre d'assurance a été supprimé car il n'est plus nécessaire -->
+            <!-- Bouton pour afficher les devis enregistrés -->
+            <button onclick="openSavedOffers()" class="no-print" style="
+                background: linear-gradient(135deg, #8e44ad, #2ecc71);
+                color: white;
+                border: none;
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
+            " onmouseover="this.style.boxShadow='0 0 25px rgba(46, 204, 113, 0.5), 0 0 15px rgba(142, 68, 173, 0.5)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(142, 68, 173, 0.3)'">
+                📁 Mes devis
+            </button>
+        </div>
+
+        <!-- Modal du formulaire utilisateur -->
+        <div id="userFormModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; overflow-y: auto;">
+            <div style="background: var(--bg-card); margin: 2rem auto; padding: 2rem; border-radius: 12px; max-width: 800px; border: 3px solid transparent; background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #ff4b5c, #00a8ff); background-origin: border-box; background-clip: padding-box, border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 style="color: var(--text-primary); margin: 0;">Remplir Formulaire Proposant</h2>
+                    <button onclick="closeUserForm()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-primary);">×</button>
+                </div>
+
+                <!-- Données de l'Assuré -->
+                <h3 style="color: #ff4b5c; margin-top: 1.5rem; margin-bottom: 1rem;">Données de l'Assuré</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" placeholder="Entrez votre nom">
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" id="prenom" placeholder="Entrez votre prénom">
+                    </div>
+                    <div class="form-group">
+                        <label for="cin">CIN</label>
+                        <input type="text" id="cin" placeholder="Entrez votre CIN">
+                    </div>
+                    <div class="form-group">
+                        <label for="adresse">Adresse</label>
+                        <input type="text" id="adresse" placeholder="Entrez votre adresse">
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile</label>
+                        <input type="tel" id="mobile" placeholder="Entrez votre numéro de mobile">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Entrez votre email">
+                    </div>
+                    <div class="form-group">
+                        <label for="agence">Agence</label>
+                        <input type="text" id="agence" placeholder="Entrez votre agence">
+                    </div>
+                </div>
+
+                <!-- Données du Véhicule -->
+                <h3 style="color: #00a8ff; margin-top: 1.5rem; margin-bottom: 1rem;">Données du Véhicule</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="marque">Marque Voiture</label>
+                        <input type="text" id="marque" placeholder="Entrez la marque du véhicule">
+                    </div>
+                    <div class="form-group">
+                        <label for="modele">Modèle</label>
+                        <input type="text" id="modele" placeholder="Entrez le modèle du véhicule">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpmec">DPMEC</label>
+                        <input type="date" id="dpmec">
+                    </div>
+                </div>
+
+                <!-- Données du Contrat -->
+                <h3 style="color: #ff4b5c; margin-top: 1.5rem; margin-bottom: 1rem;">Données du Contrat</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="typeContrat">Type de contrat</label>
+                        <select id="typeContrat">
+                            <option value="renouvelable">Renouvelable</option>
+                            <option value="ferme">Ferme</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateEffet">Date d'effet</label>
+                        <input type="date" id="dateEffet">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end;">
+                    <!-- Bouton réinitialiser : vide toutes les informations de l'assuré
+                         ainsi que la marque et le modèle du véhicule -->
+                    <button onclick="resetUserForm()" style="
+                        background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+                        color: #2c3e50;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.boxShadow='0 0 10px rgba(149, 165, 166, 0.5)'" onmouseout="this.style.boxShadow='none'">
+                        Réinitialiser
+                    </button>
+                    <!-- Bouton fermer le formulaire -->
+                    <button onclick="closeUserForm()" style="
+                        background: rgba(255, 75, 92, 0.2);
+                        color: #ff4b5c;
+                        border: 2px solid #ff4b5c;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255, 75, 92, 0.3)'" onmouseout="this.style.background='rgba(255, 75, 92, 0.2)'">
+                        Fermer
+                    </button>
+                    <!-- Bouton enregistrer le formulaire -->
+                    <button onclick="saveUserForm()" style="
+                        background: linear-gradient(135deg, #ff4b5c, #00a8ff);
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.boxShadow='0 0 15px rgba(255, 75, 92, 0.5)'" onmouseout="this.style.boxShadow='none'">
+                        Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Offre d'Assurance -->
+        <div id="offreAssuranceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; overflow-y: auto;">
+            <div style="background: var(--bg-card); margin: 2rem auto; padding: 2rem; border-radius: 12px; max-width: 900px; border: 3px solid transparent; background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #ff4b5c, #00a8ff); background-origin: border-box; background-clip: padding-box, border-box;">
+                <!-- En-tête avec titre et date -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                    <div>
+                        <h2 style="color: var(--text-primary); margin: 0; font-size: 1.8rem;">Offre d'Assurance Automobile</h2>
+                        <div style="margin-top: 0.5rem;"><span style="font-weight:700; font-size:1.2rem;">Simulateur </span><span style="color: #ff4b5c; font-weight: 700; font-size: 1.2rem;">Assurance</span> <span style="color: #00a8ff; font-weight: 700; font-size: 1.2rem;">Automobile</span></div>
+                    </div>
+                    <div style="text-align: right;">
+                        <button onclick="closeOffreAssurance()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-primary);">×</button>
+                        <p style="color: var(--text-secondary); margin: 0; font-weight: 600;" id="dateOffre"></p>
+                    </div>
+                </div>
+
+                <!-- Données de l'assuré -->
+                <h3 style="color: #ff4b5c; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #ff4b5c; padding-bottom: 0.5rem;">1. Données de l'Assuré</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <p style="margin: 0.5rem 0;"><strong>Nom :</strong> <span id="offreNom">-</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Prénom :</strong> <span id="offrePrenom">-</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>CIN :</strong> <span id="offreCIN">-</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Adresse :</strong> <span id="offreAdresse">-</span></p>
+                    </div>
+                    <div>
+                        <p style="margin: 0.5rem 0;"><strong>Mobile :</strong> <span id="offreMobile">-</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Email :</strong> <span id="offreEmail">-</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Agence :</strong> <span id="offreAgence">-</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Classe Bonus Malus :</strong> <span id="offreClasseBM">-</span></p>
+                    </div>
+                </div>
+
+                <!-- Données du véhicule -->
+                <h3 style="color: #00a8ff; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #00a8ff; padding-bottom: 0.5rem;">2. Données du Véhicule</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <p style="margin: 0.5rem 0;"><strong>Usage :</strong> <span id="offreUsage">Privé ou Affaires</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Marque :</strong> <span id="offreMarque">-</span></p>
+                    </div>
+                    <div>
+                        <p style="margin: 0.5rem 0;"><strong>Modèle :</strong> <span id="offreModele">-</span></p>
+                        <p style="margin: 0.5rem 0;"><strong>DPMEC :</strong> <span id="offreDPMEC">-</span></p>
+                    </div>
+                </div>
+
+                <!-- Couverture -->
+                <h3 style="color: #ff4b5c; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #ff4b5c; padding-bottom: 0.5rem;">3. Couverture</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+                    <thead>
+                        <tr style="background: rgba(255, 75, 92, 0.1); border-bottom: 2px solid #ff4b5c;">
+                            <th style="padding: 0.75rem; text-align: left; color: var(--text-primary);">Garanties</th>
+                            <th style="padding: 0.75rem; text-align: center; color: var(--text-primary);">Franchises (%)</th>
+                            <th style="padding: 0.75rem; text-align: right; color: var(--text-primary);">Capitaux (DT)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="offreTableBody">
+                    </tbody>
+                </table>
+
+                <!-- Prime Totale -->
+                <div style="background: rgba(255, 75, 92, 0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; text-align: right;">
+                    <p style="margin: 0; font-size: 1.2rem;"><strong>PRIME TOTALE :</strong> <span id="offrePrimeTotal" style="color: #ff4b5c; font-weight: 700; font-size: 1.3rem;">0.000 DT</span></p>
+                </div>
+
+                <!-- Texte d'assistance -->
+                <div style="background: rgba(0, 168, 255, 0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #00a8ff;">
+                    <p style="margin: 0.5rem 0; font-weight: 600; color: #00a8ff;">L'assistance comprend :</p>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>Le remorquage illimité en nombre et en kilométrage</li>
+                        <li>La prise en charge de la réparation chez nos garages conventionnés</li>
+                        <li>Un véhicule de remplacement pendant 15 jours</li>
+                    </ul>
+                </div>
+
+                <!-- Texte final -->
+                <!-- Paragraphe supprimé à la demande : la phrase finale d'impression n'est plus affichée -->
+
+                <!-- Boutons -->
+                <!-- Ajout de la classe no-print pour masquer ces boutons lors de l'impression -->
+                <div class="no-print" style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button onclick="closeOffreAssurance()" style="
+                        background: rgba(255, 75, 92, 0.2);
+                        color: #ff4b5c;
+                        border: 2px solid #ff4b5c;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255, 75, 92, 0.3)'" onmouseout="this.style.background='rgba(255, 75, 92, 0.2)'">
+                        Fermer
+                    </button>
+                    <!-- Bouton pour enregistrer l'offre d'assurance -->
+                    <button onclick="saveOffreAssurance()" style="
+                        background: linear-gradient(135deg, #2ecc71, #00a8ff);
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.boxShadow='0 0 15px rgba(46, 204, 113, 0.5)'" onmouseout="this.style.boxShadow='none'">
+                        💾 Enregistrer
+                    </button>
+                    <button onclick="printOffreAssurance()" style="
+                        background: linear-gradient(135deg, #00a8ff, #ff4b5c);
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.boxShadow='0 0 15px rgba(0, 168, 255, 0.5)'" onmouseout="this.style.boxShadow='none'">
+                        🖨 Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Mes devis (offres enregistrées) -->
+        <div id="savedOffersModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; overflow-y: auto;">
+            <div style="background: var(--bg-card); margin: 2rem auto; padding: 2rem; border-radius: 12px; max-width: 900px; border: 3px solid transparent; background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #8e44ad, #2ecc71); background-origin: border-box; background-clip: padding-box, border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 style="color: var(--text-primary); margin: 0; font-size: 1.8rem;">Mes devis enregistrés</h2>
+                    <button onclick="closeSavedOffers()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-primary);">×</button>
+                </div>
+                <div id="savedOffersList" style="color: var(--text-primary);"></div>
+            </div>
+        </div>
+
+        <!-- Modal comparateur d'offres : permet la comparaison côte à côte de deux devis sélectionnés -->
+        <div id="compareOffersModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; overflow-y: auto;">
+            <div style="background: var(--bg-card); margin: 2rem auto; padding: 2rem; border-radius: 12px; max-width: 900px; border: 3px solid transparent; background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #8e44ad, #2ecc71); background-origin: border-box; background-clip: padding-box, border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="color: var(--text-primary); margin: 0; font-size: 1.8rem;">Comparateur d'offres</h2>
+                    <button onclick="closeCompareOffers()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-primary);">×</button>
+                </div>
+                <div id="comparisonTableContainer"></div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmation avant d'afficher l'offre lorsque les données du proposant sont vides -->
+        <div id="confirmationModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1100;">
+            <div style="background: var(--bg-card); margin: 5% auto; padding: 2rem; border-radius: 12px; max-width: 600px; border: 3px solid transparent; background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #ff4b5c, #00a8ff); background-origin: border-box; background-clip: padding-box, border-box; text-align: center;">
+                <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Attention&nbsp;!</h2>
+                <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem;">Voulez-vous procéder sans remplir le formulaire proposant&nbsp;?</p>
+                <div style="display: flex; justify-content: center; gap: 2rem;">
+                    <button onclick="proceedWithoutForm()" style="background: linear-gradient(135deg, #00a8ff, #ff4b5c); color: white; border: none; padding: 0.75rem 2rem; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 168, 255, 0.3); transition: all 0.3s ease;">Oui</button>
+                    <button onclick="cancelWithoutForm()" style="background: linear-gradient(135deg, #8e44ad, #2ecc71); color: white; border: none; padding: 0.75rem 2rem; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3); transition: all 0.3s ease;">Non</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations du Véhicule -->
+        <div id="step1" class="step" style="display:none;">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">🚙</div>
+                <div>
+                    <h2 class="card-title">Informations du Véhicule</h2>
+                    <p class="card-description">Entrez les détails de votre véhicule</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="usage">Usage du véhicule</label>
+                <div class="usage-field">Privé ou Affaires</div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="places">Nombre de places</label>
+                    <input type="number" id="places" min="2" max="9" value="5" onchange="calculateAll()">
+                </div>
+
+                <div class="form-group">
+                    <label for="valeurCatalogue">Valeur catalogue (DT)</label>
+                    <input type="number" id="valeurCatalogue" min="0" value="0" onchange="calculateAll()">
+                </div>
+
+                <div class="form-group">
+                    <label for="valeurVenale">Valeur vénale (DT)</label>
+                    <input type="number" id="valeurVenale" min="0" value="0" onchange="calculateAll()">
+                </div>
+
+                <div class="form-group">
+                    <label for="cv">Nombre de CV</label>
+                    <select id="cv" onchange="calculateAll()">
+                        <!-- Options de puissance fiscale (Nombre de CV) classées par ordre croissant de 2 à 45 CV.
+                             La valeur par défaut sélectionnée est 5 CV, mais elle apparaît après 4 CV dans la liste. -->
+                        <option value="2">2 CV</option>
+                        <option value="3">3 CV</option>
+                        <option value="4">4 CV</option>
+                        <option value="5" selected>5 CV</option>
+                        <option value="6">6 CV</option>
+                        <option value="7">7 CV</option>
+                        <option value="8">8 CV</option>
+                        <option value="9">9 CV</option>
+                        <option value="10">10 CV</option>
+                        <option value="11">11 CV</option>
+                        <option value="12">12 CV</option>
+                        <option value="13">13 CV</option>
+                        <option value="14">14 CV</option>
+                        <option value="15">15 CV</option>
+                        <option value="16">16 CV</option>
+                        <option value="17">17 CV</option>
+                        <option value="18">18 CV</option>
+                        <option value="19">19 CV</option>
+                        <option value="20">20 CV</option>
+                        <option value="21">21 CV</option>
+                        <option value="22">22 CV</option>
+                        <option value="23">23 CV</option>
+                        <option value="24">24 CV</option>
+                        <option value="25">25 CV</option>
+                        <option value="26">26 CV</option>
+                        <option value="27">27 CV</option>
+                        <option value="28">28 CV</option>
+                        <option value="29">29 CV</option>
+                        <option value="30">30 CV</option>
+                        <option value="31">31 CV</option>
+                        <option value="32">32 CV</option>
+                        <option value="33">33 CV</option>
+                        <option value="34">34 CV</option>
+                        <option value="35">35 CV</option>
+                        <option value="36">36 CV</option>
+                        <option value="37">37 CV</option>
+                        <option value="38">38 CV</option>
+                        <option value="39">39 CV</option>
+                        <option value="40">40 CV</option>
+                        <option value="41">41 CV</option>
+                        <option value="42">42 CV</option>
+                        <option value="43">43 CV</option>
+                        <option value="44">44 CV</option>
+                        <option value="45">45 CV</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pmec">Date de PMEC</label>
+                    <input type="date" id="pmec" onchange="calculateAll()">
+                </div>
+
+                <div class="form-group">
+                    <label for="classBonusMalus">Classe bonus-malus</label>
+                    <select id="classBonusMalus" onchange="calculateAll()">
+                        <option value="1">Classe 1</option>
+                        <option value="2">Classe 2</option>
+                        <option value="3">Classe 3</option>
+                        <option value="4" selected>Classe 4</option>
+                        <option value="5">Classe 5</option>
+                        <option value="6">Classe 6</option>
+                        <option value="7">Classe 7</option>
+                        <option value="8">Classe 8</option>
+                        <option value="9">Classe 9</option>
+                        <option value="10">Classe 10</option>
+                        <option value="11">Classe 11</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fractionnement">Fractionnement</label>
+                    <select id="fractionnement" onchange="calculateAll()">
+                        <option value="annuel" selected>Annuel</option>
+                        <option value="semestriel">Semestriel</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- Navigation pour l'étape 1 : un bouton pour passer à l'étape suivante -->
+        <div class="step-navigation">
+            <button class="step-button btn-next" onclick="goToStep(2)">Suivant &rarr;</button>
+        </div>
+        </div> <!-- fin step1 -->
+
+        <!-- Garanties -->
+        <!-- Choix de la formule -->
+        <div id="step2" class="step" style="display:none;">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">📑</div>
+                <div>
+                    <h2 class="card-title">Choix de la formule</h2>
+                    <p class="card-description">Sélectionnez la formule souhaitée</p>
+                </div>
+            </div>
+            <!--
+                Remplacement des cases radio par des boutons interactifs.  Les deux
+                boutons sont placés dans un conteneur flexible et partagent la
+                largeur disponible.  Le premier bouton est sélectionné par défaut.
+            -->
+            <div class="formula-buttons">
+                <button type="button" id="btnFormuleBasique" class="formula-button selected" onclick="selectFormula('basique')">
+                    Formule basique
+                </button>
+                <button type="button" id="btnFormulePersonnalisee" class="formula-button" onclick="selectFormula('personnalisee')">
+                    Formule personnalisée
+                </button></div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">⭐</div>
+                <div>
+                    <h2 class="card-title">Garanties</h2>
+                    <p class="card-description">Sélectionnez les garanties souhaitées</p>
+                </div>
+            </div>
+
+            <!-- Taux de Réduction -->
+            <div class="form-group" style="margin-bottom: 1.5rem; display: none;">
+                <label for="tauxReduction">Taux de Réduction</label>
+                <!-- Select d'origine conservé mais masqué pour la persistance des données.  
+                     Le contrôle visuel de sélection est désormais déplacé dans la section
+                     « Résultats du Calcul ». -->
+                <select id="tauxReduction" onchange="applyReduction(this.value)" style="display: none;">
+                    <option value="0" selected>0%</option>
+                    <option value="5">5%</option>
+                    <option value="10">10%</option>
+                    <option value="15">15%</option>
+                    <option value="20">20%</option>
+                    <option value="25">25%</option>
+                    <option value="30">30%</option>
+                    <option value="35">35%</option>
+                    <option value="40">40%</option>
+                    <option value="45">45%</option>
+                    <option value="50">50%</option>
+                    <option value="55">55%</option>
+                    <option value="60">60%</option>
+                    <option value="65">65%</option>
+                    <option value="70">70%</option>
+                    <option value="75">75%</option>
+                    <option value="80">80%</option>
+                </select>
+            </div>
+
+            <table class="garanties-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">✓</th>
+                        <th style="width: 45%;">Garanties</th>
+                        <th style="width: 25%;">Franchises (%)</th>
+                        <th style="width: 25%;">Capitaux (DT)</th>
+                    </tr>
+                </thead>
+                <tbody id="garantiesTableBody">
+                    <!-- Généré par JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Navigation pour l'étape 2 : permettre de revenir à l'étape 1 ou passer à l'étape 3 -->
+        <div class="step-navigation">
+            <button class="step-button btn-prev" onclick="goToStep(1)">← Précédent</button>
+            <button class="step-button btn-next" onclick="goToStep(3)">Suivant &rarr;</button>
+        </div>
+        </div><!-- fin step2 -->
+
+        <!-- Résultats -->
+        <div id="step3" class="step" style="display:none;">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">📊</div>
+                <div>
+                    <h2 class="card-title">Résultats du Calcul</h2>
+                    <p class="card-description">Détail des primes par garantie</p>
+                </div>
+            </div>
+
+            <!-- Curseur de Taux de Réduction déplacé dans la section Résultats du Calcul -->
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="reductionSlider" style="font-weight: 600;">Taux de Réduction</label>
+                <div id="reductionSliderContainer" style="width: 100%; margin-top: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <input type="range" id="reductionSlider" min="0" max="80" step="5" style="flex: 1; height: 8px; -webkit-appearance: none; background: linear-gradient(90deg, #ff4b5c, #ff9500); border-radius: 4px; outline: none; cursor: pointer;">
+                    <span id="reductionSliderValue" style="min-width: 3rem; font-weight: bold; color: var(--text-primary);">0%</span>
+                </div>
+            </div>
+            
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Garantie</th>
+                        <th class="numeric">Taux de réduction<br>(%)</th>
+                        <th class="numeric">Prime Nette<br>(DT)</th>
+                        <th class="numeric">TUA (DT)</th>
+                        <th class="numeric">Prime Totale<br>(DT)</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                    <!-- Généré par JavaScript -->
+                </tbody>
+            </table>
+
+            <div class="couts-box">
+                <h3 class="couts-title">Coûts Additionnels</h3>
+                <div class="cout-line">
+                    <span>Total Prime Nette + taxes</span>
+                    <span class="value" id="totalPrimeNette">0.000 DT</span>
+                </div>
+                <div class="cout-line">
+                    <span>Coût du Contrat</span>
+                    <span class="value">25.000 DT</span>
+                </div>
+                <!-- La ligne TUA a été supprimée : les taxes sont désormais incluses dans la colonne précédente -->
+                <div class="cout-line">
+                    <span>FSSR</span>
+                    <span class="value">0.500 DT</span>
+                </div>
+                <div class="cout-line">
+                    <span>FPAC</span>
+                    <span class="value">0.300 DT</span>
+                </div>
+                <!-- Nouvelle ligne FGA fixée à 3 DT -->
+                <div class="cout-line">
+                    <span>FGA</span>
+                    <span class="value">3.000 DT</span>
+                </div>
+                <div class="cout-line final">
+                    <span>PRIME TOTALE TTC</span>
+                    <span class="value" id="primeFinale">0.000 DT</span>
+                </div>
+                <script>
+                    // Recalculer au chargement
+                    window.addEventListener('load', () => {
+                        calculateAll();
+                    });
+                </script>
+            </div>
+            <!-- Navigation pour l'étape 3 : permettre de revenir à l'étape précédente ou d'afficher l'offre détaillée -->
+            <div class="step-navigation">
+                <button class="step-button btn-prev" onclick="goToStep(2)">← Précédent</button>
+                <button class="step-button btn-finish" onclick="voirOffre()">Voir l'offre</button>
+            </div>
+        </div><!-- fin step3 -->
+               <footer class="footer">
+            <p>Développé par <a href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" style="color: #00a8ff; text-decoration: none; font-weight: 600;">Mohamed Aziz Jaouadi</a></p>
+        </footer>
+    <script>
+        // Barèmes
+        const CV_TARIF_BASE = {
+            2: 120, 3: 130, 4: 135, 5: 140, 6: 150, 7: 160, 8: 170, 9: 180, 10: 190,
+            11: 200, 12: 210, 13: 220, 14: 230, 15: 240, 16: 250, 17: 260, 18: 270,
+            19: 280, 20: 290, 21: 300, 22: 310, 23: 320, 24: 330, 25: 340, 26: 350,
+            27: 360, 28: 370, 29: 380, 30: 390, 31: 400, 32: 410, 33: 420, 34: 430,
+            35: 440, 36: 450, 37: 460, 38: 470, 39: 480, 40: 490, 41: 500, 42: 510,
+            43: 520, 44: 530, 45: 540,
+        };
+
+        const BONUS_MALUS_COEFFICIENTS = {
+            1: 0.7, 2: 0.8, 3: 0.9, 4: 1, 5: 1.2, 6: 1.4, 7: 1.6, 8: 2, 9: 2.5, 10: 3, 11: 3.5,
+        };
+
+        const GUARANTEES = [
+            { id: "rc", name: "RC-RTI", desc: "Dommages corporels et matériels causés aux tiers. Tarif selon CV et bonus‑malus. Capital illimité.", enabled: true, mandatory: true, franchise: null, capital: "Illimité", hasFranchise: false, capitalEditable: false },
+            { id: "defense", name: "Défenses et Recours", desc: "Frais juridiques (avocat, expertise, procédures) pour défendre vos intérêts et exercer un recours.", enabled: true, mandatory: true, franchise: null, capital: 1000, hasFranchise: false, capitalEditable: false, personnelMandatory: true },
+            { id: "incendie", name: "Incendie", desc: "Dommages au véhicule suite à incendie, explosion ou foudre. Capital basé sur la valeur vénale.", enabled: true, mandatory: true, franchise: null, capital: 0, hasFranchise: false, capitalEditable: false, linkedToValeurVenale: true, personnelMandatory: true },
+            { id: "vol", name: "Vol", desc: "Perte du véhicule en cas de vol. Capital basé sur la valeur vénale.", enabled: true, mandatory: true, franchise: null, capital: 0, hasFranchise: false, capitalEditable: false, linkedToValeurVenale: true, personnelMandatory: true },
+            {
+                id: "dommages",
+                name: "Dommages au véhicule", desc: "Tous dommages accidentels au véhicule (hors bris). Capital = valeur à neuf (catalogue). Franchise au choix.",
+                enabled: false,
+                mandatory: false,
+                franchise: 0,
+                capital: 0,
+                hasFranchise: true,
+                franchiseEditable: true,
+                capitalEditable: false,
+                // La garantie dommages est liée à la valeur à neuf (valeur catalogue) et non à la valeur vénale.
+                // Nous utilisons une propriété dédiée afin que renderCapitalField choisisse la valeur à neuf pour le capital.
+                linkedToValeurCatalogue: true
+            },
+            { id: "collision", name: "Dommages et collision", desc: "Dommages matériels suite à collision avec tiers identifié. Franchise 5 %. Capital maximum 10 000 DT", enabled: false, mandatory: false, franchise: 5, capital: 5000, hasFranchise: true, franchiseEditable: false, capitalEditable: true, capitalOptions: [5000, 10000] },
+            { id: "brisglace", name: "Bris de glaces", desc: "Réparation/remplacement des vitrages (pare‑brise, vitres, lunette). Franchise 10 %. Capital modulable.", enabled: false, mandatory: false, franchise: 10, capital: 0, hasFranchise: true, franchiseEditable: false, capitalEditable: true, capitalOptions: [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000] },
+            { id: "pta", name: "PTA", desc: "Accidents des passagers transportés. Capital par place (par défaut 5 000 DT).", enabled: true, mandatory: true, franchise: null, capital: 5000, hasFranchise: false, capitalEditable: false, personnelMandatory: true },
+            { id: "indacc", name: "Individuel Accident", desc: "Décès/invalidité de l’assuré (conducteur). Capital 10 000 ou 20 000 DT.", enabled: true, mandatory: true, franchise: null, capital: 10000, hasFranchise: false, capitalEditable: true, capitalOptions: [10000, 20000], personnelMandatory: true },
+            { id: "catnat", name: "CAT/NAT", desc: "Catastrophes naturelles (inondation, tempête…). Capital maximum 20 000 DT", enabled: true, mandatory: true, franchise: 10, capital: 0, hasFranchise: true, franchiseEditable: false, capitalEditable: false, linkedToValeurVenale: true, personnelMandatory: true },
+            { id: "emeutes", name: "Emeutes et Mouvements populaires", desc: "Émeutes, grèves, mouvements populaires. Capital maximum 20 000 DT.", enabled: true, mandatory: true, franchise: 10, capital: 0, hasFranchise: true, franchiseEditable: false, capitalEditable: false, linkedToValeurVenale: true, personnelMandatory: true },
+            { id: "assistance", name: "Assistance Automobile", desc: "Assistance 24/7 : remorquage, prise en charge et véhicule de remplacement (REM+PEC+VR).", enabled: true, mandatory: true, franchise: null, capital: "REM+PEC+VR", hasFranchise: false, capitalEditable: false, personnelMandatory: true },
+        ];
+
+        let guaranteesState = JSON.parse(JSON.stringify(GUARANTEES));
+        let currentReductionRate = 0;
+
+        // Gestion de la formule sélectionnée (basique ou personnalisée)
+        // La formule basique active uniquement un sous‑ensemble de garanties et désactive les autres.
+        // La formule personnalisée permet à l'utilisateur de sélectionner toutes les garanties disponibles.
+        let currentFormula = 'basique';
+        // Liste dynamique des garanties auxquelles appliquer la réduction.  Ce tableau est
+        // mis à jour par setFormula() en fonction de la formule choisie.
+        let reductionApplicableIds = [];
+
+        /**
+         * Appliquer une formule ("basique" ou "personnalisee").
+         * En formule basique, seules certaines garanties restent activées et les autres sont désactivées
+         * et rendues non sélectionnables.  En formule personnalisée, toutes les garanties sont
+         * sélectionnables et peuvent être activées/désactivées par l'utilisateur.
+         * La liste des garanties sujettes à la réduction (reductionApplicableIds) est mise à jour
+         * pour inclure toutes les garanties sauf RC-RTI.
+         * @param {string} formula
+         */
+	        function setFormula(formula) {
+	            currentFormula = formula;
+	            // Identifiants des garanties comprises dans la formule basique
+	            const basiqueIds = [
+	                'rc', 'defense', 'incendie', 'vol', 'pta', 'indacc', 'catnat', 'emeutes', 'assistance'
+	            ];
+	            
+	            // Logique pour la Formule Personnel et Personnalisée (toutes les garanties cochables/décochables sauf RC)
+	            const isCustomOrPersonnel = (formula === 'personnalisee' || formula === 'personnel' || formula === 'personnel_bh_bank');
+	
+	            if (formula === 'basique') {
+	                // Activer uniquement les garanties de la formule basique et désactiver les autres
+	                guaranteesState.forEach(g => {
+	                    if (basiqueIds.includes(g.id)) {
+	                        g.enabled = true;
+	                    } else {
+	                        g.enabled = false;
+	                    }
+	                });
+	                // Recalculer et afficher les garanties
+	                renderGuarantees();
+	                // Désactiver les cases à cocher pour les garanties hors formule
+	                guaranteesState.forEach(g => {
+	                    const checkbox = document.getElementById('guarantee_' + g.id);
+	                    if (!checkbox) return;
+	                    if (basiqueIds.includes(g.id)) {
+	                        // Les garanties incluses restent sélectionnables uniquement si elles ne sont pas marquées comme obligatoires
+	                        checkbox.disabled = g.mandatory;
+	                        checkbox.checked = true;
+	                    } else {
+	                        checkbox.disabled = true;
+	                        checkbox.checked = false;
+	                    }
+	                });
+	                // Dans la formule basique, la réduction ne s'applique que sur un sous‑ensemble précis
+	                // (vol, incendie, collision, bris de glaces et dommages au véhicule).  RC-RTI reste exclue.
+	                reductionApplicableIds = ['vol', 'incendie', 'collision', 'brisglace', 'dommages'];
+	                // Recalculer après modification de la formule basique
+	                calculateAll();
+	            } else if (isCustomOrPersonnel) {
+	                // Formule personnalisée ou Personnel : toutes les garanties doivent être cochables et cliquables.
+	                // On conserve l'état 'enabled' actuel pour les garanties non obligatoires ;
+	                // les garanties obligatoires restent activées.
+	                guaranteesState.forEach(g => {
+	                    if (g.mandatory) {
+	                        g.enabled = true;
+	                    }
+	                });
+	                // Recréer l'interface des garanties en fonction des états mis à jour
+	                renderGuarantees();
+	                // Mettre à jour l'état des cases à cocher pour refléter les états de garanties
+	                guaranteesState.forEach(g => {
+	                    const checkbox = document.getElementById('guarantee_' + g.id);
+	                    if (!checkbox) return;
+// En formule personnalisée/Personnel, toutes les garanties sont activables/désactivables
+// sauf la RC‑RTI, qui reste obligatoire et grisée.  Elle reste cochée par défaut.
+if (formula === 'personnel' || formula === 'personnel_bh_bank') {
+    // Pour les formules Personnel, les garanties personnelMandatory sont cochées et désactivées
+    if (g.personnelMandatory) {
+        g.enabled = true;
+        checkbox.disabled = true;
+        checkbox.checked = true;
+    } else {
+        // Les autres garanties sont cochables/décochables
+        checkbox.disabled = false;
+        checkbox.checked = g.enabled;
+    }
+} else {
+    // Pour la formule personnalisée standard, seule la RC est désactivée
+    checkbox.disabled = (g.id === 'rc');
+    checkbox.checked = g.enabled;
+}
+	                });
+	
+	                
+
+                    // Adapter le curseur de réduction selon la formule
+                    //
+                    // Cette partie synchronise le composant "slider" de taux de réduction
+                    // en fonction de la formule sélectionnée.  Historiquement seul le cas
+                    // « personnel_bh_bank » était traité ici, ce qui provoquait un bug lors
+                    // du va‑et‑vient entre les formules « personnel » (Simulateur <span style="color: #ff4b5c; font-weight: 700;">Assurance</span> <span style="color: #00a8ff; font-weight: 700;">Automobile</span>) et
+                    // « personnel_bh_bank » : revenir sur « personnel » laissait le
+                    // curseur bloqué à 50 %.  La logique ci‑dessous gère explicitement
+                    // chacune des formules afin d’ajuster la valeur maximale et le taux
+                    // sélectionné.  Si un taux plus élevé est requis qu’actuellement,
+                    // l’option correspondante est appliquée et le libellé mis à jour.
+                    (function() {
+                        const slider = document.getElementById('reductionSlider');
+                        const label  = document.getElementById('reductionSliderValue');
+                        const select = document.getElementById('tauxReduction');
+                        if (!slider || !label || !select) return;
+                        let desiredMax;
+                        let desiredFixedValue = null;
+                        if (formula === 'personnel_bh_bank') {
+                            // La formule Personnel BH Bank impose un taux fixe de 50 %
+                            desiredMax = 50;
+                            desiredFixedValue = 50;
+                        } else if (formula === 'personnel') {
+                            // La formule Personnel Simulateur <span style="color: #ff4b5c; font-weight: 700;">Assurance</span> <span style="color: #00a8ff; font-weight: 700;">Automobile</span> impose un taux fixe de 60 %
+                            desiredMax = 60;
+                            desiredFixedValue = 60;
+                        } else {
+                            // Pour toutes les autres formules (basique, personnalisée…) la
+                            // limite maximale reste à 80 % et aucun taux fixe n’est imposé.
+                            desiredMax = 80;
+                        }
+                        // Mettre à jour la limite maximum si nécessaire
+                        if (String(slider.max) !== String(desiredMax)) {
+                            slider.max = String(desiredMax);
+                        }
+                        // Si un taux fixe est défini, l’imposer à la fois sur le
+                        // <input type="range"> et sur le <select> caché.  Cette
+                        // synchronisation garantit que les interactions ultérieures
+                        // utiliseront la bonne valeur et que le libellé affiché est correct.
+                        if (desiredFixedValue !== null) {
+                            const fixed = desiredFixedValue;
+                            if (parseFloat(select.value) !== fixed) {
+                                select.value = String(fixed);
+                            }
+                            if (parseFloat(slider.value) !== fixed) {
+                                slider.value = String(fixed);
+                            }
+                            label.textContent = fixed + '%';
+                            currentReductionRate = fixed;
+                        } else {
+                            // Aucune contrainte particulière : s’assurer que la valeur
+                            // sélectionnée ne dépasse pas la nouvelle limite maximale
+                            let val = parseFloat(select.value) || 0;
+                            if (val > desiredMax) {
+                                val = desiredMax;
+                                select.value = String(val);
+                                slider.value = String(val);
+                                label.textContent = val + '%';
+                                currentReductionRate = val;
+                            }
+                        }
+                    })();
+if (formula === 'personnalisee') {
+	                    // En formule personnalisée, la réduction s'applique uniquement
+	                    // sur un sous-ensemble précis de garanties : incendie, vol, collision,
+	                    // bris de glaces et dommages au véhicule.  RC-RTI ainsi que les autres
+	                    // garanties ne bénéficient pas de réduction.
+	                    reductionApplicableIds = ['incendie', 'vol', 'collision', 'brisglace', 'dommages'];
+	                } else if (formula === 'personnel') {
+	                    // En formule Personnel, la réduction s'applique sur : Défense et Recours, incendie, vol, Dommages au véhicule, Dommages et collision, Bris de glaces et PTA.
+	                    reductionApplicableIds = ['defense', 'incendie', 'vol', 'dommages', 'collision', 'brisglace', 'pta'];
+	                }
+	
+                else if (formula === 'personnel_bh_bank') {
+                    // En formule Personnel BH Bank, la réduction s'applique sur :
+                    // Incendie, Vol, Dommages au véhicule, Dommages collision, Bris de glaces et PTA.
+                    reductionApplicableIds = ['incendie', 'vol', 'dommages', 'collision', 'brisglace', 'pta'];
+                }
+                
+	                // Recalculer après modification de la formule
+	                calculateAll();
+	            }
+	        }
+
+        /**
+         * Sélectionne visuellement la formule choisie et applique la logique
+         * correspondante.  Cette fonction gère l'état 'selected' sur les boutons
+         * de formulaire et délègue ensuite à setFormula() pour activer/désactiver
+         * les garanties et mettre à jour la liste des réductions applicables.
+         * @param {string} formula - 'basique' ou 'personnalisee'
+         */
+		        function selectFormula(formula) {
+	                document.querySelectorAll('.formula-button').forEach(btn => {
+	                    btn.classList.remove('selected');
+	                });
+	
+	                if (formula === 'basique') {
+	                    document.getElementById('btnFormuleBasique').classList.add('selected');
+	                } else if (formula === 'personnalisee') {
+	                    document.getElementById('btnFormulePersonnalisee').classList.add('selected');
+	                } else if (formula === 'personnel') {
+	                    document.getElementById('btnFormulePersonnel').classList.add('selected');
+	                }
+	
+                else if (formula === 'personnel_bh_bank') {
+                    document.getElementById('btnFormulePersonnelBHBank').classList.add('selected');
+                }
+
+                var slider = document.getElementById('reductionSlider');
+var label = document.getElementById('reductionSliderValue');
+var select = document.getElementById('tauxReduction');
+if (slider && label && select) {
+    if (formula === 'personnel') {
+        var fixed = 60;
+        slider.max = '60';
+        slider.value = String(fixed);
+        select.value = String(fixed);
+        label.textContent = fixed + '%';
+        slider.disabled = true;
+        select.disabled = true;
+        applyReduction(fixed);
+    } else if (formula === 'personnel_bh_bank') {
+        var fixed = 50;
+        slider.max = '50';
+        slider.value = String(fixed);
+        select.value = String(fixed);
+        label.textContent = fixed + '%';
+        slider.disabled = true;
+        select.disabled = true;
+        applyReduction(fixed);
+    } else {
+        slider.disabled = false;
+        select.disabled = false;
+        slider.max = '80';
+        var current = parseFloat(select.value) || 0;
+        if (current > 80) {
+            current = 80;
+            select.value = current;
+            slider.value = current;
+            label.textContent = current + '%';
+        }
+        applyReduction(current);
+    }
+}
+setFormula(formula);
+
+	            }
+	
+	        function renderGuarantees() {
+	            const tbody = document.getElementById("garantiesTableBody");
+	            tbody.innerHTML = "";
+	            // Afficher toutes les garanties
+	            guaranteesState.forEach(g => {
+	                const row = document.createElement("tr");
+                // Dans la formule personnalisée, toutes les garanties sont sélectionnables.
+                // Sinon, les garanties marquées comme obligatoires sont désactivées dans l'interface.
+                // Les garanties marquées obligatoires sont désactivées en formule basique.
+	                // En formule personnalisée, seule la RC‑RTI reste désactivée pour empêcher
+	                // l'utilisateur de la décocher.  Toutes les autres garanties peuvent être
+	                // activées/désactivées.
+let isDisabled = ((currentFormula === 'basique' && g.mandatory) || g.id === 'rc') ? "disabled" : "";
+			                // Pour les formules 'personnalisee' et 'personnel', seule la RC est désactivée.
+			                if ((currentFormula === 'personnalisee' || currentFormula === 'personnel' || currentFormula === 'personnel_bh_bank') && g.id === 'rc') {
+			                    isDisabled = "disabled";
+			                } else if ((currentFormula === 'personnel' || currentFormula === 'personnel_bh_bank') && g.personnelMandatory) {
+			                    // Pour les garanties obligatoires dans les formules Personnel, elles sont désactivées
+			                    isDisabled = "disabled";
+			                } else if (currentFormula === 'personnalisee' && g.mandatory) {
+			                    // Pour les autres garanties obligatoires dans la formule personnalisée standard, elles sont cochables/décochables
+			                    isDisabled = "";
+			                }
+	
+	                // **NOUVEAU: Règles de désactivation basées sur l'ancienneté du véhicule**
+	                const vehicleAge = getVehicleAgeInYears();
+	                if (g.id === 'collision' && vehicleAge > 10) {
+	                    isDisabled = "disabled";
+	                    g.enabled = false; // Désactiver la garantie si elle est trop ancienne
+	                }
+	                let infoMessage = '';
+	                if (g.id === 'collision' && vehicleAge > 10) {
+	                    isDisabled = "disabled";
+	                    g.enabled = false; // Désactiver la garantie si elle est trop ancienne
+	                    infoMessage = '<span class="info-message">Véhicule > 10 ans : garantie non disponible.</span>';
+	                }
+	                if (g.id === 'dommages' && vehicleAge > 5) {
+	                    isDisabled = "disabled";
+	                    g.enabled = false; // Désactiver la garantie si elle est trop ancienne
+	                    infoMessage = '<span class="info-message">Véhicule > 5 ans : garantie non disponible.</span>';
+	                }
+	                // Fin des règles de désactivation basées sur l'ancienneté du véhicule
+	
+	                const isRowDisabled = isDisabled === "disabled" ? "garantie-disabled" : "";
+                
+                let franchiseHtml = "";
+                if (g.hasFranchise) {
+                    if (g.id === "dommages") {
+                        const franchiseOptions = [0, 1, 2, 4, 8, 12, 16, 20];
+                        franchiseHtml = `<select class="garantie-input" id="franchise_${g.id}" value="${g.franchise || 0}" onchange="updateGuaranteeFranchise('${g.id}', this.value)">`;
+                        franchiseOptions.forEach(opt => {
+                            franchiseHtml += `<option value="${opt}" ${g.franchise === opt ? 'selected' : ''}>${opt}%</option>`;
+                        });
+                        franchiseHtml += `</select>`;
+                    } else if (!g.franchiseEditable) {
+                        franchiseHtml = `<span style="text-align: center; display: block; padding: 0.5rem; font-weight: 600;">${g.franchise}%</span>`;
+                    } else {
+                        franchiseHtml = `<input type="number" class="garantie-input" id="franchise_${g.id}" value="${g.franchise || 0}" min="0" max="100" onchange="updateGuaranteeFranchise('${g.id}', this.value)">`;
+                    }
+                } else {
+                    franchiseHtml = `<span style="text-align: center; display: block; padding: 0.5rem;">-</span>`;
+                }
+                
+	                row.innerHTML = `
+	<td data-label="Sélection" class="${isRowDisabled}">
+		                        <input type="checkbox" class="garantie-checkbox" id="guarantee_${g.id}" ${g.enabled ? "checked" : ""} ${isDisabled} onchange="toggleGuarantee('${g.id}')">
+		                    </td>
+	<td data-label="Garanties">
+		                        <label for="guarantee_${g.id}" class="garantie-name">
+				                            ${g.name}
+				                            ${(g.mandatory && (currentFormula === 'basique' || g.id === 'rc')) || ((currentFormula === 'personnel' || currentFormula === 'personnel_bh_bank') && g.personnelMandatory) ? '<span class="garantie-mandatory">(Obligatoire)</span>' : ''}
+		                        </label>
+                                ${g.desc ? '<div class="garantie-desc">' + g.desc + '</div>' : ""}
+                                ${infoMessage}
+		                    </td>
+<td data-label="Franchises (%)">
+	                        ${franchiseHtml}
+	                    </td>
+	                    <td data-label="Capitaux (DT)">
+	                        ${renderCapitalField(g)}
+	                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            updateGuaranteeExclusivity();
+        }
+
+        function toggleGuarantee(id) {
+            const g = guaranteesState.find(x => x.id === id);
+            if (!g) return;
+            // En formule personnalisée, toutes les garanties peuvent être activées/désactivées.
+            // Sinon, seules les garanties non obligatoires peuvent être modifiées.
+            // Dans les formules personnalisée et personnel, toutes les garanties sont modifiables, sauf la RC.
+if (currentFormula === 'personnalisee' || currentFormula === 'personnel' || currentFormula === 'personnel_bh_bank') {
+	                // Les garanties obligatoires pour le personnel ne peuvent pas être décochées
+	                if ((currentFormula === 'personnel' || currentFormula === 'personnel_bh_bank') && g.personnelMandatory) {
+	                    // Ne rien faire, la garantie reste cochée et désactivée
+	                    return;
+	                }
+	                if (g.id !== 'rc') {
+	                    g.enabled = !g.enabled;
+	                    updateGuaranteeExclusivity();
+                    calculateAll();
+                }
+            } else if (!g.mandatory) {
+                g.enabled = !g.enabled;
+                updateGuaranteeExclusivity();
+                calculateAll();
+            }
+        }
+
+        function updateGuaranteeExclusivity() {
+            const dommages = guaranteesState.find(x => x.id === "dommages");
+            const collision = guaranteesState.find(x => x.id === "collision");
+            const brisglace = guaranteesState.find(x => x.id === "brisglace");
+
+            const isDommagesEnabled = dommages?.enabled || false;
+            const isCollisionOrBrisEnabled = (collision?.enabled || brisglace?.enabled) || false;
+
+            const dommagesRow = document.getElementById("guarantee_dommages")?.closest("tr");
+            const collisionRow = document.getElementById("guarantee_collision")?.closest("tr");
+            const brisglaceRow = document.getElementById("guarantee_brisglace")?.closest("tr");
+
+            if (isDommagesEnabled) {
+                collisionRow?.classList.add("garantie-disabled");
+                brisglaceRow?.classList.add("garantie-disabled");
+                document.getElementById("guarantee_collision").disabled = true;
+                document.getElementById("guarantee_brisglace").disabled = true;
+                collision.enabled = false;
+                brisglace.enabled = false;
+            } else {
+                collisionRow?.classList.remove("garantie-disabled");
+                brisglaceRow?.classList.remove("garantie-disabled");
+                document.getElementById("guarantee_collision").disabled = false;
+                document.getElementById("guarantee_brisglace").disabled = false;
+            }
+
+            if (isCollisionOrBrisEnabled) {
+                dommagesRow?.classList.add("garantie-disabled");
+                document.getElementById("guarantee_dommages").disabled = true;
+                dommages.enabled = false;
+            } else {
+                dommagesRow?.classList.remove("garantie-disabled");
+                document.getElementById("guarantee_dommages").disabled = false;
+            }
+        }
+
+        function updateGuaranteeFranchise(id, value) {
+            const g = guaranteesState.find(x => x.id === id);
+            if (g && g.hasFranchise && g.franchiseEditable) {
+                g.franchise = parseInt(value) || 0;
+                calculateAll();
+            }
+        }
+
+        function renderCapitalField(g) {
+        // --- Injection: force select dropdowns for specific guarantees ---
+        // We avoid re-declaring variables that exist later in this function.
+        if (g && g.id === "collision") {
+            const opts = [5000, 10000];
+            const options = opts.map(opt => `<option value="${opt}" ${String(g.capital) === String(opt) ? 'selected' : ''}>${formatCurrency(opt)}</option>`).join('');
+            return `<select class="garantie-input" id="capital_${g.id}" onchange="updateGuaranteeCapital('${g.id}', this.value)">${options}</select>`;
+        }
+        if (g && g.id === "brisglace") {
+            const opts = [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000];
+            const options = opts.map(opt => `<option value="${opt}" ${String(g.capital) === String(opt) ? 'selected' : ''}>${formatCurrency(opt)}</option>`).join('');
+            return `<select class="garantie-input" id="capital_${g.id}" onchange="updateGuaranteeCapital('${g.id}', this.value)">${options}</select>`;
+        }
+        if (g && g.id === "dommages") {
+            const vc_local = parseFloat(document.getElementById("valeurCatalogue").value) || 0;
+            const opts = [Math.round(vc_local * 0.6), Math.round(vc_local * 0.8), Math.round(vc_local)];
+            const display = (v) => isNaN(v) ? '—' : formatCurrency(v);
+            const options = opts.map(opt => `<option value="${opt}" ${String(g.capital) === String(opt) ? 'selected' : (opt === Math.round(vc_local) && (!g.capital || Number(g.capital) === 0) ? 'selected' : '')}>${display(opt)}</option>`).join('');
+            return `<select class="garantie-input" id="capital_${g.id}" onchange="updateGuaranteeCapital('${g.id}', this.value)">${options}</select>`;
+        }
+        // --- End injection ---
+    
+            const valeurVenale = parseFloat(document.getElementById("valeurVenale").value) || 0;
+            const valeurCatalogue = parseFloat(document.getElementById("valeurCatalogue").value) || 0;
+            
+            if (g.id === "catnat" || g.id === "emeutes") {
+                const capital = valeurVenale >= 20000 ? 20000 : valeurVenale * 0.8;
+                return `<span style="text-align: center; display: block; padding: 0.5rem; font-weight: 600;">${formatCurrency(capital)}</span>`;
+            }
+            
+            // Si la garantie est liée à la valeur à neuf, on affiche la valeur catalogue (valeur à neuf) comme capital.
+            if (g.linkedToValeurCatalogue) {
+                return `<span style="text-align: center; display: block; padding: 0.5rem; font-weight: 600;">${formatCurrency(valeurCatalogue)}</span>`;
+            }
+            // Si la garantie est liée à la valeur vénale, on affiche la valeur vénale comme capital.
+            if (g.linkedToValeurVenale) {
+                return `<span style="text-align: center; display: block; padding: 0.5rem; font-weight: 600;">${formatCurrency(valeurVenale)}</span>`;
+            }
+            
+            if (g.capitalEditable && g.capitalOptions) {
+                if (g.id === "collision" || g.id === "brisglace") {
+                    const options = g.capitalOptions.map(opt => `<option value="${opt}" ${g.capital === opt ? 'selected' : ''}>${formatCurrency(opt)}</option>`).join('');
+                    return `<select class="garantie-input" id="capital_${g.id}" onchange="updateGuaranteeCapital('${g.id}', this.value)">${options}</select>`;
+                } else if (g.id === "indacc") {
+                    const options = g.capitalOptions.map(opt => {
+                        return `<option value="${opt}" ${g.capital === opt ? 'selected' : ''}>${formatCurrency(opt)}</option>`;
+                    }).join('');
+                    return `<select class="garantie-input" id="capital_${g.id}" onchange="updateGuaranteeCapital('${g.id}', this.value)">${options}</select>`;
+                }
+            }
+            
+            if (typeof g.capital === 'string') {
+                return `<span style="text-align: center; display: block; padding: 0.5rem; font-weight: 600;">${g.capital}</span>`;
+            }
+            
+            return `<span style="text-align: center; display: block; padding: 0.5rem; font-weight: 600;">${formatCurrency(g.capital)}</span>`;
+        }
+
+	        /**
+	         * Calcule l'âge du véhicule en années à partir de la date de première mise en circulation (PMEC).
+	         * @returns {number} L'âge du véhicule en années.
+	         */
+	        function getVehicleAgeInYears() {
+	            const pmecInput = document.getElementById("pmec");
+	            const pmecDate = new Date(pmecInput.value);
+	            if (isNaN(pmecDate) || !pmecInput.value) return 0; // Retourne 0 si la date n'est pas valide ou vide
+	
+	            const today = new Date();
+	            const diffTime = Math.abs(today - pmecDate);
+	            // 1000 ms * 60 s * 60 min * 24 h * 365.25 jours (pour les années bissextiles)
+	            const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+	            return diffYears;
+	        }
+	
+	        function updateGuaranteeCapital(id, value) {
+	            const g = guaranteesState.find(x => x.id === id);
+	            if (g) {
+	                g.capital = parseFloat(value) || 0;
+	                calculateAll();
+	            }
+	        }
+
+        function applyReduction(reductionRate) {
+    var rate = parseFloat(reductionRate) || 0;
+    if (typeof currentFormula !== 'undefined') {
+        if (currentFormula === 'personnel') {
+            rate = 60;
+        } else if (currentFormula === 'personnel_bh_bank') {
+            rate = 50;
+        }
+    }
+    currentReductionRate = rate;
+    try {
+        var slider = document.getElementById('reductionSlider');
+        var label = document.getElementById('reductionSliderValue');
+        var select = document.getElementById('tauxReduction');
+        if (slider) {
+            if (currentFormula === 'personnel') {
+                slider.max = '60';
+                slider.disabled = true;
+            } else if (currentFormula === 'personnel_bh_bank') {
+                slider.max = '50';
+                slider.disabled = true;
+            } else {
+                slider.max = '80';
+                slider.disabled = false;
+            }
+            if (parseFloat(slider.value) !== rate) slider.value = rate;
+        }
+        if (select) {
+            if (currentFormula === 'personnel' || currentFormula === 'personnel_bh_bank') {
+                select.disabled = true;
+            } else {
+                select.disabled = false;
+            }
+            if (parseFloat(select.value) != rate) select.value = rate;
+        }
+        if (label) { label.textContent = rate + '%'; }
+    } catch (e) {}
+    calculateAll();
+}
+
+
+        // Options disponibles pour le taux de réduction
+        const reductionOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
+
+        /**
+         * Initialise le contrôle personnalisé de sélection du taux de réduction.
+         * Génère dynamiquement les boutons d'options et définit le libellé
+         * initial en fonction de la valeur sélectionnée dans le <select> masqué.
+         */
+        function initReductionControl() {
+            const menu = document.getElementById('reductionMenu');
+            const labelSpan = document.getElementById('reductionButtonLabel');
+            const select = document.getElementById('tauxReduction');
+            // Peupler le menu avec les options
+            menu.innerHTML = '';
+            reductionOptions.forEach(rate => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = rate + '%';
+                btn.style.width = '100%';
+                btn.style.background = 'none';
+                btn.style.border = 'none';
+                btn.style.padding = '0.5rem 1rem';
+                btn.style.textAlign = 'left';
+                btn.style.color = 'var(--text-primary)';
+                btn.style.cursor = 'pointer';
+                btn.onmouseover = () => {
+                    btn.style.background = 'rgba(255, 255, 255, 0.1)';
+                };
+                btn.onmouseout = () => {
+                    btn.style.background = 'transparent';
+                };
+                btn.onclick = () => {
+                    select.value = rate;
+                    labelSpan.textContent = rate + '%';
+                    toggleReductionMenu();
+                    applyReduction(rate);
+                };
+                menu.appendChild(btn);
+            });
+            // Initialiser l'étiquette en fonction de la valeur courante du sélecteur masqué
+            if (select) {
+                labelSpan.textContent = select.value + '%';
+            }
+        }
+
+        /**
+         * Affiche ou masque le menu déroulant des taux de réduction.
+         */
+        function toggleReductionMenu() {
+            const menu = document.getElementById('reductionMenu');
+            if (menu) {
+                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+            }
+        }
+
+        /**
+         * Initialise le curseur de taux de réduction.
+         * Synchronise la valeur du slider avec le sélecteur masqué et
+         * affiche la valeur sélectionnée à côté du curseur. À chaque
+         * déplacement du curseur, la valeur du sélecteur et du label
+         * sont mises à jour et l'application de la réduction est
+         * recalculée.
+         */
+        function initReductionSlider() {
+            const slider = document.getElementById('reductionSlider');
+            const label = document.getElementById('reductionSliderValue');
+            const select = document.getElementById('tauxReduction');
+            if (!slider || !label || !select) return;
+            // Initialiser la position du slider selon la valeur du sélecteur masqué
+            slider.value = select.value;
+            label.textContent = select.value + '%';
+            // Lorsque le slider change, mettre à jour la valeur
+            slider.addEventListener('input', (e) => {
+                const val = e.target.value;
+                select.value = val;
+                label.textContent = val + '%';
+                applyReduction(val);
+            });
+        }
+
+        function formatCurrency(value) {
+            return value.toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function calculatePrimeNette(guaranteeId) {
+            const places = parseFloat(document.getElementById("places").value) || 0;
+            const valeurCatalogue = parseFloat(document.getElementById("valeurCatalogue").value) || 0;
+            
+            const capitalDom = (guaranteesState.find(x => x.id === "dommages")?.capital || valeurCatalogue);
+const valeurVenale = parseFloat(document.getElementById("valeurVenale").value) || 0;
+            const cv = document.getElementById("cv").value;
+            const classBM = parseInt(document.getElementById("classBonusMalus").value) || 1;
+            
+            const g = guaranteesState.find(x => x.id === guaranteeId);
+            const capitalBG = guaranteesState.find(x => x.id === "brisglace")?.capital || 0;
+            const capitalDC = guaranteesState.find(x => x.id === "collision")?.capital || 0;
+            const capitalPTA = guaranteesState.find(x => x.id === "pta")?.capital || 0;
+            const capitalIndAcc = guaranteesState.find(x => x.id === "indacc")?.capital || 0;
+            const tauxFranchise = g?.franchise || 0;
+
+            let primeNette = 0;
+
+            switch (guaranteeId) {
+                case "rc": {
+                    const tarif = CV_TARIF_BASE[cv] || 140;
+                    const coeff = BONUS_MALUS_COEFFICIENTS[classBM] || 1;
+                    primeNette = tarif * coeff;
+                    break;
+                }
+                case "vol":
+                    primeNette = 30 + (valeurVenale * 2.36) / 1000;
+                    break;
+                case "incendie":
+                    primeNette = 30 + (valeurVenale * 2.75) / 1000;
+                    break;
+                case "defense":
+                    primeNette = 20;
+                    break;
+                case "collision":
+                    primeNette = 30 + (capitalDC * 0.08);
+                    break;
+                case "brisglace":
+                    primeNette = capitalBG * 0.09;
+                    break;
+                case "pta":
+                    primeNette = (places * capitalPTA) / 1000;
+                    break;
+                case "catnat": {
+                    // CAT/NAT : prime fixe 40 DT si valeur vénale >= 20 000 DT, sinon prime réduite à 80%
+                    if (valeurVenale >= 20000) {
+                        primeNette = 40;
+                    } else {
+                        primeNette = 40 * 0.8;
+                    }
+                    break;
+                }
+                case "emeutes": {
+                    // Emeutes et Mouvements populaires : prime fixe 20 DT si valeur vénale >= 20 000 DT, sinon prime réduite à 80%
+                    if (valeurVenale >= 20000) {
+                        primeNette = 20;
+                    } else {
+                        primeNette = 20 * 0.8;
+                    }
+                    break;
+                }
+                case "dommages": {
+                    /*
+                     * Dommages au véhicule : la prime nette est calculée en fonction de la valeur à neuf
+                     * (ici assimilée à la valeur catalogue) et du taux de franchise choisi.  
+                     * On utilise deux tableaux pour récupérer :
+                     *  - un forfait de base (en dinars) selon le taux de franchise ;
+                     *  - une surprime (en ‰) appliquée à la valeur catalogue du véhicule.
+                     * La formule correspondante dans le fichier Excel est :
+                     * (INDEX($B$56:$I$56;1;EQUIV(tauxFranchise;$B$55:$I$55;0))
+                     *  + CHOISIR(EQUIV(tauxFranchise;$B$55:$I$55;0);32;26,5;21;17;13;9;7;4)/1000 * capitalDom)
+                     * La réduction est appliquée plus loin dans calculateAll().
+                     */
+                    const franchiseOptions = [0, 1, 2, 4, 8, 12, 16, 20];
+                    const basePrimes = [22, 21.75, 19, 15, 12.5, 9, 8, 6];
+                    const surprimeConstants = [32, 26.5, 21, 17, 13, 9, 7, 4];
+                    // Trouver l'indice correspondant au taux de franchise sélectionné
+                    let idx = franchiseOptions.indexOf(tauxFranchise);
+                    if (idx < 0) idx = 0;
+                    const baseComponent = basePrimes[idx];
+                    const surprimeComponent = (surprimeConstants[idx] / 1000) * capitalDom;
+                    primeNette = baseComponent + surprimeComponent;
+                    break;
+                }
+                case "indacc":
+                    primeNette = capitalIndAcc === 10000 ? 15.050 : (capitalIndAcc === 20000 ? 29.400 : 0);
+                    break;
+                case "assistance":
+                    primeNette = 100;
+                    break;
+                default:
+                    primeNette = 0;
+            }
+
+            return primeNette;
+        }
+
+        function calculateAll() {
+            // Déterminer dynamiquement les garanties auxquelles appliquer la réduction.  La liste
+            // reductionApplicableIds est mise à jour par setFormula() selon la formule choisie.
+            const guaranteesWithReduction = reductionApplicableIds;
+
+            
+            // Taux effectif (capé à 50% pour la formule Personnel BH Bank)
+            const effectiveReductionRate = (currentFormula === 'personnel_bh_bank')
+                ? Math.min(currentReductionRate, 50)
+                : currentReductionRate;
+// Avant de calculer les primes, mettre à jour les capitaux dynamiques pour les garanties
+            // liées à la valeur vénale ou à la valeur catalogue.  Cela permet d'afficher correctement
+            // les capitaux dans le tableau des garanties et d'utiliser ces valeurs pour certains calculs.
+            {
+                const valeurCatalogue = parseFloat(document.getElementById("valeurCatalogue").value) || 0;
+                const valeurVenale = parseFloat(document.getElementById("valeurVenale").value) || 0;
+                guaranteesState.forEach(g => {
+                    if (g.id === "catnat" || g.id === "emeutes") {
+                        // CAT/NAT et Emeutes ont un capital fixe de 20 000 DT si la valeur vénale >= 20k, sinon 80% de la valeur vénale
+                        g.capital = valeurVenale >= 20000 ? 20000 : valeurVenale * 0.8;
+                    } else if (g.linkedToValeurCatalogue) {
+                        g.capital = valeurCatalogue;
+                    } else if (g.linkedToValeurVenale) {
+                        g.capital = valeurVenale;
+                    }
+                });
+            }
+            
+            const results = guaranteesState.filter(g => g.enabled).map(g => {
+                let primeNette = calculatePrimeNette(g.id);
+                
+                // Appliquer la réduction uniquement sur les garanties spécifiées
+                if (guaranteesWithReduction.includes(g.id) && g.enabled) {
+                    primeNette = primeNette * (1 - effectiveReductionRate / 100);
+                }
+
+                // **NOUVEAU: Application du fractionnement**
+                const fractionnement = document.getElementById("fractionnement").value;
+                if (fractionnement === "semestriel") {
+                    // Si le fractionnement est semestriel, la prime nette est divisée par 2
+                    primeNette = primeNette / 2;
+                }
+                
+                return { ...g, primeNette, tua: 0, primeTotal: 0 };
+            });
+
+            // Les totaux seront calculés après que les TUA soient déterminés pour chaque garantie.
+            let totalPrimeNette = 0;
+            let totalTUA = 0;
+            let totalPrimeNetteTaxes = 0;
+            const coutContrat = 25;
+            const fssr = 0.5;
+            const fpac = 0.3;
+            const fga = 3;
+            
+            // Calcul du TUA
+            // Pour RC-RTI, la formule reste inchangée: prime nette *12% + (prime nette + coût du contrat) *2%
+            const rcResult = results.find(r => r.id === "rc");
+            if (rcResult && rcResult.primeNette > 0) {
+                rcResult.tua = (rcResult.primeNette * 0.12) + ((rcResult.primeNette + coutContrat) * 0.02);
+            } else if (rcResult) {
+                rcResult.tua = 0;
+            }
+
+            // Liste des garanties dont le TUA est calculé comme 12% de la prime nette uniquement
+            const tuaPrimeOnly = ["defense", "incendie", "vol", "dommages", "pta", "indacc", "catnat", "emeutes", "assistance", "collision", "brisglace"];
+
+            // Calcul du TUA pour les autres garanties
+            results.forEach(r => {
+                if (r.id !== "rc") {
+                    if (r.primeNette > 0) {
+                        if (tuaPrimeOnly.includes(r.id)) {
+                            // TUA = 12% de la prime nette
+                            r.tua = r.primeNette * 0.12;
+                        } else {
+                            // Pour les autres garanties, TUA = 12% de (prime nette + coût du contrat)
+                            r.tua = (r.primeNette + coutContrat) * 0.12;
+                        }
+                    } else {
+                        r.tua = 0;
+                    }
+                }
+                r.primeTotal = r.primeNette + r.tua;
+            });
+            
+            // Calcul des totaux après le calcul des TUA
+            totalPrimeNette = results.reduce((sum, r) => sum + r.primeNette, 0);
+            totalTUA = results.reduce((sum, r) => sum + r.tua, 0);
+            totalPrimeNetteTaxes = totalPrimeNette + totalTUA;
+            const totalPrimeTotal = results.reduce((sum, r) => sum + r.primeTotal, 0);
+            
+            // Prime Totale TTC = (Total prime nette + taxes) + Coût du Contrat + FSSR + FPAC + FGA
+            const primeFinale = totalPrimeNetteTaxes + coutContrat + fssr + fpac + fga;
+
+            const tbody = document.getElementById("resultsTableBody");
+            // Construire le tableau HTML en ajoutant une colonne pour le taux de réduction.
+            let html = results.filter(r => r.enabled).map(r => {
+                // Déterminer si une réduction est appliquée pour cette garantie
+                const reductionApplicable = guaranteesWithReduction.includes(r.id) && currentReductionRate > 0;
+                const reductionDisplay = reductionApplicable ? (effectiveReductionRate.toFixed(0) + "%") : "-";
+                return `
+                <tr>
+                    <td data-label="Garantie">${r.name}</td>
+	                    <td class="numeric" data-label="Taux de réduction (%)">${reductionDisplay}</td>
+	                    <td class="numeric" data-label="Prime Nette (DT)">${formatCurrency(r.primeNette)}</td>
+	                    <td class="numeric" data-label="TUA (DT)">${formatCurrency(r.tua)}</td>
+	                    <td class="numeric" data-label="Prime Totale (DT)">${formatCurrency(r.primeTotal)}</td>
+                </tr>`;
+            }).join("");
+            
+            // Ajouter la ligne de totaux avec une cellule vide pour le taux de réduction
+            html += `
+                <tr style="background: rgba(0, 168, 255, 0.1); font-weight: 700; border-top: 2px solid var(--primary-color);">
+                    <td data-label="Garantie"><strong>TOTAL</strong></td>
+	                    <td class="numeric" data-label="Taux de réduction (%)">-</td>
+	                    <td class="numeric" data-label="Prime Nette (DT)"><strong>${formatCurrency(totalPrimeNette)}</strong></td>
+	                    <td class="numeric" data-label="TUA (DT)"><strong>${formatCurrency(totalTUA)}</strong></td>
+	                    <td class="numeric" data-label="Prime Totale (DT)"><strong>${formatCurrency(totalPrimeTotal)}</strong></td>
+                </tr>
+            `;
+            
+            tbody.innerHTML = html;
+
+            // Afficher les ru00e9sultats
+            // Afficher le total des primes nettes et taxes (prime nette + TUA)
+            document.getElementById("totalPrimeNette").textContent = formatCurrency(totalPrimeNetteTaxes) + " DT";
+            // Mise à jour du total de TUA est supprimée de l'affichage
+            document.getElementById("primeFinale").textContent = formatCurrency(primeFinale) + " DT";
+
+            // Après le recalcul des primes et des totaux, mettre à jour l'affichage des garanties
+            // afin que les capitaux dynamiques (valeur à neuf ou vénale) soient reflétés dans le tableau.
+            renderGuarantees();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle("light-mode");
+            const icon = document.getElementById("themeIcon");
+            icon.textContent = document.body.classList.contains("light-mode") ? "🌙" : "☀️";
+            localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem("theme") || "dark";
+            if (savedTheme === "light") {
+                document.body.classList.add("light-mode");
+                document.getElementById("themeIcon").textContent = "🌙";
+            }
+        }
+
+        function openUserForm() {
+            // Afficher la modale du formulaire et pré-remplir la date DPMEC
+            const modal = document.getElementById("userFormModal");
+            if (modal) {
+                modal.style.display = "block";
+            }
+            // Synchroniser la date DPMEC du formulaire avec celle saisie à l'étape 1
+            const pmecInput = document.getElementById("pmec");
+            const dpmecInput = document.getElementById("dpmec");
+            if (pmecInput && dpmecInput) {
+                dpmecInput.value = pmecInput.value;
+            }
+        }
+
+        function closeUserForm() {
+            document.getElementById("userFormModal").style.display = "none";
+        }
+
+        function openOffreAssurance() {
+            const modal = document.getElementById("offreAssuranceModal");
+            modal.style.display = "block";
+            populateOffreAssurance();
+        }
+
+        function closeOffreAssurance() {
+            document.getElementById("offreAssuranceModal").style.display = "none";
+        }
+
+        /**
+         * Gestion de l'affichage de l'offre :
+         * Lorsque l'utilisateur clique sur "Voir l'offre", on vérifie si les
+         * données du proposant (nom, prénom, coordonnées, marque, modèle…) sont
+         * remplies.  Si elles sont vides ou absentes, on affiche une fenêtre
+         * de confirmation lui demandant s'il souhaite poursuivre sans remplir
+         * le formulaire.  En cas de réponse positive, on affiche l'offre;
+         * sinon on ouvre le formulaire du proposant.
+         */
+        function voirOffre() {
+            let showConfirm = true;
+            try {
+                const savedData = localStorage.getItem("userFormData");
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    // Les champs minimaux requis pour considérer que l'utilisateur a saisi des données significatives
+                    // On ne prend pas en compte dpmec qui peut être pré‑rempli automatiquement.
+                    const requiredFields = ["nom", "prenom", "marque", "modele"];
+                    // Vérifier si tous les champs requis sont vides
+                    const allEmpty = requiredFields.every(k => !data[k] || String(data[k]).trim() === "");
+                    showConfirm = allEmpty;
+                }
+            } catch (err) {
+                console.warn("Erreur lors de la lecture des données du formulaire:", err);
+            }
+            if (showConfirm) {
+                const modal = document.getElementById('confirmationModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                } else {
+                    // En cas d'erreur dans l'ajout du modal, afficher l'offre directement
+                    openOffreAssurance();
+                }
+            } else {
+                // Les données existent, on affiche directement l'offre
+                openOffreAssurance();
+            }
+        }
+
+        function proceedWithoutForm() {
+            // Fermer la fenêtre de confirmation et afficher l'offre
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            openOffreAssurance();
+        }
+
+        function cancelWithoutForm() {
+            // Fermer la fenêtre de confirmation et ouvrir le formulaire du proposant
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            openUserForm();
+        }
+
+        function populateOffreAssurance() {
+            const savedData = localStorage.getItem("userFormData");
+            const formData = savedData ? JSON.parse(savedData) : {};
+
+            document.getElementById("offreNom").textContent = formData.nom || "-";
+            document.getElementById("offrePrenom").textContent = formData.prenom || "-";
+            document.getElementById("offreCIN").textContent = formData.cin || "-";
+            document.getElementById("offreAdresse").textContent = formData.adresse || "-";
+            document.getElementById("offreMobile").textContent = formData.mobile || "-";
+            document.getElementById("offreEmail").textContent = formData.email || "-";
+            document.getElementById("offreAgence").textContent = formData.agence || "-";
+            document.getElementById("offreMarque").textContent = formData.marque || "-";
+            document.getElementById("offreModele").textContent = formData.modele || "-";
+            document.getElementById("offreDPMEC").textContent = formData.dpmec || "-";
+            
+            // Récupération de la classe bonus-malus.  Le sélecteur de la classe porte l'ID
+            // "classBonusMalus" (voir la section Informations du Véhicule).  On utilise
+            // l'option sélectionnée pour afficher "Classe X" plutôt que la simple valeur numérique.
+            const classBonusEl = document.getElementById("classBonusMalus");
+            if (classBonusEl) {
+                const selectedOption = classBonusEl.options[classBonusEl.selectedIndex];
+                document.getElementById("offreClasseBM").textContent = selectedOption ? selectedOption.text : classBonusEl.value;
+            } else {
+                document.getElementById("offreClasseBM").textContent = "-";
+            }
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById("dateOffre").textContent = dateStr;
+
+            const tbody = document.getElementById("offreTableBody");
+            // Vider le tableau avant de le remplir
+            tbody.innerHTML = "";
+
+            /* Pour construire le tableau de couverture, on parcourt l'état global des
+             * garanties (`guaranteesState`).  Chaque entrée de `guaranteesState`
+             * contient l'identifiant (`id`), le nom à afficher (`name`), l'indication
+             * d'activation (`enabled`), la franchise éventuelle (`franchise`),
+             * le capital (`capital`) ainsi que des indicateurs comme
+             * `linkedToValeurVenale` pour les garanties dont le capital dépend de
+             * la valeur vénale et `capitalEditable` pour celles qui disposent
+             * d'un champ de saisie.  Cette logique reprend celle de `renderGuarantees()`. */
+            guaranteesState.forEach(g => {
+                if (g.enabled) {
+                    // Déterminer l'affichage de la franchise
+                    let franchiseDisplay = "-";
+                    if (g.hasFranchise) {
+                        // Si la franchise est renseignée dans l'état, on l'affiche avec un %
+                        if (g.franchise !== null && g.franchise !== undefined) {
+                            franchiseDisplay = g.franchise + "%";
+                        }
+                    }
+                    // Déterminer l'affichage du capital
+                    let capitalDisplay = "-";
+                    const valeurVenale = parseFloat(document.getElementById("valeurVenale").value) || 0;
+                    if (g.id === "catnat" || g.id === "emeutes") {
+                        // Pour CAT/NAT et Emeutes, le capital est limité à 20 000 DT ou 80 % de la valeur vénale
+                        const capValue = valeurVenale >= 20000 ? 20000 : valeurVenale * 0.8;
+                        capitalDisplay = formatCurrency(capValue);
+                    } else if (g.linkedToValeurVenale) {
+                        // Pour les garanties liées à la valeur vénale (incendie, vol, dommages…), utiliser la valeur vénale
+                        capitalDisplay = formatCurrency(valeurVenale);
+                    } else {
+                        // Sinon utiliser la valeur définie dans l'état ; si c'est une chaîne, l'afficher telle quelle
+                        if (typeof g.capital === "string") {
+                            capitalDisplay = g.capital;
+                        } else {
+                            capitalDisplay = formatCurrency(g.capital);
+                        }
+                    }
+                    // Créer une ligne pour la garantie
+                    const row = document.createElement("tr");
+                    row.style.borderBottom = "1px solid rgba(255, 75, 92, 0.2)";
+                    row.innerHTML = `<td style="padding: 0.75rem;">${g.name}</td><td style="padding: 0.75rem; text-align: center;">${franchiseDisplay}</td><td style="padding: 0.75rem; text-align: right;">${capitalDisplay}</td>`;
+                    tbody.appendChild(row);
+                }
+            });
+
+            // Copier la prime totale calculée dans la section résultats vers l'offre
+            const primeFinaleElement = document.getElementById("primeFinale");
+            const primeTotal = primeFinaleElement ? primeFinaleElement.textContent : "0.000 DT";
+            document.getElementById("offrePrimeTotal").textContent = primeTotal;
+        }
+
+        function printOffreAssurance() {
+            // Générer une nouvelle fenêtre pour l'impression afin de n'afficher que
+            // le contenu de l'offre d'assurance. Cela évite les problèmes
+            // d'affichage liés à l'impression du reste de la page ou à la
+            // visibilité des éléments cachés.
+            const modal = document.getElementById("offreAssuranceModal");
+            if (!modal) {
+                window.print();
+                return;
+            }
+            // Ouvrir une nouvelle fenêtre vierge pour l'impression
+            const printWindow = window.open('', '', 'width=900,height=650');
+            const doc = printWindow.document;
+            // Préparer le document HTML
+            doc.open();
+            doc.write('<html><head><title>Offre d\'Assurance</title>');
+            // Copier toutes les balises <style> et <link rel="stylesheet"> de la page courante
+            const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
+            styles.forEach(style => {
+                doc.write(style.outerHTML);
+            });
+            // Fermer l'élément head et débuter le body avec la classe print-only
+            doc.write('</head><body class="print-only"></body></html>');
+            doc.close();
+            // Préparer un conteneur temporaire pour copier uniquement le contenu du modal,
+            // sans le conteneur principal qui comporte un style `display: none` et la
+            // superposition. Cela permet d'éviter que le contenu soit caché.
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = modal.innerHTML;
+            // Supprimer les éléments marqués comme non imprimables
+            tempContainer.querySelectorAll('.no-print').forEach(el => el.remove());
+            // Injecter le contenu préparé dans la nouvelle fenêtre
+            printWindow.document.body.innerHTML = tempContainer.innerHTML;
+            // Focus sur la nouvelle fenêtre et lancement de l'impression
+            printWindow.focus();
+            printWindow.print();
+            // Fermer la fenêtre après le lancement de l'impression
+            printWindow.close();
+        }
+
+        /**
+         * Enregistre l'offre d'assurance actuellement affichée dans le modal.
+         * Les offres sont stockées dans le stockage local (localStorage) sous
+         * forme d'un tableau d'objets avec un identifiant unique, la date
+         * d'enregistrement et le contenu HTML de l'offre (sans les boutons).
+         */
+        function saveOffreAssurance() {
+            const modal = document.getElementById("offreAssuranceModal");
+            if (!modal) {
+                alert("Aucune offre à enregistrer.");
+                return;
+            }
+            // Préparer un conteneur temporaire pour récupérer le contenu sans la superposition
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = modal.innerHTML;
+            // Supprimer les éléments non imprimables (ex. boutons) pour ne conserver que les données
+            tempContainer.querySelectorAll('.no-print').forEach(el => el.remove());
+            const offerContent = tempContainer.innerHTML;
+            // Construire un objet de données contenant les informations utiles pour recharger le devis
+            const userInfo = (() => {
+                try {
+                    return JSON.parse(localStorage.getItem('userFormData')) || {};
+                } catch (e) {
+                    return {};
+                }
+            })();
+            const vehicleInfo = {
+                places: parseInt(document.getElementById('places').value) || 0,
+                valeurCatalogue: parseFloat(document.getElementById('valeurCatalogue').value) || 0,
+                valeurVenale: parseFloat(document.getElementById('valeurVenale').value) || 0,
+                cv: document.getElementById('cv').value,
+                dpmec: document.getElementById('dpmec').value,
+                classBonusMalus: document.getElementById('classBonusMalus').value,
+                tauxReduction: document.getElementById('tauxReduction').value
+            };
+            // Sauvegarder l'état des garanties afin de pouvoir le recharger
+            const savedGuarantees = guaranteesState.map(g => ({
+                id: g.id,
+                enabled: g.enabled,
+                franchise: g.franchise,
+                capital: g.capital
+            }));
+            const primeTotal = document.getElementById('offrePrimeTotal').textContent;
+            // Construire un objet offre avec un identifiant, la date, le contenu HTML et les données structurées
+            const offer = {
+                id: Date.now(),
+                date: new Date().toLocaleString('fr-FR'),
+                content: offerContent,
+                data: {
+                    userInfo: userInfo,
+                    vehicleInfo: vehicleInfo,
+                    guarantees: savedGuarantees,
+                    primeTotal: primeTotal
+                }
+            };
+            // Récupérer les offres existantes
+            const existing = localStorage.getItem('savedOffers');
+            let offers = [];
+            if (existing) {
+                try {
+                    offers = JSON.parse(existing);
+                    if (!Array.isArray(offers)) offers = [];
+                } catch (e) {
+                    offers = [];
+                }
+            }
+            offers.push(offer);
+            localStorage.setItem('savedOffers', JSON.stringify(offers));
+            alert('Offre enregistrée avec succès !');
+        }
+
+        /**
+         * Ouvre le modal affichant toutes les offres enregistrées. Les offres
+         * sont lues depuis le localStorage et affichées dans l'élément
+         * #savedOffersList. Chaque offre montre la date et le contenu du
+         * devis enregistré.
+         */
+        function openSavedOffers() {
+            const modal = document.getElementById("savedOffersModal");
+            const listDiv = document.getElementById("savedOffersList");
+            // Charger les offres depuis le stockage
+            let offers = [];
+            const saved = localStorage.getItem('savedOffers');
+            if (saved) {
+                try {
+                    offers = JSON.parse(saved);
+                    if (!Array.isArray(offers)) offers = [];
+                } catch (e) {
+                    offers = [];
+                }
+            }
+            // Réinitialiser le contenu de la liste
+            listDiv.innerHTML = '';
+            if (offers.length === 0) {
+                const emptyMsg = document.createElement('p');
+                emptyMsg.textContent = "Aucun devis enregistré.";
+                emptyMsg.style.fontStyle = 'italic';
+                listDiv.appendChild(emptyMsg);
+            } else {
+                /*
+                 * Pour chaque devis enregistré, nous créons un élément visuel
+                 * qui s'apparente à un dossier.  Il comporte une icône de
+                 * dossier, la date et un aperçu de la prime totale.  Un
+                 * ensemble de boutons permet de charger ou de supprimer le
+                 * devis.  Cette présentation facilite la navigation parmi
+                 * plusieurs enregistrements.
+                 */
+                // Réinitialiser la sélection d'offres pour le comparateur
+                selectedOfferIds = [];
+                offers.forEach(offer => {
+                    // Conteneur général pour chaque devis
+                    const container = document.createElement('div');
+                    container.style.display = 'flex';
+                    container.style.justifyContent = 'space-between';
+                    container.style.alignItems = 'center';
+                    container.style.padding = '1rem';
+                    container.style.marginBottom = '1rem';
+                    container.style.background = 'rgba(255, 255, 255, 0.05)';
+                    container.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                    container.style.borderRadius = '6px';
+                    // Sélecteur pour la comparaison
+                    const selectCB = document.createElement('input');
+                    selectCB.type = 'checkbox';
+                    selectCB.setAttribute('data-offer-id', offer.id);
+                    selectCB.style.marginRight = '0.75rem';
+                    selectCB.onchange = (e) => toggleOfferSelection(offer.id, e.target.checked);
+                    // Icône dossier et infos
+                    const folderIcon = document.createElement('span');
+                    folderIcon.textContent = '📁';
+                    folderIcon.style.fontSize = '1.5rem';
+                    folderIcon.style.marginRight = '0.75rem';
+                    const titleP = document.createElement('p');
+                    titleP.textContent = `Devis du ${offer.date}`;
+                    titleP.style.margin = '0';
+                    titleP.style.fontWeight = '600';
+                    const primeP = document.createElement('p');
+                    const primeVal = (offer.data && offer.data.primeTotal) ? offer.data.primeTotal : '';
+                    primeP.textContent = primeVal ? `Prime : ${primeVal}` : '';
+                    primeP.style.margin = '0';
+                    primeP.style.fontSize = '0.85rem';
+                    primeP.style.opacity = '0.8';
+                    const infoStack = document.createElement('div');
+                    infoStack.appendChild(titleP);
+                    infoStack.appendChild(primeP);
+                    const leftSection = document.createElement('div');
+                    leftSection.style.display = 'flex';
+                    leftSection.style.alignItems = 'center';
+                    leftSection.appendChild(selectCB);
+                    leftSection.appendChild(folderIcon);
+                    leftSection.appendChild(infoStack);
+                    // Permettre la sélection de l'offre en cliquant n'importe où sur
+                    // la section gauche (icône ou texte).  Si l'événement provient
+                    // directement de la case à cocher, l'onChange suffira.
+                    leftSection.addEventListener('click', (evt) => {
+                        // Ne rien faire si l'utilisateur a cliqué sur le bouton de la case
+                        // à cocher elle-même : l'événement onchange gère cet état.
+                        if (evt.target && evt.target.tagName === 'INPUT') return;
+                        // Basculer l'état de la case à cocher et mettre à jour la sélection
+                        selectCB.checked = !selectCB.checked;
+                        toggleOfferSelection(offer.id, selectCB.checked);
+                    });
+                    // Actions : charger et supprimer
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.style.display = 'flex';
+                    actionsDiv.style.gap = '0.5rem';
+                    // Bouton Charger
+                    const loadBtn = document.createElement('button');
+                    loadBtn.textContent = 'Charger';
+                    loadBtn.style.background = 'linear-gradient(135deg, #2ecc71, #00a8ff)';
+                    loadBtn.style.color = 'white';
+                    loadBtn.style.border = 'none';
+                    loadBtn.style.padding = '0.5rem 0.75rem';
+                    loadBtn.style.borderRadius = '4px';
+                    loadBtn.style.cursor = 'pointer';
+                    loadBtn.onclick = () => loadOffer(offer.id);
+                    // Bouton Supprimer
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Supprimer';
+                    deleteBtn.style.background = 'linear-gradient(135deg, #e74c3c, #ff7675)';
+                    deleteBtn.style.color = 'white';
+                    deleteBtn.style.border = 'none';
+                    deleteBtn.style.padding = '0.5rem 0.75rem';
+                    deleteBtn.style.borderRadius = '4px';
+                    deleteBtn.style.cursor = 'pointer';
+                    deleteBtn.onclick = () => deleteOffer(offer.id);
+                    actionsDiv.appendChild(loadBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    // Assembler la ligne
+                    container.appendChild(leftSection);
+                    container.appendChild(actionsDiv);
+                    listDiv.appendChild(container);
+                });
+                // Ajouter un bouton de comparaison
+                const compareContainer = document.createElement('div');
+                compareContainer.style.display = 'flex';
+                compareContainer.style.justifyContent = 'flex-end';
+                compareContainer.style.marginTop = '1rem';
+                const compareBtn = document.createElement('button');
+                compareBtn.id = 'compareOffersButton';
+                compareBtn.textContent = 'Comparer les offres';
+                compareBtn.disabled = true;
+                compareBtn.style.background = 'linear-gradient(135deg, #8e44ad, #2ecc71)';
+                compareBtn.style.color = 'white';
+                compareBtn.style.border = 'none';
+                compareBtn.style.padding = '0.5rem 1rem';
+                compareBtn.style.borderRadius = '4px';
+                compareBtn.style.cursor = 'pointer';
+                compareBtn.onclick = () => openCompareOffers();
+                compareContainer.appendChild(compareBtn);
+                listDiv.appendChild(compareContainer);
+                // Mettre à jour l'état du bouton de comparaison lors de l'ouverture
+                if (typeof updateCompareButton === 'function') {
+                    updateCompareButton();
+                }
+            }
+            modal.style.display = 'block';
+        }
+
+        /**
+         * Ferme le modal des devis enregistrés.
+         */
+        function closeSavedOffers() {
+            const modal = document.getElementById("savedOffersModal");
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        /**
+         * Charge un devis enregistré à partir de son identifiant.  Cette
+         * fonction restaure les informations saisies (utilisateur et véhicule),
+         * l'état des garanties et recalcule les primes avant d'ouvrir la
+         * fenêtre d'offre.  Elle ferme également le modal des devis
+         * enregistrés.
+         *
+         * @param {number} id L'identifiant unique du devis enregistré
+         */
+        function loadOffer(id) {
+            // Récupérer tous les devis depuis le stockage
+            let offers = [];
+            const saved = localStorage.getItem('savedOffers');
+            if (saved) {
+                try {
+                    offers = JSON.parse(saved);
+                    if (!Array.isArray(offers)) offers = [];
+                } catch (e) {
+                    offers = [];
+                }
+            }
+            // Chercher le devis correspondant
+            const offer = offers.find(o => o.id === id);
+            if (!offer) {
+                alert("Devis introuvable.");
+                return;
+            }
+            // Restaurer les données utilisateur dans localStorage pour que
+            // populateOffreAssurance() les affiche correctement
+            if (offer.data && offer.data.userInfo) {
+                localStorage.setItem('userFormData', JSON.stringify(offer.data.userInfo));
+                // Mettre à jour immédiatement le formulaire utilisateur si ouvert
+                loadUserFormData();
+            }
+            // Restaurer les informations du véhicule
+            const v = (offer.data && offer.data.vehicleInfo) || {};
+            const setValue = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = value != null ? value : '';
+                }
+            };
+            setValue('places', v.places);
+            setValue('valeurCatalogue', v.valeurCatalogue);
+            setValue('valeurVenale', v.valeurVenale);
+            setValue('cv', v.cv);
+            setValue('dpmec', v.dpmec);
+            setValue('classBonusMalus', v.classBonusMalus);
+            setValue('tauxReduction', v.tauxReduction);
+            // Mettre à jour le curseur de réduction et le label associé
+            const sliderEl = document.getElementById('reductionSlider');
+            const labelEl = document.getElementById('reductionSliderValue');
+            if (sliderEl) {
+                sliderEl.value = v.tauxReduction != null ? v.tauxReduction : 0;
+            }
+            if (labelEl) {
+                labelEl.textContent = (v.tauxReduction != null ? v.tauxReduction : 0) + '%';
+            }
+            // Appliquer immédiatement le taux de réduction rechargé
+            applyReduction(v.tauxReduction != null ? v.tauxReduction : 0);
+            // Restaurer l'état des garanties
+            if (offer.data && Array.isArray(offer.data.guarantees)) {
+                guaranteesState.forEach(g => {
+                    const savedG = offer.data.guarantees.find(x => x.id === g.id);
+                    if (savedG) {
+                        g.enabled = !!savedG.enabled;
+                        g.franchise = savedG.franchise;
+                        g.capital = savedG.capital;
+                    } else {
+                        // Si aucune sauvegarde, désactiver la garantie
+                        g.enabled = false;
+                    }
+                });
+            }
+            // Rendre les garanties visibles et recalculer la prime
+            renderGuarantees();
+            calculateAll();
+            // Ouvrir le devis avec les nouvelles données
+            closeSavedOffers();
+            openOffreAssurance();
+        }
+
+        /**
+         * Supprime un devis enregistré en utilisant son identifiant.  Cette
+         * fonction met à jour le localStorage et rafraîchit la liste des
+         * devis affichés dans le modal.
+         *
+         * @param {number} id L'identifiant unique du devis à supprimer
+         */
+        function deleteOffer(id) {
+            let offers = [];
+            const saved = localStorage.getItem('savedOffers');
+            if (saved) {
+                try {
+                    offers = JSON.parse(saved);
+                    if (!Array.isArray(offers)) offers = [];
+                } catch (e) {
+                    offers = [];
+                }
+            }
+            // Filtrer pour supprimer l'offre souhaitée
+            const newOffers = offers.filter(o => o.id !== id);
+            localStorage.setItem('savedOffers', JSON.stringify(newOffers));
+            // Rafraîchir l'affichage des devis
+            openSavedOffers();
+        }
+
+        function saveUserForm() {
+            const formData = {
+                nom: document.getElementById("nom").value,
+                prenom: document.getElementById("prenom").value,
+                cin: document.getElementById("cin").value,
+                adresse: document.getElementById("adresse").value,
+                mobile: document.getElementById("mobile").value,
+                email: document.getElementById("email").value,
+                agence: document.getElementById("agence").value,
+                marque: document.getElementById("marque").value,
+                modele: document.getElementById("modele").value,
+                dpmec: document.getElementById("dpmec").value,
+                typeContrat: document.getElementById("typeContrat").value,
+                dateEffet: document.getElementById("dateEffet").value
+            };
+            localStorage.setItem("userFormData", JSON.stringify(formData));
+            alert("Formulaire enregistre avec succes!");
+            closeUserForm();
+        }
+
+        function loadUserFormData() {
+            const savedData = localStorage.getItem("userFormData");
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                document.getElementById("nom").value = formData.nom || "";
+                document.getElementById("prenom").value = formData.prenom || "";
+                document.getElementById("cin").value = formData.cin || "";
+                document.getElementById("adresse").value = formData.adresse || "";
+                document.getElementById("mobile").value = formData.mobile || "";
+                document.getElementById("email").value = formData.email || "";
+                document.getElementById("agence").value = formData.agence || "";
+                document.getElementById("marque").value = formData.marque || "";
+                document.getElementById("modele").value = formData.modele || "";
+                document.getElementById("dpmec").value = formData.dpmec || "";
+                document.getElementById("typeContrat").value = formData.typeContrat || "renouvelable";
+                document.getElementById("dateEffet").value = formData.dateEffet || "";
+            }
+        }
+
+        /**
+         * Réinitialise le formulaire utilisateur en vidant toutes les données
+         * de l'assuré ainsi que la marque et le modèle du véhicule.  Les
+         * autres champs (dates et type de contrat) sont laissés inchangés.
+         * Le stockage local de ces informations est également supprimé pour
+         * éviter de recharger d'anciennes valeurs à la prochaine ouverture.
+         */
+        function resetUserForm() {
+            const fieldsToClear = [
+                'nom', 'prenom', 'cin', 'adresse', 'mobile',
+                'email', 'agence', 'marque', 'modele'
+            ];
+            fieldsToClear.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = '';
+                }
+            });
+            // Supprimer les données sauvegardées pour que le formulaire reste vide
+            localStorage.removeItem('userFormData');
+        }
+
+        window.addEventListener("click", (event) => {
+            const userModal = document.getElementById("userFormModal");
+            const offreModal = document.getElementById("offreAssuranceModal");
+            if (event.target === userModal) {
+                closeUserForm();
+            }
+            if (event.target === offreModal) {
+                closeOffreAssurance();
+            }
+        });
+
+        window.addEventListener("DOMContentLoaded", () => {
+            initializeTheme();
+            // Initialiser le curseur de taux de réduction (remplace le contrôle personnalisé)
+            initReductionSlider();
+            // Appliquer la formule basique par défaut et sélectionner le bouton correspondant
+            selectFormula('basique');
+            // Charger les données utilisateur après avoir appliqué la formule basique
+            loadUserFormData();
+            
+            // Définir la date d'aujourd'hui pour le champ PMEC
+            const pmecInput = document.getElementById("pmec");
+            if (pmecInput && !pmecInput.value) {
+                const today = new Date().toISOString().split('T')[0];
+                pmecInput.value = today;
+            }
+            
+            const valeurVenaleInput = document.getElementById("valeurVenale");
+            if (valeurVenaleInput) {
+                valeurVenaleInput.addEventListener("change", () => {
+                    renderGuarantees();
+                    calculateAll();
+                });
+            }
+
+            // Lors du clic sur le bouton de démarrage, lancer la simulation (masquer l'écran d'accueil et afficher l'étape 1)
+            const startBtn = document.getElementById('startSimulationBtn');
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    startSimulation();
+                });
+            }
+        });
+</script>
+
+<script>
+    // Gestion de l'écran d'accueil et de la navigation étape par étape
+    let currentStep = 0;
+    function startSimulation() {
+        const home = document.getElementById('homeIntro');
+        if (home) {
+            home.style.display = 'none';
+        }
+        // Afficher la barre de progression au démarrage
+        const progress = document.getElementById('progressBar');
+        if (progress) {
+            progress.style.display = 'flex';
+        }
+        goToStep(1);
+    }
+    function goToStep(step) {
+        currentStep = step;
+        const steps = document.querySelectorAll('.step');
+        steps.forEach(el => {
+            el.style.display = 'none';
+        });
+        if (step >= 1) {
+            const el = document.getElementById('step' + step);
+            if (el) {
+                el.style.display = 'block';
+            }
+        }
+
+        // Afficher ou masquer les boutons d'action en fonction de l'étape
+        const actionButtons = document.querySelector('.main-action-buttons');
+        if (actionButtons) {
+            // Les boutons ne sont visibles que dans la dernière étape (3)
+            if (step === 3) {
+                actionButtons.style.display = 'flex';
+            } else {
+                actionButtons.style.display = 'none';
+            }
+        }
+        // Mettre à jour la barre de progression
+        const progressSteps = document.querySelectorAll('#progressBar .progress-step');
+        progressSteps.forEach((el, index) => {
+            if (index + 1 === step) {
+                el.classList.add('step-active');
+            } else {
+                el.classList.remove('step-active');
+            }
+        });
+    }
+    // Variables et fonctions pour la comparaison des offres
+    let selectedOfferIds = [];
+    function toggleOfferSelection(id, checked) {
+        id = Number(id);
+        if (checked) {
+            if (!selectedOfferIds.includes(id)) {
+                selectedOfferIds.push(id);
+                if (selectedOfferIds.length > 2) {
+                    selectedOfferIds = selectedOfferIds.slice(-2);
+                }
+            }
+        } else {
+            selectedOfferIds = selectedOfferIds.filter(x => x !== id);
+        }
+        updateCompareButton();
+    }
+    function updateCompareButton() {
+        const compareBtn = document.getElementById('compareOffersButton');
+        if (compareBtn) {
+            compareBtn.disabled = (selectedOfferIds.length !== 2);
+        }
+    }
+    function openCompareOffers() {
+        const modal = document.getElementById('compareOffersModal');
+        if (modal) {
+            populateComparisonTable();
+            modal.style.display = 'block';
+        }
+    }
+    function closeCompareOffers() {
+        const modal = document.getElementById('compareOffersModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+    function populateComparisonTable() {
+        const container = document.getElementById('comparisonTableContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        const saved = localStorage.getItem('savedOffers');
+        let offers = [];
+        if (saved) {
+            try {
+                offers = JSON.parse(saved);
+                if (!Array.isArray(offers)) offers = [];
+            } catch (e) {
+                offers = [];
+            }
+        }
+        const selIds = selectedOfferIds.map(x => Number(x));
+        const selected = offers.filter(o => selIds.includes(o.id));
+        if (selected.length !== 2) return;
+        const table = document.createElement('table');
+        table.className = 'comparison-table';
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+        const headerRow = document.createElement('tr');
+        const emptyCell = document.createElement('th');
+        emptyCell.textContent = '';
+        headerRow.appendChild(emptyCell);
+        selected.forEach((offer, idx) => {
+            const th = document.createElement('th');
+            th.textContent = `Offre ${idx + 1}`;
+            th.style.padding = '0.5rem';
+            headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+        function createRow(label, values) {
+            // Build a row for the comparison table. Accepts an array of values and
+            // gracefully handles HTML strings (e.g. values containing <br>) so
+            // that multiline information such as capitals is rendered cleanly.
+            const row = document.createElement('tr');
+            const cellLabel = document.createElement('td');
+            cellLabel.textContent = label;
+            cellLabel.style.fontWeight = '600';
+            row.appendChild(cellLabel);
+            values.forEach(val => {
+                const td = document.createElement('td');
+                // If the value contains HTML break tags we use innerHTML so the
+                // breaks are rendered. Otherwise fall back to textContent.
+                if (val && typeof val === 'string' && val.indexOf('<br>') !== -1) {
+                    td.innerHTML = val;
+                    // allow wrapping on long lines
+                    td.style.whiteSpace = 'normal';
+                } else {
+                    td.textContent = val || '-';
+                }
+                td.style.padding = '0.5rem';
+                row.appendChild(td);
+            });
+            return row;
+        }
+        const primeVals = selected.map(o => (o.data && o.data.primeTotal) ? o.data.primeTotal : '-');
+        table.appendChild(createRow('Prime totale', primeVals));
+        const reductionVals = selected.map(o => {
+            const tr = o.data && o.data.vehicleInfo && o.data.vehicleInfo.tauxReduction;
+            return tr ? tr + '%' : '-';
+        });
+        table.appendChild(createRow('Taux de réduction', reductionVals));
+        const frVals = selected.map(o => {
+            if (o.data && Array.isArray(o.data.guarantees)) {
+                const list = o.data.guarantees.filter(g => g.enabled && g.franchise != null && g.franchise !== '').map(g => g.id.toUpperCase() + ': ' + g.franchise + '%');
+                return list.join(', ');
+            }
+            return '-';
+        });
+        table.appendChild(createRow('Franchises', frVals));
+        const capVals = selected.map(o => {
+            if (o.data && Array.isArray(o.data.guarantees)) {
+                // Build a list of capitals and join them with line breaks for better readability
+                const list = o.data.guarantees
+                    .filter(g => g.enabled && g.capital != null && g.capital !== '')
+                    .map(g => {
+                        let cap = g.capital;
+                        if (typeof cap === 'number') {
+                            cap = formatCurrency(cap);
+                        }
+                        return g.id.toUpperCase() + ': ' + cap;
+                    });
+                return list.join('<br>');
+            }
+            return '-';
+        });
+        table.appendChild(createRow('Capitaux', capVals));
+        container.appendChild(table);
+    }
+</script>
+
+<script>
+/* Patch JS – garanties & contraintes (collison, dommages, bris de glaces) */
+function getVehicleAgeYears(){const e=document.getElementById("pmec");if(!e||!e.value)return 0;const t=new Date,n=new Date(e.value);if(isNaN(n.getTime()))return 0;let a=t.getFullYear()-n.getFullYear();const i=t.getMonth()-n.getMonth();return(i<0||0===i&&t.getDate()<n.getDate())&&a--,Math.max(0,a)}function updateAgeConstraints(){if("undefined"==typeof guaranteesState)return;const e=getVehicleAgeYears(),t=(e,t,n)=>{const a=guaranteesState.find((e=>e.id===t)),i=document.getElementById("guarantee_"+t);if(!a||!i)return;e?(a.enabled=!1,i.checked=!1,i.disabled=!0,i.title=n||"",i.closest("tr")?.classList.add("garantie-disabled")):i.title=""};t(0/0,"collision",e>10,"Indisponible : véhicule > 10 ans"),t(0/0,"dommages",e>3,"Indisponible : véhicule > 3 ans")}var __orig_renderCapitalField="function"==typeof renderCapitalField?renderCapitalField:null,__orig_renderGuarantees="function"==typeof renderGuarantees?renderGuarantees:null,__orig_calculateAll="function"==typeof calculateAll?calculateAll:null;window.renderCapitalField=function(e){try{const t=parseFloat((document.getElementById("valeurVenale")||{}).value)||0,n=parseFloat((document.getElementById("valeurCatalogue")||{}).value)||0;if(e&&("catnat"===e.id||"emeutes"===e.id)){const e=t>=2e4?2e4:.8*t;return`<span style="text-align:center;display:block;padding:0.5rem;font-weight:600;">${formatCurrency(e)}</span>`}if(e&&e.linkedToValeurCatalogue)return`<span style="text-align:center;display:block;padding:0.5rem;font-weight:600;">${formatCurrency(n)}</span>`;if(e&&e.linkedToValeurVenale)return`<span style="text-align:center;display:block;padding:0.5rem;font-weight:600;">${formatCurrency(t)}</span>`;if(e&&e.capitalEditable){if("collision"===e.id){let t="";for(let n=0;n<=1e4;n+=1e3)t+=`<option value="${n}" ${e.capital===n?"selected":""}>${formatCurrency(n)}</option>`;return`<select class="garantie-input" id="capital_${e.id}" onchange="updateGuaranteeCapital('${e.id}', this.value)">${t}</select>`}if("brisglace"===e.id){let t="";for(let n=0;n<=3e3;n+=200)t+=`<option value="${n}" ${e.capital===n?"selected":""}>${formatCurrency(n)}</option>`;return`<select class="garantie-input" id="capital_${e.id}" onchange="updateGuaranteeCapital('${e.id}', this.value)">${t}</select>`}if("indacc"===e.id&&Array.isArray(e.capitalOptions)){const t=e.capitalOptions.map((t=>`<option value="${t}" ${e.capital===t?"selected":""}>${formatCurrency(t)}</option>`)).join("");return`<select class="garantie-input" id="capital_${e.id}" onchange="updateGuaranteeCapital('${e.id}', this.value)">${t}</select>`}}if(e&&"string"==typeof e.capital)return`<span style="text-align:center;display:block;padding:0.5rem;font-weight:600;">${e.capital}</span>`;if(e)return`<span style="text-align:center;display:block;padding:0.5rem;font-weight:600;">${formatCurrency(e.capital)}</span>`}catch(t){console.warn("renderCapitalField (patch) fallback -> original",t)}return __orig_renderCapitalField?__orig_renderCapitalField.apply(this,arguments):""},window.renderGuarantees=function(){__orig_renderGuarantees&&__orig_renderGuarantees.apply(this,arguments),"function"==typeof updateGuaranteeExclusivity&&function(){try{updateGuaranteeExclusivity()}catch(e){}}(),updateAgeConstraints()},__orig_calculateAll&&(window.calculateAll=function(){__orig_calculateAll.apply(this,arguments),updateAgeConstraints()}),window.addEventListener("DOMContentLoaded",(()=>{try{updateAgeConstraints()}catch(e){}const t=document.getElementById("pmec");t&&t.addEventListener("change",(()=>{try{updateAgeConstraints()}catch(e){}}))}));
+</script>
+
+<!-- Fix: supprimer automatiquement les zéros à gauche pour Valeur catalogue & Valeur vénale -->
+<script>
+(function() {
+  function stripLeadingZerosOnNumberInput(el) {
+    var before = (el && el.value != null) ? String(el.value) : '';
+    if (!before) return;
+    // uniquement des zéros -> garder "0"
+    if (/^0+$/.test(before)) { el.value = '0'; return; }
+    // "000.5" -> "0.5"
+    var v = before.replace(/^0+(?=\.)/, '0');
+    // "000123" -> "123"
+    v = v.replace(/^0+(?=\d)/, '');
+    if (v === '') v = '0';
+    if (el.value !== v) el.value = v;
+  }
+
+  function attachZeroTrim(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var handler = function() { stripLeadingZerosOnNumberInput(el); };
+    // Nettoyer pendant la saisie et à la sortie du champ
+    el.addEventListener('input', handler);
+    el.addEventListener('blur', handler);
+  }
+
+  // Attacher quand le DOM est prêt
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      attachZeroTrim('valeurCatalogue');
+      attachZeroTrim('valeurVenale');
+    });
+  } else {
+    attachZeroTrim('valeurCatalogue');
+    attachZeroTrim('valeurVenale');
+  }
+})();
+</script>
+</body>
+</html>
+
+
+<style>
+@media (max-width: 768px) {
+    /* Responsive table styles */
+    .garanties-table thead, .results-table thead {
+        display: none; /* Hide table headers */
+    }
+    .garanties-table tr, .results-table tr {
+        display: block;
+        border-bottom: 2px solid var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    .garanties-table td, .results-table td {
+        display: block;
+        text-align: right;
+        border-bottom: 1px dotted var(--border-color);
+        position: relative;
+        padding-left: 50%;
+    }
+    .garanties-table td:before, .results-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 1rem;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+</style>
+
+<style>
+@media (max-width: 768px) {
+    /* Stack main action buttons vertically */
+    .main-action-buttons {
+        flex-direction: column;
+    }
+
+    /* Make modals full width on mobile */
+    #userFormModal > div, #offreAssuranceModal > div {
+        margin: 1rem 0.5rem !important;
+        max-width: 100% !important;
+        width: auto !important;
+    }
+
+    /* Adjust padding for modal content */
+    #userFormModal > div > div, #offreAssuranceModal > div > div {
+        padding: 1rem !important;
+    }
+
+    /* Adjust font size for main title */
+    .main-title {
+        font-size: 1.5rem !important;
+    }
+    .subtitle {
+        font-size: 0.8rem !important;
+    }
+}
+</style>
+
+
+<!-- Injected override to enforce reduction defaults per formula -->
+
+<script>
+// --- OVERRIDE selectFormula ---
+// Objectif :
+// - Basique : taux de réduction par défaut = 0% (contrôles actifs)
+// - Personnalisée : taux de réduction par défaut = 0% (contrôles actifs)
+// - Personnel Simulateur <span style="color: #ff4b5c; font-weight: 700;">Assurance</span> <span style="color: #00a8ff; font-weight: 700;">Automobile</span> : taux de réduction par défaut = 60% (figé)
+// - Personnel BH Bank : taux de réduction par défaut = 50% (figé)
+(function() {
+  function selectFormula(formula) {
+    // Mettre à jour l'état visuel des boutons
+    document.querySelectorAll('.formula-button').forEach(btn => btn.classList.remove('selected'));
+    if (formula === 'basique') {
+      document.getElementById('btnFormuleBasique')?.classList.add('selected');
+    } else if (formula === 'personnalisee') {
+      document.getElementById('btnFormulePersonnalisee')?.classList.add('selected');
+    } else if (formula === 'personnel') {
+      document.getElementById('btnFormulePersonnel')?.classList.add('selected');
+    } else if (formula === 'personnel_bh_bank') {
+      document.getElementById('btnFormulePersonnelBHBank')?.classList.add('selected');
+    }
+
+    // Contrôles du taux de réduction
+    var slider = document.getElementById('reductionSlider');
+    var label  = document.getElementById('reductionSliderValue');
+    var select = document.getElementById('tauxReduction');
+
+    if (slider && label && select) {
+      if (formula === 'personnel') {
+        // 60% figé
+        var fixed = 60;
+        slider.max = '60';
+        slider.value = String(fixed);
+        select.value = String(fixed);
+        label.textContent = fixed + '%';
+        slider.disabled = true;
+        select.disabled  = true;
+        applyReduction(fixed);
+      } else if (formula === 'personnel_bh_bank') {
+        // 50% figé
+        var fixed = 50;
+        slider.max = '50';
+        slider.value = String(fixed);
+        select.value = String(fixed);
+        label.textContent = fixed + '%';
+        slider.disabled = true;
+        select.disabled  = true;
+        applyReduction(fixed);
+      } else if (formula === 'basique' || formula === 'personnalisee') {
+        // 0% par défaut à chaque sélection et contrôles actifs
+        var fixed = 0;
+        slider.max = '80';
+        slider.value = '0';
+        select.value = '0';
+        label.textContent = '0%';
+        slider.disabled = false;
+        select.disabled  = false;
+        applyReduction(fixed);
+      } else {
+        // Sécurité si de futures formules sont ajoutées
+        slider.disabled = false;
+        select.disabled = false;
+        slider.max = '80';
+        var current = parseFloat(select.value) || 0;
+        if (current > 80) current = 80;
+        slider.value = String(current);
+        label.textContent = current + '%';
+        applyReduction(current);
+      }
+    }
+
+    // Appliquer la logique de la formule (garanties & réductions applicables)
+    setFormula(formula);
+  }
+
+  // Exposer l'override globalement
+  window.selectFormula = selectFormula;
+})();
+</script>
