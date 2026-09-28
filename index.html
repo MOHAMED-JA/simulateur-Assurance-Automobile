@@ -548,7 +548,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 /* ==========================================================================
    Étape 3 — réduction et détail
    ========================================================================== */
-.reduction { display: flex; align-items: center; gap: 24px; padding: 22px 24px; }
+.reduction { display: flex; align-items: flex-start; gap: 24px; padding: 22px 24px; }
 .reduction-plate {
   flex: none; min-width: 104px; padding: 14px 16px 12px; border-radius: var(--radius-sign);
   display: flex; align-items: baseline; justify-content: center; gap: 4px;
@@ -738,7 +738,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 }
 .doc-total span { font-weight: 800; font-size: 1.05rem; }
 .doc-total strong { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
-.doc-assist { margin-top: 20px; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; padding: 16px 18px; border-radius: 10px; background: #eef3f9; }
+.doc-assist { margin-top: 20px; display: grid; grid-template-columns: auto 1fr; align-content: start; gap: 4px 14px; padding: 16px 18px; border-radius: 10px; background: #eef3f9; }
 .doc-assist .doc-glyph { grid-row: span 2; }
 .doc-assist p { font-weight: 800; color: var(--doc-blue); }
 .doc-assist ul { list-style: disc; padding-left: 18px; font-size: .95rem; line-height: 1.6; }
@@ -777,6 +777,56 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .compare-list { display: grid; gap: 3px; font-size: .92rem; }
 .compare-list li { display: flex; justify-content: space-between; gap: 10px; }
 .compare-list li span:last-child { font-weight: 700; white-space: nowrap; }
+
+/* Prime cible (calcul inversé du taux) */
+.target { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--line); }
+.target .field { flex: 1 1 220px; }
+.target .btn { flex: none; }
+.calc-result { flex-basis: 100%; display: flex; gap: 8px; align-items: flex-start; font-size: .9rem; font-weight: 650; line-height: 1.4; }
+.calc-result .icon { width: 18px; height: 18px; margin-top: 1px; stroke-width: 2.2; }
+.calc-result--ok { color: var(--green-text); }
+.calc-result--warn { padding: 8px 10px; border-radius: 6px; background: var(--traffic-yellow); color: #1b1d21; }
+
+/* Outils de vente */
+.tools-bar { display: flex; flex-wrap: wrap; gap: 12px; }
+.tools-bar .btn { flex: 1 1 240px; }
+
+/* Propositions en 3 formules */
+.dialog--wide { width: min(1040px, calc(100vw - 32px)); }
+.packs-intro { padding-top: 18px; color: var(--muted); font-size: .92rem; }
+.packs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding-top: 16px; }
+.pack { display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 12px; background: var(--panel); box-shadow: inset 0 0 0 1.5px var(--line); }
+.pack-name { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.01em; }
+.pack-desc { font-size: .88rem; color: var(--muted); line-height: 1.4; min-height: 2.8em; }
+.pack-price { padding: 14px 16px 12px; border-radius: 10px; background: var(--traffic-blue); color: #fff; box-shadow: inset 0 0 0 4px var(--traffic-blue), inset 0 0 0 5.5px rgb(255 255 255 / .94); }
+.pack-price span { display: block; font-size: .8rem; font-weight: 600; color: var(--on-sign-muted); }
+.pack-price strong { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.pack-price small { font-size: .85rem; margin-left: 4px; }
+.pack-delta { font-size: .88rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pack-list { display: grid; gap: 6px; font-size: .9rem; }
+.pack-list li { display: flex; justify-content: space-between; gap: 10px; }
+.pack-list li span:last-child { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pack-note { display: flex; gap: 7px; align-items: flex-start; font-size: .85rem; font-weight: 700; color: var(--red-text); }
+.pack-note .icon { width: 17px; height: 17px; margin-top: 1px; stroke-width: 2.2; }
+.pack .btn { margin-top: auto; }
+.pack--off .pack-price { background: var(--tile-off); box-shadow: inset 0 0 0 4px var(--tile-off), inset 0 0 0 5.5px rgb(255 255 255 / .8); }
+
+/* Partage */
+.share-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 24px; align-items: start; padding-top: 20px; }
+.share-qr { margin: 0; padding: 10px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.share-qr svg { display: block; width: 180px; height: 180px; }
+.share-body { display: grid; gap: 14px; min-width: 0; }
+.share-total { font-weight: 700; color: var(--muted); }
+.share-total strong { display: block; font-size: 1.6rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.share-link { display: flex; gap: 8px; }
+.share-link .input { flex: 1; min-width: 0; font-size: .9rem; color: var(--muted); }
+.share-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Offre : code QR à côté de l'assistance */
+.doc-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; margin-top: 20px; align-items: stretch; }
+.doc-foot .doc-assist { margin-top: 0; }
+.doc-qr { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 132px; padding: 10px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--doc-line); font-size: .72rem; line-height: 1.3; color: var(--doc-muted); text-align: center; }
+.doc-qr svg { width: 104px; height: 104px; display: block; }
 
 /* Notifications */
 .toast-region { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 100; display: grid; gap: 8px; width: max-content; max-width: calc(100vw - 32px); pointer-events: none; }
@@ -824,6 +874,11 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .grid-2 { grid-template-columns: minmax(0, 1fr); }
   .form-panel { padding: 4px 18px 20px; }
   .offer-doc { padding: 24px 20px; }
+  .packs { grid-template-columns: 1fr; }
+  .pack-desc { min-height: 0; }
+  .doc-foot { grid-template-columns: 1fr; }
+  .doc-qr { width: auto; flex-direction: row; text-align: left; }
+  .doc-qr svg { width: 88px; height: 88px; flex: none; }
   .dialog--offer .dialog-scroll { padding: 12px; }
 }
 @media (max-width: 560px) {
@@ -850,6 +905,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .devis-actions { grid-column: 1 / -1; justify-content: flex-end; }
   .compare-table th, .compare-table td { padding: 12px 6px; }
   .compare-list li { flex-direction: column; gap: 0; }
+  .share-grid { grid-template-columns: 1fr; justify-items: center; }
+  .share-body { width: 100%; }
+  .share-actions .btn { flex: 1 1 auto; }
   .exits li { column-gap: 12px; }
   .exit-detail { font-size: .88rem; }
 }
@@ -872,19 +930,28 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   #printRoot { display: block !important; }
   #printRoot .offer-doc { box-shadow: none; padding: 0; max-width: none; border-radius: 0; font-size: 10.5pt; }
   #printRoot * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  #printRoot .doc-head { padding-bottom: 12px; }
-  #printRoot .doc-title { margin: 16px 0 0; font-size: 20pt; }
-  #printRoot .doc-section { margin-top: 16px; }
-  #printRoot .doc-section h3 { padding-bottom: 5px; }
+  #printRoot .doc-head { padding-bottom: 8px; }
+  #printRoot .doc-title { margin: 10px 0 0; font-size: 18pt; }
+  #printRoot .doc-section { margin-top: 10px; }
+  #printRoot .doc-section h3 { padding-bottom: 4px; margin-bottom: 2px; }
   #printRoot .doc-grid { grid-template-columns: 1fr 1fr; grid-auto-flow: column; }
   #printRoot .doc-grid--4 { grid-template-rows: repeat(4, auto); }
   #printRoot .doc-grid--2 { grid-template-rows: repeat(2, auto); }
-  #printRoot .doc-grid div { padding: 5px 0; font-size: 10pt; }
-  #printRoot .doc-table { font-size: 10pt; }
-  #printRoot .doc-table th, #printRoot .doc-table td { padding: 5px 4px; }
-  #printRoot .doc-total { margin-top: 16px; padding: 12px 18px; }
+  #printRoot .doc-grid div { padding: 3px 0; font-size: 9.5pt; }
+  #printRoot .doc-table { font-size: 9.5pt; }
+  #printRoot .doc-table th, #printRoot .doc-table td { padding: 3.5px 4px; }
+  #printRoot .doc-total { margin-top: 12px; padding: 10px 18px; }
   #printRoot .doc-total strong { font-size: 16pt; }
-  #printRoot .doc-assist { margin-top: 14px; padding: 12px 16px; }
+  #printRoot .doc-assist { margin-top: 0; padding: 12px 16px; }
+  #printRoot .doc-foot { margin-top: 12px; grid-template-columns: minmax(0, 1fr) auto; }
+  #printRoot .doc-qr { width: auto; flex-direction: row; gap: 10px; padding: 8px 10px; text-align: left; font-size: 8pt; }
+  #printRoot .doc-qr span { max-width: 70px; }
+  #printRoot .doc-qr svg { width: 84px; height: 84px; }
+  #printRoot .doc-assist ul { line-height: 1.4; }
+  #printRoot .packs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding-top: 12px; }
+  #printRoot .pack { padding: 12px; gap: 8px; box-shadow: inset 0 0 0 1px #d8d8d4; }
+  #printRoot .pack .btn, #printRoot .packs-intro { display: none; }
+  #printRoot .pack-list, #printRoot .pack-desc { font-size: 9pt; }
   #printRoot .doc-assist ul { font-size: 10pt; line-height: 1.5; }
   .doc-section h3, .doc-total, .doc-assist, .doc-table tr { break-inside: avoid; break-after: auto; }
   .doc-section h3 { break-after: avoid; }
@@ -908,6 +975,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5.2 3.5h10.6l3.7 3.7v11.6c0 .9-.8 1.7-1.7 1.7H5.2c-.9 0-1.7-.8-1.7-1.7V5.2c0-.9.8-1.7 1.7-1.7z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.8h16M9.3 6.8V4.2h5.4v2.6M6.3 6.8l.9 13.2h9.6l.9-13.2M10 10.8v5.4M14 10.8v5.4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4.2 19.8l1.1-3.9A8 8 0 1 1 8.4 19z"/><path d="M9 9.5c.3 2.3 2.2 4.2 4.5 4.6l1-1.2 2 .9-.4 1.6c-3.7.2-7.6-3.4-7.7-7.3l1.6-.4.9 2z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.8"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></symbol>
   <symbol id="i-no" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></symbol>
   <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5L2.5 20h19z"/><path d="M12 9.5v5M12 17.3v.2"/></symbol>
   <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4v4.5H9"/></symbol>
@@ -1103,7 +1173,19 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
               <input class="range" type="range" id="reductionSlider" min="0" max="80" step="5" value="0" aria-valuetext="0 %">
               <div class="ticks" aria-hidden="true"><span>0 %</span><span>20 %</span><span>40 %</span><span>60 %</span><span>80 %</span></div>
               <p class="hint">S'applique uniquement à : <b>Incendie, Vol, Dommages au véhicule, Dommages et collision, Bris de glaces</b>.</p>
+              <form class="target" id="targetForm" novalidate>
+                <div class="field">
+                  <label for="targetPremium">Prime cible TTC</label>
+                  <div class="affix"><input class="input" type="text" id="targetPremium" inputmode="decimal" placeholder="Ex. 900" autocomplete="off"><span class="affix-unit">DT</span></div>
+                </div>
+                <button type="submit" class="btn btn--blue">Trouver le taux</button>
+                <p class="calc-result" id="targetResult" aria-live="polite" hidden></p>
+              </form>
             </div>
+          </div>
+          <div class="tools-bar">
+            <button type="button" class="btn btn--ghost" id="openPacksBtn"><svg class="icon"><use href="#i-compare"/></svg> Propositions en 3 formules</button>
+            <button type="button" class="btn btn--ghost" id="openShareBtn"><svg class="icon"><use href="#i-share"/></svg> Partager la simulation</button>
           </div>
           <div class="panel table-panel">
             <table class="results">
@@ -1266,20 +1348,24 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
         </table>
       </section>
       <div class="doc-total"><span>PRIME TOTALE</span><strong id="offrePrimeTotal">0.000 DT</strong></div>
-      <div class="doc-assist">
-        <span class="doc-glyph"><svg class="icon"><use href="#g-assistance"/></svg></span>
-        <p>L'assistance comprend :</p>
-        <ul>
-          <li>Le remorquage illimité en nombre et en kilométrage</li>
-          <li>La prise en charge de la réparation chez nos garages conventionnés</li>
-          <li>Un véhicule de remplacement pendant 15 jours</li>
-        </ul>
+      <div class="doc-foot">
+        <div class="doc-assist">
+          <span class="doc-glyph"><svg class="icon"><use href="#g-assistance"/></svg></span>
+          <p>L'assistance comprend :</p>
+          <ul>
+            <li>Le remorquage illimité en nombre et en kilométrage</li>
+            <li>La prise en charge de la réparation chez nos garages conventionnés</li>
+            <li>Un véhicule de remplacement pendant 15 jours</li>
+          </ul>
+        </div>
+        <div class="doc-qr" id="offerQr" hidden></div>
       </div>
     </article>
   </div>
   <footer class="dialog-foot">
     <button type="button" class="btn btn--ghost" data-close>Fermer</button>
     <span class="spacer"></span>
+    <button type="button" class="btn btn--ghost" id="shareOfferBtn"><svg class="icon"><use href="#i-share"/></svg> Partager</button>
     <button type="button" class="btn btn--green" id="saveOfferBtn"><svg class="icon"><use href="#i-save"/></svg> Enregistrer</button>
     <button type="button" class="btn btn--blue" id="printOfferBtn"><svg class="icon"><use href="#i-print"/></svg> Imprimer</button>
   </footer>
@@ -1306,9 +1392,49 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   <div class="dialog-scroll"><div id="comparisonTableContainer"></div></div>
 </dialog>
 
+<dialog class="dialog dialog--wide" id="packsModal" aria-labelledby="packsTitle">
+  <header class="dialog-head">
+    <h2 id="packsTitle">Propositions en 3 formules</h2>
+    <button type="button" class="icon-btn" data-close aria-label="Fermer"><svg class="icon"><use href="#i-close"/></svg></button>
+  </header>
+  <div class="dialog-scroll"><div id="packsContent"></div></div>
+  <footer class="dialog-foot">
+    <p class="compare-hint">Même véhicule, même taux de réduction. Capitaux ajustables à l'étape Garanties.</p>
+    <span class="spacer"></span>
+    <button type="button" class="btn btn--blue" id="printPacksBtn"><svg class="icon"><use href="#i-print"/></svg> Imprimer les propositions</button>
+  </footer>
+</dialog>
+
+<dialog class="dialog" id="shareModal" aria-labelledby="shareTitle">
+  <header class="dialog-head">
+    <h2 id="shareTitle">Partager la simulation</h2>
+    <button type="button" class="icon-btn" data-close aria-label="Fermer"><svg class="icon"><use href="#i-close"/></svg></button>
+  </header>
+  <div class="dialog-scroll">
+    <div class="share-grid">
+      <figure class="share-qr" id="shareQr"></figure>
+      <div class="share-body">
+        <p class="share-total">Prime totale TTC<strong id="shareTotal">0.000 DT</strong></p>
+        <p class="hint">Ce lien et ce code QR rouvrent la simulation à l'identique : véhicule, formule, garanties, capitaux et réduction. Ils ne contiennent aucune donnée personnelle du proposant.</p>
+        <div class="share-link">
+          <label class="sr-only" for="shareLink">Lien de la simulation</label>
+          <input class="input" type="text" id="shareLink" readonly>
+          <button type="button" class="btn btn--ghost" id="copyLinkBtn">Copier</button>
+        </div>
+        <div class="share-actions">
+          <a class="btn btn--green" id="shareWhatsapp" target="_blank" rel="noopener"><svg class="icon"><use href="#i-chat"/></svg> WhatsApp</a>
+          <a class="btn btn--ghost" id="shareEmail"><svg class="icon"><use href="#i-mail"/></svg> Email</a>
+          <button type="button" class="btn btn--ghost" id="shareNative" hidden><svg class="icon"><use href="#i-share"/></svg> Autre application</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
 <div class="toast-region" id="toastRegion" role="status" aria-live="polite"></div>
 <div class="print-root" id="printRoot"></div>
 
+<script src="assets/js/qrcode.js"></script>
 <script>
 (() => {
   'use strict';
@@ -1900,6 +2026,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       return `<tr><td>${escapeHtml(d.name)}</td><td>${franchise}</td><td>${capital}</td></tr>`;
     }).join('');
     $('#offrePrimeTotal').textContent = formatCurrency(q.primeFinale) + ' DT';
+    renderOfferQr();
   }
   function printOffer() {
     const root = $('#printRoot');
@@ -2086,6 +2213,259 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     openDialog($('#compareOffersModal'));
   }
 
+
+  /* ------------------------------------------------------------------
+   * Calcul inversé : taux de réduction pour atteindre une prime cible
+   * ------------------------------------------------------------------ */
+  function premiumAt(rate) {
+    const saved = state.reduction;
+    state.reduction = rate;
+    const p = computeQuote().primeFinale;
+    state.reduction = saved;
+    return p;
+  }
+  function parseAmount(raw) {
+    let t = String(raw || '').replace(/[\s  ]|DT/gi, '');
+    // "1,100" ou "1,100.500" : virgule = séparateur de milliers (format de l'application)
+    if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(t) || (t.includes(',') && t.includes('.'))) t = t.replace(/,/g, '');
+    else t = t.replace(',', '.');
+    const n = parseFloat(t);
+    return isFinite(n) && n > 0 ? n : NaN;
+  }
+  function showTargetResult(kind, html) {
+    const el = $('#targetResult');
+    el.hidden = false;
+    el.className = 'calc-result calc-result--' + kind;
+    el.innerHTML = `${icon(kind === 'ok' ? 'i-check' : 'i-warn')}<span>${html}</span>`;
+  }
+  function findReductionForTarget(e) {
+    e.preventDefault();
+    const target = parseAmount($('#targetPremium').value);
+    if (isNaN(target)) { showTargetResult('warn', 'Saisissez une prime cible en DT, par exemple 900.'); return; }
+    const milli = v => Math.round(v * 1000);
+    const atZero = premiumAt(0);
+    const atMax = premiumAt(80);
+    const fmt = v => `<b>${formatCurrency(v)} DT</b>`;
+    if (milli(atZero) <= milli(target)) {
+      state.reduction = 0; refresh();
+      showTargetResult('ok', `Aucune réduction nécessaire : sans réduction, la prime est de ${fmt(atZero)}.`);
+      return;
+    }
+    if (milli(atZero) === milli(atMax)) {
+      showTargetResult('warn', 'Aucune garantie éligible à la réduction n’est cochée : le taux ne change pas la prime.');
+      return;
+    }
+    if (milli(atMax) > milli(target)) {
+      showTargetResult('warn', `Objectif impossible : même à 80 %, la prime est de ${fmt(atMax)}.`);
+      return;
+    }
+    let rate = 5;
+    while (rate < 80 && milli(premiumAt(rate)) > milli(target)) rate += 5;
+    state.reduction = rate;
+    refresh();
+    showTargetResult('ok', `Taux appliqué : <b>${rate}${NNBSP}%</b>. Prime obtenue ${fmt(lastQuote.primeFinale)} pour un objectif de ${fmt(target)}.`);
+  }
+
+  /* ------------------------------------------------------------------
+   * Propositions en 3 formules
+   * ------------------------------------------------------------------ */
+  const PACKS = [
+    { id: 'essentielle', name: 'Essentielle', desc: 'Les 9 garanties de base de la formule basique.', add: () => ({}) },
+    { id: 'confort', name: 'Confort', desc: 'Garanties de base + Bris de glaces + Dommages et collision.',
+      add: () => ({ brisglace: { capital: Number(state.g.brisglace.capital) > 0 ? state.g.brisglace.capital : 1000 }, collision: { capital: state.g.collision.capital } }) },
+    { id: 'tousrisques', name: 'Tous risques', desc: 'Garanties de base + Dommages au véhicule (capital = valeur à neuf).',
+      add: () => ({ dommages: {} }) },
+  ];
+  function applyPackToState(pack) {
+    const extra = pack.add();
+    state.formula = 'basique';
+    GUARANTEES.forEach(d => { state.g[d.id].enabled = BASIQUE_IDS.includes(d.id); });
+    Object.entries(extra).forEach(([id, cfg]) => {
+      state.g[id].enabled = true;
+      if (cfg.capital != null) state.g[id].capital = cfg.capital;
+    });
+    return Object.keys(extra);
+  }
+  function evaluatePack(pack) {
+    const snapshot = JSON.parse(JSON.stringify({ formula: state.formula, g: state.g }));
+    const wanted = applyPackToState(pack);
+    applyRules();
+    const blocked = wanted.filter(id => !state.g[id].enabled).map(id => ({ id, reason: status[id].reason }));
+    const q = computeQuote();
+    const lines = wanted.filter(id => state.g[id].enabled).map(id => {
+      const g = state.g[id];
+      return [DEF[id].name, typeof g.capital === 'number' ? formatCurrency(g.capital) + ' DT' : g.capital];
+    });
+    state.formula = snapshot.formula;
+    state.g = snapshot.g;
+    applyRules();
+    const available = blocked.length < wanted.length || wanted.length === 0;
+    return { pack, prime: q.primeFinale, lines, blocked, available };
+  }
+  function renderPacks() {
+    const results = PACKS.map(evaluatePack);
+    const base = results[0].prime;
+    const v = readVehicle();
+    const html = `
+      <p class="packs-intro">${[`${v.cv} CV`, `Classe ${v.classBM}`, `Valeur vénale ${formatCurrency(v.valeurVenale)} DT`, v.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel', `Réduction ${state.reduction}${NNBSP}%`].join('\u2002·\u2002')}</p>
+      <div class="packs">
+        ${results.map((r, i) => `
+          <section class="pack${r.available ? '' : ' pack--off'}" aria-labelledby="pack_${r.pack.id}">
+            <h3 class="pack-name" id="pack_${r.pack.id}">${r.pack.name}</h3>
+            <p class="pack-desc">${r.pack.desc}</p>
+            <div class="pack-price">${r.available
+              ? `<span>Prime totale TTC</span><strong>${formatCurrency(r.prime)}<small>DT</small></strong>`
+              : `<span>Prime totale TTC</span><strong>Indisponible</strong>`}</div>
+            ${r.available && i > 0 ? `<p class="pack-delta">+ ${formatCurrency(r.prime - base)} DT par rapport à Essentielle</p>` : ''}
+            ${r.lines.length ? `<ul class="pack-list">${r.lines.map(([n, c]) => `<li><span>${escapeHtml(n)}</span><span>${escapeHtml(c)}</span></li>`).join('')}</ul>` : ''}
+            ${r.blocked.map(b => `<p class="pack-note">${icon('i-no')}<span>${escapeHtml(DEF[b.id].name)} : ${escapeHtml(b.reason || 'non disponible')}</span></p>`).join('')}
+            ${r.available ? `<button type="button" class="btn btn--blue" data-pack="${r.pack.id}">Choisir ${r.pack.name}</button>` : ''}
+          </section>`).join('')}
+      </div>`;
+    $('#packsContent').innerHTML = html;
+    $$('#packsContent [data-pack]').forEach(btn => btn.addEventListener('click', () => choosePack(btn.dataset.pack)));
+  }
+  function openPacks() {
+    renderPacks();
+    openDialog($('#packsModal'));
+  }
+  function choosePack(id) {
+    const pack = PACKS.find(p => p.id === id);
+    applyPackToState(pack);
+    syncFormulaRadios();
+    refresh();
+    closeDialog($('#packsModal'));
+    goToStep(3, { focus: false });
+    toast(`Formule « ${pack.name} » appliquée.`);
+  }
+  function printPacks() {
+    const root = $('#printRoot');
+    const doc = document.createElement('article');
+    doc.className = 'offer-doc';
+    doc.innerHTML = `
+      <header class="doc-head">
+        <div class="doc-brand"><span class="doc-glyph">${icon('sign-arrow')}</span>Simulateur Assurance Automobile</div>
+        <p class="doc-date">${new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      </header>
+      <h3 class="doc-title">Propositions d'assurance automobile</h3>
+      ${$('#packsContent').innerHTML}`;
+    doc.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    root.innerHTML = '';
+    root.appendChild(doc);
+    window.print();
+  }
+
+  /* ------------------------------------------------------------------
+   * Lien de simulation, code QR, WhatsApp et email
+   * ------------------------------------------------------------------ */
+  const MASK_IDS = GUARANTEES.map(d => d.id);
+  function simulationParams() {
+    const v = readVehicle();
+    const mask = MASK_IDS.reduce((m, id, i) => (state.g[id].enabled ? m | (1 << i) : m), 0);
+    const params = new URLSearchParams({
+      p: String(v.places), vc: String(v.valeurCatalogue), vv: String(v.valeurVenale), cv: v.cv, bm: String(v.classBM),
+      d: $('#pmec').value, fr: v.fractionnement === 'semestriel' ? 's' : 'a', f: state.formula === 'personnalisee' ? 'p' : 'b',
+      r: String(state.reduction), g: mask.toString(16), df: String(state.g.dommages.franchise || 0),
+      cc: String(state.g.collision.capital), bc: String(state.g.brisglace.capital), ic: String(state.g.indacc.capital),
+    });
+    return params.toString();
+  }
+  function simulationLink() {
+    return window.location.href.split('#')[0] + '#' + simulationParams();
+  }
+  function qrSvg(text, label) {
+    if (typeof qrcode !== 'function') return '';
+    const qr = qrcode(0, 'M');
+    qr.addData(text);
+    qr.make();
+    const n = qr.getModuleCount();
+    const q = 3;
+    let d = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c + q} ${r + q}h1v1h-1z`;
+    const size = n + q * 2;
+    return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="${escapeHtml(label)}" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="#fff"/><path d="${d}" fill="#1b1d21"/></svg>`;
+  }
+  function shareText(link) {
+    const q = lastQuote || computeQuote();
+    return `Offre d'assurance automobile : prime totale TTC ${formatCurrency(q.primeFinale)} DT (formule ${state.formula === 'basique' ? 'basique' : 'personnalisée'}, ${q.vehicle.fractionnement === 'semestriel' ? 'semestriel' : 'annuel'}). Retrouvez la simulation : ${link}`;
+  }
+  function whatsappNumber(mobile) {
+    const digits = String(mobile || '').replace(/\D/g, '').replace(/^00/, '');
+    if (digits.length === 8) return '216' + digits;
+    if (digits.length === 11 && digits.startsWith('216')) return digits;
+    return '';
+  }
+  function openShare() {
+    const link = simulationLink();
+    const fd = readUserForm();
+    const text = shareText(link);
+    const q = lastQuote || computeQuote();
+    $('#shareTotal').textContent = formatCurrency(q.primeFinale) + ' DT';
+    $('#shareLink').value = link;
+    $('#shareQr').innerHTML = qrSvg(link, 'Code QR du lien de la simulation');
+    const phone = whatsappNumber(fd.mobile);
+    $('#shareWhatsapp').href = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    $('#shareWhatsapp').lastChild.textContent = phone ? ' WhatsApp au +' + phone : ' WhatsApp';
+    const to = fd.email ? encodeURIComponent(fd.email) : '';
+    $('#shareEmail').href = `mailto:${to}?subject=${encodeURIComponent("Offre d'assurance automobile")}&body=${encodeURIComponent(text)}`;
+    $('#shareNative').hidden = !navigator.share;
+    openDialog($('#shareModal'));
+  }
+  async function copyLink() {
+    const input = $('#shareLink');
+    try {
+      await navigator.clipboard.writeText(input.value);
+    } catch (e) {
+      input.select();
+      try { document.execCommand('copy'); } catch (err) { /* copie manuelle */ }
+    }
+    toast('Lien copié.');
+  }
+  async function nativeShare() {
+    const link = $('#shareLink').value;
+    try { await navigator.share({ title: "Offre d'assurance automobile", text: shareText(link), url: link }); } catch (e) { /* partage annulé */ }
+  }
+  function renderOfferQr() {
+    const box = $('#offerQr');
+    const svg = qrSvg(simulationLink(), 'Code QR pour rouvrir cette simulation');
+    box.hidden = !svg;
+    box.innerHTML = svg ? `${svg}<span>Scannez pour rouvrir cette simulation</span>` : '';
+  }
+  // Ouvre une simulation reçue par lien (#p=…&cv=…)
+  function loadFromLink() {
+    const hash = window.location.hash.replace(/^#/, '');
+    if (!hash) return false;
+    const q = new URLSearchParams(hash);
+    if (!q.has('cv') || !q.has('g')) return false;
+    const num = (k, min, max) => { const n = parseFloat(q.get(k)); return isFinite(n) && n >= min && n <= max ? n : null; };
+    const inList = (k, list) => { const n = parseFloat(q.get(k)); return list.includes(n) ? n : null; };
+    const places = num('p', 1, 99); if (places != null) $('#places').value = places;
+    const vc = num('vc', 0, 1e9); if (vc != null) $('#valeurCatalogue').value = vc;
+    const vv = num('vv', 0, 1e9); if (vv != null) $('#valeurVenale').value = vv;
+    if (CV_TARIF_BASE[q.get('cv')]) $('#cv').value = q.get('cv');
+    if (BONUS_MALUS_COEFFICIENTS[q.get('bm')]) $('#classBonusMalus').value = q.get('bm');
+    if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('d') || '')) $('#pmec').value = q.get('d');
+    const fr = q.get('fr') === 's' ? 'semestriel' : 'annuel';
+    $$('input[name="fractionnement"]').forEach(r => { r.checked = r.value === fr; });
+    state.formula = q.get('f') === 'p' ? 'personnalisee' : 'basique';
+    syncFormulaRadios();
+    const mask = parseInt(q.get('g'), 16);
+    if (isFinite(mask)) MASK_IDS.forEach((id, i) => { state.g[id].enabled = Boolean(mask & (1 << i)); });
+    const df = inList('df', DOMMAGES_FRANCHISES); if (df != null) state.g.dommages.franchise = df;
+    const cc = inList('cc', DEF.collision.capitalOptions); if (cc != null) state.g.collision.capital = cc;
+    const bc = inList('bc', DEF.brisglace.capitalOptions); if (bc != null) state.g.brisglace.capital = bc;
+    const ic = inList('ic', DEF.indacc.capitalOptions); if (ic != null) state.g.indacc.capital = ic;
+    const r = num('r', 0, 80); state.reduction = r != null ? Math.round(r / 5) * 5 : 0;
+    refresh();
+    history.replaceState(null, '', window.location.href.split('#')[0]);
+    $('#homeIntro').hidden = true;
+    $('#app').hidden = false;
+    goToStep(3, { focus: false, silent: true });
+    $('#step3Title').focus({ preventScroll: true });
+    toast('Simulation ouverte depuis un lien partagé.');
+    return true;
+  }
+
   /* ------------------------------------------------------------------
    * Compteur mobile : visible quand le panneau principal sort de l'écran
    * ------------------------------------------------------------------ */
@@ -2135,6 +2515,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     $$('input[name="fractionnement"]').forEach(r => r.addEventListener('change', refresh));
     $$('input[name="formula"]').forEach(r => r.addEventListener('change', () => { if (r.checked) setFormula(r.value); }));
     $('#reductionSlider').addEventListener('input', e => {
+      $('#targetResult').hidden = true;
       state.reduction = parseFloat(e.target.value) || 0;
       refresh();
     });
@@ -2158,6 +2539,15 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     $('#printOfferBtn').addEventListener('click', printOffer);
     window.addEventListener('afterprint', () => { $('#printRoot').innerHTML = ''; });
 
+    // Outils de vente : prime cible, propositions, partage
+    $('#targetForm').addEventListener('submit', findReductionForTarget);
+    $('#openPacksBtn').addEventListener('click', openPacks);
+    $('#printPacksBtn').addEventListener('click', printPacks);
+    $('#openShareBtn').addEventListener('click', openShare);
+    $('#shareOfferBtn').addEventListener('click', openShare);
+    $('#copyLinkBtn').addEventListener('click', copyLink);
+    $('#shareNative').addEventListener('click', nativeShare);
+
     // Mes devis & comparateur
     $('#openDevisBtn').addEventListener('click', openSavedOffers);
     $('#compareOffersButton').addEventListener('click', openCompareOffers);
@@ -2169,6 +2559,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     });
 
     watchMeter();
+    loadFromLink();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

@@ -40,6 +40,7 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 - Dommages au véhicule excludes Dommages et collision and Bris de glaces, and vice versa. Collision is unavailable for vehicles over 10 years, Dommages au véhicule for vehicles over 5 years.
 - Reduction rate 0 to 80% in 5% steps, applied only to the guarantees the formula allows (basique and personnalisée: Incendie, Vol, Collision, Bris de glaces, Dommages).
 - Fractionnement semestriel halves net premiums; fixed fees are unchanged: coût du contrat 25.000, FSSR 0.500, FPAC 0.300, FGA 3.000 DT.
+- Sales tools (added after the redesign): target-premium calculator (finds the lowest 5 % step reaching a TTC target, or says it is impossible); three-formula proposals (Essentielle = basic 9, Confort = + Bris de glaces + Dommages et collision, Tous risques = + Dommages au véhicule) computed with the current vehicle and reduction, printable and applicable in one click; simulation link in the URL hash (no personal data), QR code on the share dialog and on the printed offer, WhatsApp (to the proposant's mobile when known) and email sharing.
 - Terminology to keep: prime nette, TUA, prime totale TTC, franchise, capital, valeur vénale, valeur catalogue, classe bonus-malus, fractionnement, DPMEC/PMEC.
 
 ## Brand Commitments
