@@ -8,16 +8,16 @@ colors:
   traffic-red: "#c4161c"
   traffic-green: "#11763f"
   traffic-black: "#1b1d21"
-  concrete: "#e4e7eb"
+  concrete: "#e5e5e2"
   traffic-white: "#ffffff"
-  panel-sunk: "#f1f3f5"
-  line: "#d5dbe1"
-  line-strong: "#8d98a4"
+  panel-sunk: "#f2f2f0"
+  line: "#d8d8d4"
+  line-strong: "#8f918d"
   muted-ink: "#525c68"
   on-sign-muted: "#d3e2f4"
-  tile-off: "#b6bec8"
-  night-asphalt: "#101317"
-  night-panel: "#191d22"
+  tile-off: "#b9bbb7"
+  night-asphalt: "#141414"
+  night-panel: "#1e1e1e"
   night-ink: "#e9edf1"
   night-blue: "#0d58a6"
 typography:
@@ -142,7 +142,7 @@ Density is that of a working tool: tables of figures, twelve guarantees with the
 The RAL "traffic" family on a concrete ground: four signal colors with fixed meanings, and a neutral field that never competes with them.
 
 ### Primary
-- **Traffic Blue** (RAL 5017): information, navigation, mandatory. Direction panels (hero, premium meter, total on the offer), the top bar, dialog headers, selected formula, active step, "Obligatoire" discs, guarantee tiles that are switched on, primary "Suivant" and "Imprimer" buttons, the reduction disc and slider.
+- **Traffic Blue** (RAL 5017): information, navigation, mandatory. Direction panels (hero, premium meter, total on the offer), the top bar, dialog headers, selected formula, active step, "Obligatoire" discs, guarantee tiles that are switched on, primary "Suivant" and "Imprimer" buttons, the reduction plate and slider.
 - **Traffic Blue Deep**: hover state of every blue button.
 
 ### Secondary
@@ -154,14 +154,14 @@ The RAL "traffic" family on a concrete ground: four signal colors with fixed mea
 
 ### Neutral
 - **Traffic Black** (RAL 9017): ink, table rules, focus ring by day.
-- **Concrete**: page ground by day.
+- **Concrete**: neutral grey page ground by day (no blue cast).
 - **Traffic White**: panels, fields, the printed offer.
 - **Panel Sunk**: table headers, total rows, segmented-control track, the offer's desk.
 - **Line / Line Strong**: dividers and field borders; Line Strong is also the dashed lane marking of the step route.
 - **Muted Ink**: secondary text, hints, column headers (6.8:1 on white).
 - **On-Sign Muted**: secondary text on blue panels.
 - **Tile Off**: pictogram tiles of guarantees that are off or unavailable.
-- **Night Asphalt / Night Panel / Night Ink / Night Blue**: the night-mode ground, panels, text and sign blue.
+- **Night Asphalt / Night Panel / Night Ink / Night Blue**: the night-mode ground and panels (neutral near-blacks, not blue-black slate), text and sign blue.
 
 ### Named Rules
 **The Traffic Code Rule.** A signal color is never used for decoration or for a meaning other than its own. If an element is not informing, warning, forbidding or confirming, it is neutral.
@@ -177,7 +177,7 @@ The RAL "traffic" family on a concrete ground: four signal colors with fixed mea
 **Character:** A single signage face descended from Highway Gothic: open, wide apertures, legible at a glance and at a distance. Hierarchy comes from weight (400 / 600 / 700 / 800) and size, never from a second family. Self-hosted from `assets/fonts/` (SIL OFL 1.1).
 
 ### Hierarchy
-- **Display** (800, clamp(2.35rem, 7vw, 4.4rem), 0.98): the hero sign title only; its lead word "Simulateur" is set at 0.62em, weight 600, in On-Sign Muted.
+- **Display** (800, clamp(2.35rem, 7vw, 4.4rem), 0.98): the hero sign title only; its first word "Simulateur" is set smaller (0.62em, weight 700) but in the same white, as part of the name, never as an eyebrow.
 - **Headline** (800, clamp(1.5rem, 2.6vw, 1.9rem), 1.15): step titles.
 - **Figure** (800, clamp(2rem, 3.1vw, 2.55rem), tabular): the premium TTC on the meter sign.
 - **Title** (800, 1.05–1.2rem): panel titles, fieldset legends, guarantee names, dialog titles.
@@ -198,7 +198,7 @@ Depth is physical and quiet: signs stand slightly off the concrete, panels sit o
 
 ### Shadow Vocabulary
 - **Panel** (`box-shadow: 0 1px 2px rgb(16 24 32 / .06), 0 10px 24px -14px rgb(16 24 32 / .24)`): white panels and formula cards.
-- **Sign** (`box-shadow: 0 2px 4px rgb(16 24 32 / .16), 0 18px 36px -18px rgb(16 24 32 / .5)`): blue sign panels and the reduction disc, combined with the inset keyline.
+- **Sign** (`box-shadow: 0 2px 4px rgb(16 24 32 / .16), 0 18px 36px -18px rgb(16 24 32 / .5)`): blue sign panels and the reduction plate, combined with the inset keyline.
 - **Pop** (`box-shadow: 0 24px 64px -18px rgb(10 16 24 / .5)`): dialogs.
 
 ### Named Rules
@@ -206,7 +206,7 @@ Depth is physical and quiet: signs stand slightly off the concrete, panels sit o
 
 ## Shapes
 
-Rounded rectangles throughout, with radii that grow with the object: fields and buttons 8px, panels 10px, signs 12px, the hero sign 18px, service tiles 9px, checkboxes 7px. Round shapes are reserved for Vienna-convention meanings: the blue disc (mandatory, the reduction rate) and the radio mark. The only triangle is the warning sign. Milestone markers have a rounded top and square-ish base (16px 16px 5px 5px) with a colored cap.
+Rounded rectangles throughout, with radii that grow with the object: fields and buttons 8px, panels 10px, signs 12px, the hero sign 18px, service tiles 9px, checkboxes 7px. Round shapes are reserved for Vienna-convention meanings: the blue disc means mandatory (the "Obligatoire" badge) and nothing else; user-chosen values such as the reduction rate sit on rectangular information plates. The only triangle is the warning sign. Arrows on signs (hero, brand mark, offer header) are filled sign arrows with a thick square-ended shaft and a broad triangular head; thin stroked arrows are reserved for button icons. Milestone markers have a rounded top and square-ish base (16px 16px 5px 5px) with a colored cap.
 
 ## Components
 
@@ -224,6 +224,9 @@ Rounded rectangles throughout, with radii that grow with the object: fields and 
 ### Service tiles (guarantee pictograms)
 - **Style:** 44px blue square with a white 24px line pictogram (1.7–1.8 stroke, round caps) and keyline. The tile turns Tile Off grey when the guarantee is off or unavailable, like a switched-off service sign.
 
+### Read-only facts
+- A fixed value (the vehicle usage "Privé ou Affaires") is a read-only field on Panel Sunk with a small blue pictogram tile and a muted lock + "Usage fixe"; it must never look like a button.
+
 ### Inputs / Fields
 - **Style:** white field, 1.5px Line Strong border, 8px radius, 48px tall; units ("DT") sit inside the field on the right; selects use a drawn chevron.
 - **Focus:** border turns Traffic Blue with a 3px 28% blue ring (yellow by night).
@@ -234,8 +237,8 @@ Rounded rectangles throughout, with radii that grow with the object: fields and 
 - Checkboxes are 26px rounded squares that fill Traffic Blue with a white check; locked ones are a lighter blue. The segmented control (fractionnement) is a sunk track whose selected half becomes a small blue sign.
 
 ### Navigation
-- **Top bar:** Traffic Blue band with a white keyline at its base, brand glyph (white square with a blue arrow), outlined white buttons for "Formulaire proposant", "Mes devis" (with a count badge) and the day/night toggle.
-- **Step route:** milestone markers (cap grey ahead, blue current, green done), labels in bold, lane line dashed ahead and solid green behind. Every marker is a button.
+- **Top bar:** Traffic Blue band with a white keyline at its base, brand glyph (white square with a filled blue sign arrow), the full product name on every width (the tagline drops on phones), outlined white buttons for "Formulaire proposant", "Mes devis" (with a count badge) and the day/night toggle.
+- **Step route:** milestone markers (cap grey ahead, blue current, green done), labels in bold, lane line dashed ahead and solid green behind. Every marker is a button. Below 480px only the current step keeps its label so the lane line keeps real length.
 
 ### Dialogs
 - Blue header band with a white keyline base and a white close button; body scrolls; footer holds actions, primary on the right. The confirmation dialog uses a yellow header with the red-bordered warning triangle.
@@ -254,6 +257,7 @@ Rounded rectangles throughout, with radii that grow with the object: fields and 
 - **Do** set every amount in Overpass tabular figures with three decimals and "DT".
 - **Do** give each guarantee or concept a line pictogram on a blue service tile, drawn on the 24px grid with round caps.
 - **Do** keep the premium visible: the meter on desktop, the bottom bar on small screens.
+- **Do** let content start visible: entrances move by transform only; the premium roll is the one authored motion.
 
 ### Don't:
 - **Don't** use a signal color as decoration, or two signal colors for the same meaning.

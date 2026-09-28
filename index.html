@@ -6,7 +6,7 @@
 <title>Simulateur Assurance Automobile</title>
 <meta name="description" content="Simulez une prime d'assurance automobile en trois étapes : véhicule, garanties, résumé. Détail des primes nettes, TUA et frais, offre imprimable et comparateur de devis.">
 <meta name="theme-color" content="#0b4f94">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b4f94'/%3E%3Crect x='2.5' y='2.5' width='27' height='27' rx='5' fill='none' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M8.5 16h14M17 10l6 6-6 6' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b4f94'/%3E%3Crect x='2.5' y='2.5' width='27' height='27' rx='5' fill='none' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M6.5 13.6h10V8l9 8-9 8v-5.6h-10z' fill='white'/%3E%3C/svg%3E">
 <link rel="preload" href="assets/fonts/overpass-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>
   try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
@@ -45,17 +45,17 @@
   --traffic-green-deep: #0b5c30;
   --traffic-black: #1b1d21;       /* RAL 9017 */
 
-  --ground: #e4e7eb;              /* béton */
+  --ground: #e5e5e2;              /* béton */
   --panel: #ffffff;               /* RAL 9016 */
-  --panel-sunk: #f1f3f5;
-  --line: #d5dbe1;
-  --line-strong: #8d98a4;
+  --panel-sunk: #f2f2f0;
+  --line: #d8d8d4;
+  --line-strong: #8f918d;
   --ink: #1b1d21;
   --muted: #525c68;
   --blue-text: #0b4f94;
   --red-text: #b3141a;
   --green-text: #0f6b39;
-  --tile-off: #b6bec8;
+  --tile-off: #b9bbb7;
   --focus: #1b1d21;
   --on-sign-muted: #d3e2f4;
 
@@ -74,17 +74,17 @@ html[data-theme="dark"] {
   /* Mode nuit : asphalte, panneaux rétroréfléchissants */
   --traffic-blue: #0d58a6;
   --traffic-blue-deep: #0a4886;
-  --ground: #101317;
-  --panel: #191d22;
-  --panel-sunk: #14171b;
-  --line: #2b323a;
-  --line-strong: #5a6571;
+  --ground: #141414;
+  --panel: #1e1e1e;
+  --panel-sunk: #181818;
+  --line: #313131;
+  --line-strong: #5e5e5e;
   --ink: #e9edf1;
   --muted: #a7b0bb;
   --blue-text: #82b4f0;
   --red-text: #ff8185;
   --green-text: #63d193;
-  --tile-off: #3c444e;
+  --tile-off: #444444;
   --focus: #f5b400;
   --shadow-panel: 0 1px 2px rgb(0 0 0 / .35), 0 12px 28px -16px rgb(0 0 0 / .75);
   --shadow-sign: 0 2px 4px rgb(0 0 0 / .4), 0 18px 36px -18px rgb(0 0 0 / .85);
@@ -218,8 +218,8 @@ button { -webkit-tap-highlight-color: transparent; }
   letter-spacing: -0.02em;
 }
 .hero-title span { display: block; }
-.hero-title .hero-title-lead { font-weight: 600; font-size: .62em; letter-spacing: -0.01em; margin-bottom: .14em; color: var(--on-sign-muted); }
-.hero-arrow { width: clamp(64px, 11vw, 104px); height: auto; flex: none; margin-top: 4px; stroke: #fff; stroke-width: 3.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.hero-title .hero-title-lead { font-weight: 700; font-size: .62em; letter-spacing: -0.01em; margin-bottom: .1em; color: #fff; }
+.hero-arrow { width: clamp(64px, 11vw, 104px); height: auto; flex: none; margin-top: 4px; fill: #fff; stroke: none; }
 .hero-sub { margin-top: 18px; max-width: 34ch; font-size: clamp(1rem, 1.9vw, 1.15rem); line-height: 1.45; color: var(--on-sign-muted); }
 .exits {
   margin-top: clamp(24px, 4vw, 36px);
@@ -257,7 +257,7 @@ button { -webkit-tap-highlight-color: transparent; }
    ========================================================================== */
 .app { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
 .app.is-entering .shell { animation: rise .42s var(--ease-out) both; }
-@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes rise { from { transform: translateY(12px); } to { transform: none; } }
 
 .topbar {
   position: sticky; top: 0; z-index: 20;
@@ -341,7 +341,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .stage { min-width: 0; }
 .step { display: grid; gap: 20px; }
 .step.is-shown { animation: stepIn .32s var(--ease-out) both; }
-@keyframes stepIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes stepIn { from { transform: translateY(8px); } to { transform: none; } }
 
 .step-head { display: flex; align-items: center; gap: 16px; }
 .step-head h2 { font-size: clamp(1.5rem, 2.6vw, 1.9rem); font-weight: 800; letter-spacing: -0.015em; }
@@ -390,7 +390,7 @@ button { -webkit-tap-highlight-color: transparent; }
 html[data-theme="dark"] .input:focus-visible, html[data-theme="dark"] .select:focus-visible { border-color: var(--traffic-yellow); box-shadow: 0 0 0 3px rgb(245 180 0 / .3); }
 .select {
   appearance: none; -webkit-appearance: none; padding-right: 42px; cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238d98a4' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238f918d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
 }
 .select option { background: var(--panel); color: var(--ink); }
@@ -404,14 +404,20 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .input[type="number"] { -moz-appearance: textfield; }
 .input[type="number"]::-webkit-outer-spin-button, .input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-.usage-sign {
-  display: flex; align-items: center; gap: 10px;
-  min-height: 48px; padding: 0 16px; border-radius: var(--radius-field);
-  background: var(--traffic-blue); color: #fff; font-weight: 750;
-  box-shadow: inset 0 0 0 2px var(--traffic-blue), inset 0 0 0 3.5px rgb(255 255 255 / .9);
+.usage-field {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 48px; padding: 6px 14px 6px 6px; border-radius: var(--radius-field);
+  background: var(--panel-sunk); color: var(--ink); font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--line);
 }
-.usage-sign .icon { width: 20px; height: 20px; }
-.usage-sign small { margin-left: auto; font-weight: 600; font-size: .8rem; color: var(--on-sign-muted); }
+.usage-tile {
+  flex: none; width: 34px; height: 34px; border-radius: 7px; display: grid; place-items: center;
+  background: var(--traffic-blue); color: #fff;
+  box-shadow: inset 0 0 0 2px var(--traffic-blue), inset 0 0 0 3.2px rgb(255 255 255 / .9);
+}
+.usage-tile .icon { width: 20px; height: 20px; }
+.usage-field small { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: .82rem; color: var(--muted); }
+.usage-field small .icon { width: 14px; height: 14px; }
 
 /* Contrôle segmenté (fractionnement) */
 .segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 10px; background: var(--panel-sunk); box-shadow: inset 0 0 0 1.5px var(--line); }
@@ -543,18 +549,17 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
    Étape 3 — réduction et détail
    ========================================================================== */
 .reduction { display: flex; align-items: center; gap: 24px; padding: 22px 24px; }
-.reduction-disc {
-  flex: none; width: 88px; height: 88px; border-radius: 50%;
-  display: grid; place-items: center; align-content: center;
+.reduction-plate {
+  flex: none; min-width: 104px; padding: 14px 16px 12px; border-radius: var(--radius-sign);
+  display: flex; align-items: baseline; justify-content: center; gap: 4px;
   background: var(--traffic-blue); color: #fff;
-  box-shadow: inset 0 0 0 4px var(--traffic-blue), inset 0 0 0 6px rgb(255 255 255 / .94), var(--shadow-sign);
+  box-shadow: inset 0 0 0 5px var(--traffic-blue), inset 0 0 0 7px rgb(255 255 255 / .94), var(--shadow-sign);
   font-weight: 800; line-height: 1;
 }
-.reduction-disc strong { font-size: 2.1rem; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.reduction-disc small { font-size: .85rem; font-weight: 700; margin-top: 2px; }
+.reduction-plate strong { font-size: 2.3rem; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.reduction-plate small { font-size: 1.05rem; font-weight: 800; }
 .reduction-body { flex: 1; min-width: 0; display: grid; gap: 10px; }
-.reduction-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.reduction-top .label { font-size: 1.05rem; font-weight: 800; }
+.reduction-label { font-size: 1.05rem; font-weight: 800; }
 .range {
   --pct: 0%;
   -webkit-appearance: none; appearance: none; width: 100%; height: 28px; margin: 0;
@@ -710,7 +715,12 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .doc-title { margin: 26px 0 6px; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; color: var(--doc-ink); }
 .doc-section { margin-top: 24px; }
 .doc-section h3 { font-size: 1.05rem; font-weight: 800; color: var(--doc-blue); padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--doc-line); }
-.doc-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+.doc-grid { display: grid; grid-template-columns: 1fr; column-gap: 32px; }
+@media (min-width: 701px) {
+  .doc-grid { grid-template-columns: 1fr 1fr; grid-auto-flow: column; }
+  .doc-grid--4 { grid-template-rows: repeat(4, auto); }
+  .doc-grid--2 { grid-template-rows: repeat(2, auto); }
+}
 .doc-grid div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--doc-line); font-size: .95rem; }
 .doc-grid dt { color: var(--doc-muted); }
 .doc-grid dd { font-weight: 700; text-align: right; overflow-wrap: anywhere; }
@@ -797,18 +807,22 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 }
 @media (max-width: 760px) {
   .top-btn .top-btn-text { display: none; }
-  .top-btn { padding: 0; width: 44px; justify-content: center; position: relative; }
+  .top-btn { padding: 0; justify-content: center; position: relative; }
   .top-btn .count { position: absolute; top: -4px; right: -6px; min-width: 20px; height: 20px; font-size: .72rem; }
   .brand-name span { display: none; }
-  .brand-lead { display: none; }
-  .brand-name { font-size: 1rem; }
+  .brand-name { font-size: .9rem; line-height: 1.15; }
+  .topbar-inner { gap: 10px; }
+  .brand { gap: 10px; }
+  .brand-glyph { width: 32px; height: 32px; }
+  .brand-glyph .icon { width: 19px; height: 19px; }
+  .top-actions { gap: 4px; }
+  .top-btn { width: 40px; min-height: 40px; }
   .route-label { font-size: .92rem; }
   .route li:not(:last-child)::after { margin: 0 8px; }
   .formula-choice { grid-template-columns: 1fr; }
   .meter { grid-template-columns: minmax(0, 1fr); }
   .grid-2 { grid-template-columns: minmax(0, 1fr); }
   .form-panel { padding: 4px 18px 20px; }
-  .doc-grid { grid-template-columns: 1fr; }
   .offer-doc { padding: 24px 20px; }
   .dialog--offer .dialog-scroll { padding: 12px; }
 }
@@ -826,9 +840,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .route-btn { gap: 8px; }
   .borne { width: 28px; height: 36px; background: linear-gradient(var(--cap) 0 11px, var(--panel) 11px); }
   .reduction { padding: 18px 16px; gap: 14px; align-items: flex-start; }
-  .reduction-disc { width: 60px; height: 60px; }
-  .reduction-disc strong { font-size: 1.4rem; }
-  .reduction-disc small { font-size: .72rem; }
+  .reduction-plate { min-width: 76px; padding: 12px 10px 10px; }
+  .reduction-plate strong { font-size: 1.6rem; }
+  .reduction-plate small { font-size: .85rem; }
   .step-nav { flex-direction: column-reverse; align-items: stretch; }
   .step-nav > .btn, .step-nav-end, .step-nav-end .btn { width: 100%; }
   .step-nav-end { flex-direction: column-reverse; }
@@ -839,7 +853,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .exits li { column-gap: 12px; }
   .exit-detail { font-size: .88rem; }
 }
-@media (max-width: 380px) {
+@media (max-width: 480px) {
   .route-label { display: none; }
   .route li.is-current .route-label { display: inline; }
 }
@@ -862,6 +876,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   #printRoot .doc-title { margin: 16px 0 0; font-size: 20pt; }
   #printRoot .doc-section { margin-top: 16px; }
   #printRoot .doc-section h3 { padding-bottom: 5px; }
+  #printRoot .doc-grid { grid-template-columns: 1fr 1fr; grid-auto-flow: column; }
+  #printRoot .doc-grid--4 { grid-template-rows: repeat(4, auto); }
+  #printRoot .doc-grid--2 { grid-template-rows: repeat(2, auto); }
   #printRoot .doc-grid div { padding: 5px 0; font-size: 10pt; }
   #printRoot .doc-table { font-size: 10pt; }
   #printRoot .doc-table th, #printRoot .doc-table td { padding: 5px 4px; }
@@ -878,6 +895,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 
 <!-- Pictogrammes (tracé 24 px, trait homogène) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="sign-arrow" viewBox="0 0 24 24"><path d="M2.5 9.6h10.2V3.8L21.8 12l-9.1 8.2v-5.8H2.5z" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4.5 12h15M13 5.5l6.5 6.5-6.5 6.5"/></symbol>
   <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19.5 12h-15M11 5.5L4.5 12l6.5 6.5"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
@@ -889,6 +907,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8.5V3.5h10v5"/><path d="M7 17H4.8c-.7 0-1.3-.6-1.3-1.3v-5.9c0-.7.6-1.3 1.3-1.3h14.4c.7 0 1.3.6 1.3 1.3v5.9c0 .7-.6 1.3-1.3 1.3H17"/><path d="M7 13.5h10v7H7z"/></symbol>
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5.2 3.5h10.6l3.7 3.7v11.6c0 .9-.8 1.7-1.7 1.7H5.2c-.9 0-1.7-.8-1.7-1.7V5.2c0-.9.8-1.7 1.7-1.7z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.8h16M9.3 6.8V4.2h5.4v2.6M6.3 6.8l.9 13.2h9.6l.9-13.2M10 10.8v5.4M14 10.8v5.4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
   <symbol id="i-no" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></symbol>
   <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5L2.5 20h19z"/><path d="M12 9.5v5M12 17.3v.2"/></symbol>
   <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4v4.5H9"/></symbol>
@@ -920,7 +939,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     <div class="sign sign--hero">
       <div class="hero-head">
         <h1 class="hero-title" id="introTitle"><span class="hero-title-lead">Simulateur</span><span>Assurance</span><span>Automobile</span></h1>
-        <svg class="hero-arrow" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 24h31M26 11l13 13-13 13"/></svg>
+        <svg class="hero-arrow" viewBox="0 0 48 48" aria-hidden="true"><path d="M4 19.5h22V6l19 18-19 18V28.5H4z"/></svg>
       </div>
       <p class="hero-sub">Votre simulateur Assurance Automobile, simple, visuel et immédiatement opérationnel</p>
       <ol class="exits" aria-label="Les trois étapes">
@@ -941,7 +960,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   <header class="topbar on-blue">
     <div class="topbar-inner">
       <div class="brand">
-        <span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#i-arrow-right"/></svg></span>
+        <span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#sign-arrow"/></svg></span>
         <p class="brand-name"><b class="brand-lead">Simulateur </b>Assurance Automobile<span>Simple, visuel et immédiatement opérationnel</span></p>
       </div>
       <nav class="top-actions" aria-label="Outils">
@@ -979,7 +998,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
               <div class="grid-2">
                 <div class="field">
                   <span class="label" id="usageLabel">Usage du véhicule</span>
-                  <div class="usage-sign" aria-labelledby="usageLabel"><svg class="icon"><use href="#g-rc"/></svg>Privé ou Affaires<small>Usage fixe</small></div>
+                  <div class="usage-field" role="group" aria-labelledby="usageLabel"><span class="usage-tile" aria-hidden="true"><svg class="icon"><use href="#g-rc"/></svg></span>Privé ou Affaires<small><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Usage fixe</small></div>
                 </div>
                 <div class="field">
                   <label for="places">Nombre de places</label>
@@ -1078,12 +1097,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
             </div>
           </header>
           <div class="panel reduction">
-            <div class="reduction-disc" aria-hidden="true"><strong id="reductionDisc">0</strong><small>%</small></div>
+            <div class="reduction-plate" aria-hidden="true"><strong id="reductionPlate">0</strong><small>%</small></div>
             <div class="reduction-body">
-              <div class="reduction-top">
-                <label class="label" for="reductionSlider">Taux de réduction</label>
-                <span class="hint" id="reductionSliderValue">0 %</span>
-              </div>
+              <label class="label reduction-label" for="reductionSlider">Taux de réduction</label>
               <input class="range" type="range" id="reductionSlider" min="0" max="80" step="5" value="0" aria-valuetext="0 %">
               <div class="ticks" aria-hidden="true"><span>0 %</span><span>20 %</span><span>40 %</span><span>60 %</span><span>80 %</span></div>
               <p class="hint">S'applique uniquement à : <b>Incendie, Vol, Dommages au véhicule, Dommages et collision, Bris de glaces</b>.</p>
@@ -1216,29 +1232,29 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   <div class="dialog-scroll">
     <article class="offer-doc" id="offerDoc">
       <header class="doc-head">
-        <div class="doc-brand"><span class="doc-glyph"><svg class="icon"><use href="#i-arrow-right"/></svg></span>Simulateur Assurance Automobile</div>
+        <div class="doc-brand"><span class="doc-glyph"><svg class="icon"><use href="#sign-arrow"/></svg></span>Simulateur Assurance Automobile</div>
         <p class="doc-date" id="dateOffre"></p>
       </header>
       <h3 class="doc-title">Offre d'Assurance Automobile</h3>
       <section class="doc-section">
         <h3>Données de l'assuré</h3>
-        <dl class="doc-grid">
+        <dl class="doc-grid doc-grid--4">
           <div><dt>Nom</dt><dd id="offreNom">-</dd></div>
-          <div><dt>Mobile</dt><dd id="offreMobile">-</dd></div>
           <div><dt>Prénom</dt><dd id="offrePrenom">-</dd></div>
-          <div><dt>Email</dt><dd id="offreEmail">-</dd></div>
           <div><dt>CIN</dt><dd id="offreCIN">-</dd></div>
-          <div><dt>Agence</dt><dd id="offreAgence">-</dd></div>
           <div><dt>Adresse</dt><dd id="offreAdresse">-</dd></div>
+          <div><dt>Mobile</dt><dd id="offreMobile">-</dd></div>
+          <div><dt>Email</dt><dd id="offreEmail">-</dd></div>
+          <div><dt>Agence</dt><dd id="offreAgence">-</dd></div>
           <div><dt>Classe bonus-malus</dt><dd id="offreClasseBM">-</dd></div>
         </dl>
       </section>
       <section class="doc-section">
         <h3>Données du véhicule</h3>
-        <dl class="doc-grid">
+        <dl class="doc-grid doc-grid--2">
           <div><dt>Usage</dt><dd id="offreUsage">Privé ou Affaires</dd></div>
-          <div><dt>Modèle</dt><dd id="offreModele">-</dd></div>
           <div><dt>Marque</dt><dd id="offreMarque">-</dd></div>
+          <div><dt>Modèle</dt><dd id="offreModele">-</dd></div>
           <div><dt>DPMEC</dt><dd id="offreDPMEC">-</dd></div>
         </dl>
       </section>
@@ -1690,8 +1706,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     slider.value = String(state.reduction);
     slider.style.setProperty('--pct', (state.reduction / 80 * 100) + '%');
     slider.setAttribute('aria-valuetext', state.reduction + ' %');
-    $('#reductionDisc').textContent = state.reduction;
-    $('#reductionSliderValue').textContent = state.reduction + NNBSP + '%';
+    $('#reductionPlate').textContent = state.reduction;
   }
 
   function refresh() {

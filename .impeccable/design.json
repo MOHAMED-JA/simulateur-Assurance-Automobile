@@ -82,16 +82,16 @@
       "concrete": {
         "role": "neutral",
         "displayName": "Concrete",
-        "canonical": "#e4e7eb",
+        "canonical": "#e5e5e2",
         "tonalRamp": [
-          "#21252c",
-          "#363e49",
-          "#4c5767",
-          "#627084",
-          "#8492a4",
-          "#adb6c2",
-          "#d3d8de",
-          "#f0f2f4"
+          "#282824",
+          "#43433c",
+          "#5e5e54",
+          "#79796c",
+          "#9a9a8e",
+          "#bbbbb4",
+          "#dbdbd7",
+          "#f3f3f2"
         ]
       },
       "traffic-white": {
@@ -127,16 +127,16 @@
       "night-asphalt": {
         "role": "neutral",
         "displayName": "Night Asphalt",
-        "canonical": "#101317",
+        "canonical": "#141414",
         "tonalRamp": [
-          "#1f252d",
-          "#343e4b",
-          "#495769",
-          "#5e7087",
-          "#8191a7",
-          "#abb6c4",
-          "#d2d8e0",
-          "#f0f2f5"
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#949494",
+          "#b8b8b8",
+          "#d9d9d9",
+          "#f2f2f2"
         ]
       }
     },
@@ -250,7 +250,7 @@
       "refersTo": "button-ghost",
       "description": "Secondary actions: Précédent, Fermer, Réinitialiser.",
       "html": "<button class=\"ds-btn-ghost\">Précédent</button>",
-      "css": ".ds-btn-ghost{min-height:48px;padding:0 20px;border:0;border-radius:8px;background:#fff;color:#1b1d21;font:700 1rem/1.1 Overpass,system-ui,sans-serif;box-shadow:inset 0 0 0 1.5px #8d98a4;cursor:pointer} .ds-btn-ghost:hover{background:#f1f3f5;box-shadow:inset 0 0 0 1.5px #1b1d21} .ds-btn-ghost:focus-visible{outline:3px solid #1b1d21;outline-offset:2px}"
+      "css": ".ds-btn-ghost{min-height:48px;padding:0 20px;border:0;border-radius:8px;background:#fff;color:#1b1d21;font:700 1rem/1.1 Overpass,system-ui,sans-serif;box-shadow:inset 0 0 0 1.5px #8f918d;cursor:pointer} .ds-btn-ghost:hover{background:#f2f2f0;box-shadow:inset 0 0 0 1.5px #1b1d21} .ds-btn-ghost:focus-visible{outline:3px solid #1b1d21;outline-offset:2px}"
     },
     {
       "name": "Field",
@@ -258,7 +258,7 @@
       "refersTo": "input",
       "description": "Text/number field with inline unit.",
       "html": "<label class=\"ds-field\"><span>Valeur vénale</span><span class=\"ds-affix\"><input value=\"52000\"><b>DT</b></span></label>",
-      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font:700 .95rem Overpass,system-ui,sans-serif;color:#1b1d21} .ds-affix{position:relative} .ds-affix input{width:100%;min-height:48px;padding:11px 48px 9px 14px;border:1.5px solid #8d98a4;border-radius:8px;background:#fff;font:400 1rem Overpass,system-ui,sans-serif;color:#1b1d21} .ds-affix input:hover{border-color:#1b1d21} .ds-affix input:focus-visible{outline:none;border-color:#0b4f94;box-shadow:0 0 0 3px rgba(11,79,148,.28)} .ds-affix b{position:absolute;right:14px;top:50%;transform:translateY(-45%);color:#525c68}"
+      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font:700 .95rem Overpass,system-ui,sans-serif;color:#1b1d21} .ds-affix{position:relative} .ds-affix input{width:100%;min-height:48px;padding:11px 48px 9px 14px;border:1.5px solid #8f918d;border-radius:8px;background:#fff;font:400 1rem Overpass,system-ui,sans-serif;color:#1b1d21} .ds-affix input:hover{border-color:#1b1d21} .ds-affix input:focus-visible{outline:none;border-color:#0b4f94;box-shadow:0 0 0 3px rgba(11,79,148,.28)} .ds-affix b{position:absolute;right:14px;top:50%;transform:translateY(-45%);color:#525c68}"
     },
     {
       "name": "Premium Meter Sign",
@@ -274,7 +274,7 @@
       "refersTo": "service-tile",
       "description": "Guarantee pictogram tile; grey when the guarantee is off.",
       "html": "<span class=\"ds-tile\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4.5\" y=\"11\" width=\"15\" height=\"9.5\" rx=\"1.8\"/><path d=\"M8 11V7.6a4 4 0 0 1 7.7-1.6\"/><path d=\"M12 14.5v2.6\"/></svg></span><span class=\"ds-tile ds-tile-off\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"><path d=\"M3 8.3c5.9-2.4 12.1-2.4 18 0l-2.3 10.2H5.3z\"/></svg></span>",
-      "css": ".ds-tile{--bg:#0b4f94;display:inline-grid;place-items:center;width:44px;height:44px;margin-right:8px;border-radius:9px;background:var(--bg);color:#fff;box-shadow:inset 0 0 0 2.5px var(--bg),inset 0 0 0 3.8px rgba(255,255,255,.9)} .ds-tile-off{--bg:#b6bec8}"
+      "css": ".ds-tile{--bg:#0b4f94;display:inline-grid;place-items:center;width:44px;height:44px;margin-right:8px;border-radius:9px;background:var(--bg);color:#fff;box-shadow:inset 0 0 0 2.5px var(--bg),inset 0 0 0 3.8px rgba(255,255,255,.9)} .ds-tile-off{--bg:#b9bbb7}"
     },
     {
       "name": "Attention Note",
@@ -322,7 +322,8 @@
       "**Do** draw signs with the inset keyline (5px color, 2px white) and a neutral offset shadow.",
       "**Do** set every amount in Overpass tabular figures with three decimals and \"DT\".",
       "**Do** give each guarantee or concept a line pictogram on a blue service tile, drawn on the 24px grid with round caps.",
-      "**Do** keep the premium visible: the meter on desktop, the bottom bar on small screens."
+      "**Do** keep the premium visible: the meter on desktop, the bottom bar on small screens.",
+      "**Do** let content start visible: entrances move by transform only; the premium roll is the one authored motion."
     ],
     "donts": [
       "**Don't** use a signal color as decoration, or two signal colors for the same meaning.",
