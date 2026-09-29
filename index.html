@@ -637,6 +637,12 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .meter-value { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .meter-value .num { font-size: clamp(2rem, 3.1vw, 2.55rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
 .meter-unit { font-size: 1.1rem; font-weight: 800; }
+.meter-wait { margin-top: 10px; font-size: .9rem; line-height: 1.4; color: var(--on-sign-muted); }
+.meter-wait b { color: #fff; }
+.sign--meter.is-waiting .meter-value .num { color: var(--on-sign-muted); }
+.field-error { display: flex; gap: 6px; align-items: flex-start; font-size: .85rem; font-weight: 700; color: var(--red-text); line-height: 1.35; }
+.field-error .icon { width: 16px; height: 16px; margin-top: 1px; stroke-width: 2.2; }
+.field.is-invalid .input { border-color: var(--traffic-red); box-shadow: 0 0 0 3px color-mix(in srgb, var(--traffic-red) 18%, transparent); }
 .meter-meta {
   display: grid; grid-template-columns: repeat(3, minmax(0, auto)); justify-content: space-between; gap: 12px;
   margin: 16px 0 0; padding-top: 14px;
@@ -851,6 +857,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .toast.is-leaving { animation: toastOut .22s ease both; }
 .toast i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--traffic-green); flex: none; }
 .toast .icon { width: 16px; height: 16px; stroke-width: 3; }
+.toast--warn i { background: var(--traffic-yellow); color: #1b1d21; }
+.toast--warn .icon { stroke-width: 2.4; }
 @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes toastOut { to { opacity: 0; transform: translateY(6px); } }
 
@@ -1115,13 +1123,16 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
               <div class="grid-2">
                 <div class="field">
                   <label for="valeurCatalogue">Valeur catalogue</label>
-                  <div class="affix"><input class="input" type="number" id="valeurCatalogue" min="0" value="0" inputmode="decimal"><span class="affix-unit">DT</span></div>
-                  <p class="hint">Valeur à neuf : capital de « Dommages au véhicule ».</p>
+                  <div class="affix"><input class="input" type="number" id="valeurCatalogue" min="0" inputmode="decimal" placeholder="Ex. 68 000" required aria-describedby="vcError vcHint"><span class="affix-unit">DT</span></div>
+                  <p class="field-error" id="vcError" hidden><svg class="icon" aria-hidden="true"><use href="#i-warn"/></svg>Saisissez la valeur catalogue (valeur à neuf) du véhicule.</p>
+                  <p class="hint" id="vcHint">Valeur à neuf : capital de « Dommages au véhicule ».</p>
                 </div>
                 <div class="field">
                   <label for="valeurVenale">Valeur vénale</label>
-                  <div class="affix"><input class="input" type="number" id="valeurVenale" min="0" value="0" inputmode="decimal"><span class="affix-unit">DT</span></div>
-                  <p class="hint">Capital d'Incendie et de Vol ; plafonne CAT/NAT et Émeutes.</p>
+                  <div class="affix"><input class="input" type="number" id="valeurVenale" min="0" inputmode="decimal" placeholder="Ex. 52 000" required aria-describedby="vvError vvHint"><span class="affix-unit">DT</span></div>
+                  <p class="field-error" id="vvError" hidden><svg class="icon" aria-hidden="true"><use href="#i-warn"/></svg>Saisissez la valeur vénale (valeur actuelle) du véhicule.</p>
+                  <p class="hint" id="vvHint">Capital d'Incendie et de Vol ; plafonne CAT/NAT et Émeutes.</p>
+                  <p class="hint-warn" id="vvWarn" hidden><svg class="icon"><use href="#i-warn"/></svg><span>La valeur vénale dépasse la valeur catalogue : vérifiez la saisie.</span></p>
                 </div>
               </div>
             </fieldset>
@@ -1241,7 +1252,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       <aside class="meter" aria-label="Prime en cours">
         <div class="sign sign--meter" id="meterSign">
           <p class="meter-label">Prime totale TTC</p>
-          <p class="meter-value" aria-live="polite"><span class="num" id="primeFinale">0.000</span><span class="meter-unit">DT</span></p>
+          <p class="meter-value" aria-live="polite"><span class="num" id="primeFinale">—</span><span class="meter-unit">DT</span></p>
+          <p class="meter-wait" id="meterWait">Saisissez la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule pour calculer la prime.</p>
           <dl class="meter-meta">
             <div><dt>Formule</dt><dd id="meterFormula">Basique</dd></div>
             <div><dt>Fractionnement</dt><dd id="meterFraction">Annuel</dd></div>
@@ -1792,6 +1804,11 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 
   function renderResults(q) {
     const body = $('#resultsTableBody');
+    if (!q.ready) {
+      body.innerHTML = '<tr class="empty-row"><td colspan="5">Saisissez la valeur catalogue et la valeur vénale du véhicule (étape 1) pour afficher le détail des primes.</td></tr>';
+      $('#resultsTableFoot').innerHTML = '';
+      return;
+    }
     if (!q.lines.length) {
       body.innerHTML = '<tr class="empty-row"><td colspan="5">Aucune garantie sélectionnée.</td></tr>';
     } else {
@@ -1818,6 +1835,20 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   let meterFrame = 0;
   function renderMeter(q) {
     const targets = [$('#primeFinale'), $('#mobilePrime')];
+    $('#meterSign').classList.toggle('is-waiting', !q.ready);
+    $('#meterWait').hidden = q.ready;
+    $('#meterFormula').textContent = state.formula === 'basique' ? 'Basique' : 'Personnalisée';
+    $('#meterFraction').textContent = q.vehicle.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel';
+    $('#meterReduction').textContent = state.reduction + NNBSP + '%';
+    if (!q.ready) {
+      cancelAnimationFrame(meterFrame);
+      meterValue = 0;
+      targets.forEach(el => { el.textContent = '—'; });
+      $('#primeFinale').dataset.value = '';
+      $('#totalPrimeNette').textContent = '— DT';
+      $('#primeFinaleLine').textContent = '— DT';
+      return;
+    }
     const to = q.primeFinale;
     const from = meterValue;
     cancelAnimationFrame(meterFrame);
@@ -1875,14 +1906,53 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     $('#reductionPlate').textContent = state.reduction;
   }
 
+  // La prime n'est calculée qu'une fois les deux valeurs du véhicule saisies
+  let showErrors = false;
+  function missingInputs() {
+    const miss = [];
+    if (!(numberOf('valeurCatalogue') > 0)) miss.push('valeurCatalogue');
+    if (!(numberOf('valeurVenale') > 0)) miss.push('valeurVenale');
+    return miss;
+  }
+  function renderValidation(miss) {
+    [['valeurCatalogue', 'vcError'], ['valeurVenale', 'vvError']].forEach(([id, err]) => {
+      const bad = showErrors && miss.includes(id);
+      $('#' + err).hidden = !bad;
+      $('#' + id).closest('.field').classList.toggle('is-invalid', bad);
+      $('#' + id).setAttribute('aria-invalid', String(bad));
+    });
+    const vc = numberOf('valeurCatalogue');
+    const vv = numberOf('valeurVenale');
+    $('#vvWarn').hidden = !(vc > 0 && vv > vc);
+  }
+  function isReady() { return missingInputs().length === 0; }
+  // Bloque une action tant que les valeurs manquent : renvoie à l'étape 1
+  function requireReady() {
+    const miss = missingInputs();
+    if (!miss.length) return true;
+    showErrors = true;
+    renderValidation(miss);
+    closeAllDialogs();
+    goToStep(1, { focus: false, force: true });
+    const el = $('#' + miss[0]);
+    el.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'center' });
+    el.focus({ preventScroll: true });
+    toast(miss.length === 2 ? 'Saisissez la valeur catalogue et la valeur vénale pour continuer.' : (miss[0] === 'valeurCatalogue' ? 'Saisissez la valeur catalogue pour continuer.' : 'Saisissez la valeur vénale pour continuer.'), 'warn');
+    return false;
+  }
+  function closeAllDialogs() { $$('dialog[open]').forEach(d => d.close()); }
+
   function refresh() {
     applyRules();
     lastQuote = computeQuote();
+    const miss = missingInputs();
+    lastQuote.ready = miss.length === 0;
     renderGuarantees();
     renderResults(lastQuote);
     renderMeter(lastQuote);
     renderHints();
     renderReduction();
+    renderValidation(miss);
   }
 
   /* ------------------------------------------------------------------
@@ -1917,6 +1987,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
    * Navigation
    * ------------------------------------------------------------------ */
   function goToStep(step, opts = {}) {
+    if (step > 1 && !opts.force && !isReady()) { requireReady(); return; }
     state.step = step;
     [1, 2, 3].forEach(n => {
       const el = $('#step' + n);
@@ -2008,11 +2079,12 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   function openDialog(dlg) { if (!dlg.open) dlg.showModal(); }
   function closeDialog(dlg) { if (dlg.open) dlg.close(); }
 
-  function toast(message) {
+  function toast(message, kind) {
     const region = $('#toastRegion');
     const el = document.createElement('div');
     el.className = 'toast';
-    el.innerHTML = `<i>${icon('i-check')}</i><span>${escapeHtml(message)}</span>`;
+    el.className = 'toast' + (kind === 'warn' ? ' toast--warn' : '');
+    el.innerHTML = `<i>${icon(kind === 'warn' ? 'i-warn' : 'i-check')}</i><span>${escapeHtml(message)}</span>`;
     region.appendChild(el);
     setTimeout(() => {
       el.classList.add('is-leaving');
@@ -2051,6 +2123,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 
   /* Offre */
   function voirOffre() {
+    if (!requireReady()) return;
     let showConfirm = true;
     const raw = store.get('userFormData');
     if (raw) {
@@ -2063,6 +2136,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     else openOffer();
   }
   function openOffer() {
+    if (!requireReady()) return;
     populateOffer();
     openDialog($('#offreAssuranceModal'));
   }
@@ -2244,7 +2318,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     refresh();
     closeDialog($('#savedOffersModal'));
     goToStep(3, { focus: false });
-    openOffer();
+    if (isReady()) openOffer();
   }
 
   /* Comparateur */
@@ -2304,6 +2378,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   }
   function findReductionForTarget(e) {
     e.preventDefault();
+    if (!requireReady()) return;
     const target = parseAmount($('#targetPremium').value);
     if (isNaN(target)) { showTargetResult('warn', 'Saisissez une prime cible en DT, par exemple 900.'); return; }
     const milli = v => Math.round(v * 1000);
@@ -2390,6 +2465,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     $$('#packsContent [data-pack]').forEach(btn => btn.addEventListener('click', () => choosePack(btn.dataset.pack)));
   }
   function openPacks() {
+    if (!requireReady()) return;
     renderPacks();
     openDialog($('#packsModal'));
   }
@@ -2460,6 +2536,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     return '';
   }
   function openShare() {
+    if (!requireReady()) return;
     const link = simulationLink();
     const fd = readUserForm();
     const text = shareText(link);
