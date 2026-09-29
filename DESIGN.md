@@ -163,6 +163,9 @@ The RAL "traffic" family on a concrete ground: four signal colors with fixed mea
 - **Tile Off**: pictogram tiles of guarantees that are off or unavailable.
 - **Night Asphalt / Night Panel / Night Ink / Night Blue**: the night-mode ground and panels (neutral near-blacks, not blue-black slate), text and sign blue.
 
+### Constat colors (content, not signals)
+- **Constat Yellow** (#ffe01a, soft #fff7c2) and **Constat Green** (#00a88e, soft #d9f2ec): vehicle A and vehicle B, exactly as on the FTUSA constat amiable. In sketches, A/X cars are #ffd23f and B/Y cars #22a87a, like the barème's own croquis. They identify vehicles only and never carry a UI meaning.
+
 ### Named Rules
 **The Traffic Code Rule.** A signal color is never used for decoration or for a meaning other than its own. If an element is not informing, warning, forbidding or confirming, it is neutral.
 
@@ -245,6 +248,12 @@ Rounded rectangles throughout, with radii that grow with the object: fields and 
 
 ### Premium meter (signature)
 - The blue sign that answers the whole flow: "Prime totale TTC", the figure rolling to its new value in 460ms with an exponential ease-out, and a three-column detail (Formule, Fractionnement, Réduction) under a white rule. Below it, the fixed-fee breakdown panel ends with the TTC total in blue.
+
+### Constat amiable (Sinistre)
+- A paper document that stays light in night mode: yellow A column, green B column, the 17 numbered circumstances in the middle, square boxes that receive a drawn blue cross, and the per-vehicle count of ticked boxes at the foot.
+- The verdict follows the traffic code: green badge = non fautif, red = fautif, yellow = responsabilité partagée; the split bar uses the vehicle colors.
+- Case numbers sit on white number plates keyed in blue (blue plates on white cards in the barème list).
+- Sketches are drawn in SVG on a light road ground: curbs in dark grey, white lane markings, red impact star, black motion arrows.
 
 ### Printed offer
 - A white A4 document regardless of theme: brand line and date over a 3px blue rule, key-value grids with dashed separators, the coverage table, a blue keylined total panel and the assistance note. Fits one page.

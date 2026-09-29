@@ -269,7 +269,18 @@ button { -webkit-tap-highlight-color: transparent; }
   padding: 10px var(--gutter) 13px;
   display: flex; align-items: center; gap: 16px;
 }
-.brand { display: flex; align-items: center; gap: 12px; min-width: 0; margin-right: auto; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.view-tabs { display: flex; gap: 6px; margin-right: auto; margin-left: 12px; }
+.view-tab {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px;
+  border: 0; border-radius: 8px; background: transparent; color: #fff; font-weight: 750; font-size: .95rem; cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.view-tab .icon { width: 19px; height: 19px; }
+@media (hover: hover) { .view-tab:not(.is-active):hover { background: rgb(255 255 255 / .12); } }
+.view-tab.is-active { background: #fff; color: var(--traffic-blue); box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3.5px var(--traffic-blue); }
+.mobile-meter.is-off { display: none !important; }
+.intro-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .brand-glyph {
   flex: none; width: 38px; height: 38px; border-radius: 8px;
   display: grid; place-items: center;
@@ -280,7 +291,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .brand-name { font-weight: 800; font-size: 1.1rem; line-height: 1.1; letter-spacing: -0.01em; }
 .brand-lead { font-weight: inherit; }
 .brand-name span { display: block; font-weight: 600; font-size: .8rem; color: var(--on-sign-muted); letter-spacing: 0; }
-.top-actions { display: flex; align-items: center; gap: 6px; }
+.top-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .top-btn {
   display: inline-flex; align-items: center; gap: 8px;
   min-height: 44px; padding: 0 14px;
@@ -861,6 +872,11 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .top-btn .count { position: absolute; top: -4px; right: -6px; min-width: 20px; height: 20px; font-size: .72rem; }
   .brand-name span { display: none; }
   .brand-name { font-size: .9rem; line-height: 1.15; }
+  .topbar-inner { flex-wrap: wrap; row-gap: 8px; padding-bottom: 12px; }
+  .view-tabs { order: 3; flex-basis: 100%; margin: 0; }
+  .view-tab { flex: 1; justify-content: center; min-height: 38px; }
+  .intro-cta { flex-direction: column; align-items: stretch; width: 100%; }
+  .intro-cta .btn { white-space: normal; }
   .topbar-inner { gap: 10px; }
   .brand { gap: 10px; }
   .brand-glyph { width: 32px; height: 32px; }
@@ -957,6 +973,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .doc-section h3 { break-after: avoid; }
 }
 </style>
+<link rel="stylesheet" href="assets/css/sinistre.css">
 </head>
 <body>
 
@@ -1019,7 +1036,10 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       </ol>
     </div>
     <div class="intro-actions">
-      <button type="button" class="btn btn--green btn--xl" id="startSimulationBtn">Commencer la simulation <svg class="icon icon-slide"><use href="#i-arrow-right"/></svg></button>
+      <div class="intro-cta">
+        <button type="button" class="btn btn--green btn--xl" id="startSimulationBtn">Commencer la simulation <svg class="icon icon-slide"><use href="#i-arrow-right"/></svg></button>
+        <button type="button" class="btn btn--ghost btn--xl" id="startSinistreBtn"><svg class="icon"><use href="#i-warn"/></svg> Sinistre : constat et barème FTUSA</button>
+      </div>
       <p class="credit-plate">Application développée par <a href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener">Mohamed Aziz Jaouadi</a></p>
     </div>
   </div>
@@ -1033,6 +1053,10 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
         <span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#sign-arrow"/></svg></span>
         <p class="brand-name"><b class="brand-lead">Simulateur </b>Assurance Automobile<span>Simple, visuel et immédiatement opérationnel</span></p>
       </div>
+      <nav class="view-tabs" aria-label="Rubriques">
+        <button type="button" class="view-tab is-active" data-view="devis" aria-current="page"><svg class="icon"><use href="#i-receipt"/></svg>Tarification</button>
+        <button type="button" class="view-tab" data-view="sinistre"><svg class="icon"><use href="#i-warn"/></svg>Sinistre</button>
+      </nav>
       <nav class="top-actions" aria-label="Outils">
         <button type="button" class="top-btn" id="openProposantBtn" aria-label="Formulaire proposant"><svg class="icon"><use href="#i-user"/></svg><span class="top-btn-text">Formulaire proposant</span></button>
         <button type="button" class="top-btn" id="openDevisBtn" aria-label="Mes devis"><svg class="icon"><use href="#i-folder"/></svg><span class="top-btn-text">Mes devis</span><span class="count" id="devisCount">0</span></button>
@@ -1041,7 +1065,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     </div>
   </header>
 
-  <div class="shell">
+  <div class="shell" id="devisView">
     <nav aria-label="Étapes de la simulation">
       <ol class="route" id="progressBar">
         <li data-step="1"><button type="button" class="route-btn" data-goto="1"><span class="borne">1</span><span class="route-label">Véhicule</span></button></li>
@@ -1239,6 +1263,20 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     </div>
   </div>
 
+  <section class="sinistre" id="sinistreView" hidden aria-labelledby="sinTitle">
+    <div class="sin-shell">
+      <header class="step-head sin-head">
+        <span class="step-tile" aria-hidden="true"><svg class="icon"><use href="#i-warn"/></svg></span>
+        <div>
+          <h2 id="sinTitle" tabindex="-1">Sinistre : constat et responsabilité</h2>
+          <p>Barème de responsabilité de la FTUSA : simulez un constat amiable, consultez les 25 cas, entraînez-vous.</p>
+        </div>
+      </header>
+      <div id="sinistreMount"></div>
+    </div>
+    <div class="sin-mobile-bar" id="sinMobileBar" aria-hidden="true"></div>
+  </section>
+
   <footer class="site-footer">
     <p>Développé par<a href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener">Mohamed Aziz Jaouadi</a></p>
   </footer>
@@ -1435,6 +1473,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 <div class="print-root" id="printRoot"></div>
 
 <script src="assets/js/qrcode.js"></script>
+<script src="assets/js/bareme-ftusa.js"></script>
+<script src="assets/js/sinistre.js"></script>
 <script>
 (() => {
   'use strict';
@@ -1899,7 +1939,25 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     }
   }
 
-  function startSimulation() {
+  // Rubriques : tarification (devis) ou sinistre (constat et barème FTUSA)
+  function showView(name) {
+    const sin = name === 'sinistre';
+    $('#devisView').hidden = sin;
+    $('#sinistreView').hidden = !sin;
+    $$('.view-tab').forEach(t => {
+      const on = t.dataset.view === name;
+      t.classList.toggle('is-active', on);
+      if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
+    });
+    $('#openProposantBtn').hidden = sin;
+    $('#openDevisBtn').hidden = sin;
+    $('#mobileMeter').classList.toggle('is-off', sin);
+    if (sin && window.Sinistre) window.Sinistre.mount($('#sinistreView'));
+    history.replaceState(null, '', window.location.href.split('#')[0] + (sin ? '#sinistre' : ''));
+    window.scrollTo(0, 0);
+  }
+
+  function startSimulation(view) {
     const intro = $('#homeIntro');
     const app = $('#app');
     const show = () => {
@@ -1908,8 +1966,14 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       app.hidden = false;
       app.classList.add('is-entering');
       window.scrollTo(0, 0);
-      goToStep(1, { focus: false, silent: true });
-      $('#step1Title').focus({ preventScroll: true });
+      if (view === 'sinistre') {
+        showView('sinistre');
+        $('#sinTitle').focus({ preventScroll: true });
+      } else {
+        showView('devis');
+        goToStep(1, { focus: false, silent: true });
+        $('#step1Title').focus({ preventScroll: true });
+      }
       setTimeout(() => app.classList.remove('is-entering'), 500);
     };
     if (reduceMotion.matches) { show(); return; }
@@ -2460,6 +2524,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     history.replaceState(null, '', window.location.href.split('#')[0]);
     $('#homeIntro').hidden = true;
     $('#app').hidden = false;
+    showView('devis');
     goToStep(3, { focus: false, silent: true });
     $('#step3Title').focus({ preventScroll: true });
     toast('Simulation ouverte depuis un lien partagé.');
@@ -2521,7 +2586,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     });
 
     // Navigation
-    $('#startSimulationBtn').addEventListener('click', startSimulation);
+    $('#startSimulationBtn').addEventListener('click', () => startSimulation('devis'));
+    $('#startSinistreBtn').addEventListener('click', () => startSimulation('sinistre'));
+    $$('.view-tab').forEach(t => t.addEventListener('click', () => showView(t.dataset.view)));
     $$('[data-goto]').forEach(btn => btn.addEventListener('click', () => goToStep(Number(btn.dataset.goto))));
     $$('.theme-toggle').forEach(btn => btn.addEventListener('click', toggleTheme));
 
@@ -2559,7 +2626,13 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     });
 
     watchMeter();
-    loadFromLink();
+    if (window.location.hash === '#sinistre') {
+      $('#homeIntro').hidden = true;
+      $('#app').hidden = false;
+      showView('sinistre');
+    } else {
+      loadFromLink();
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

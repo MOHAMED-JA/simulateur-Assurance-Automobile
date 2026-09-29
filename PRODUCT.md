@@ -41,6 +41,7 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 - Reduction rate 0 to 80% in 5% steps, applied only to the guarantees the formula allows (basique and personnalisée: Incendie, Vol, Collision, Bris de glaces, Dommages).
 - Fractionnement semestriel halves net premiums; fixed fees are unchanged: coût du contrat 25.000, FSSR 0.500, FPAC 0.300, FGA 3.000 DT.
 - Sales tools (added after the redesign): target-premium calculator (finds the lowest 5 % step reaching a TTC target, or says it is impossible); three-formula proposals (Essentielle = basic 9, Confort = + Bris de glaces + Dommages et collision, Tous risques = + Dommages au véhicule) computed with the current vehicle and reduction, printable and applicable in one click; simulation link in the URL hash (no personal data), QR code on the share dialog and on the printed offer, WhatsApp (to the proposant's mobile when known) and email sharing.
+- Sinistre section (tab "Sinistre" in the header, direct link `#sinistre`): clickable FTUSA constat amiable (17 circumstances, vehicles A yellow / B green as on the official form), responsibility engine proposing the FTUSA barème case (25 cases, edition of 1 June 1999) with the A/B split (0, 1/4, 1/2, 3/4, 1), the full barème with a sketch per case and "Simuler sur le constat", a chain/successive-collision simulator (cases 24–25), and a 10-question training mode. Barème texts are transcribed verbatim in `assets/js/bareme-ftusa.js` (single source). The case proposed from the ticked boxes is a teaching aid; the insurer decides from the full constat.
 - Terminology to keep: prime nette, TUA, prime totale TTC, franchise, capital, valeur vénale, valeur catalogue, classe bonus-malus, fractionnement, DPMEC/PMEC.
 
 ## Brand Commitments
@@ -50,6 +51,8 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 - The previous visual style (dark blue, red/blue gradients, rainbow borders, emoji icons) is explicitly discarded; the visual identity is free.
 
 ## Evidence on Hand
+
+- FTUSA barème de responsabilité (1er juin 1999, 4 pages) and the FTUSA constat amiable (2 pages), provided by the user; source https://www.ftusanet.org/userfiles/file/pdf/bareme2.pdf. The PDFs are not redistributed in the repository.
 
 - Real content: the tariff rules, guarantee names and descriptions, and the assistance text in `index.html`.
 - No logo, photography, testimonials, customer names, or partner insurer. None may be invented, and no insurer branding may be implied.
