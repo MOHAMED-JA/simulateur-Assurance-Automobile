@@ -1515,15 +1515,18 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   /* ------------------------------------------------------------------
-   * Barèmes (inchangés)
+   * Barèmes
    * ------------------------------------------------------------------ */
+  // Tarif RC de base en dinars (classe 4) selon la puissance fiscale :
+  // 2 CV : 94 · 3-4 CV : 110 · 5-6 CV : 140 · 7-10 CV : 170 · 11-14 CV : 220 · 15 CV et plus : 264.
+  // Prime nette RC = tarif de base × coefficient bonus-malus de la classe.
   const CV_TARIF_BASE = {
-    2: 120, 3: 130, 4: 135, 5: 140, 6: 150, 7: 160, 8: 170, 9: 180, 10: 190,
-    11: 200, 12: 210, 13: 220, 14: 230, 15: 240, 16: 250, 17: 260, 18: 270,
-    19: 280, 20: 290, 21: 300, 22: 310, 23: 320, 24: 330, 25: 340, 26: 350,
-    27: 360, 28: 370, 29: 380, 30: 390, 31: 400, 32: 410, 33: 420, 34: 430,
-    35: 440, 36: 450, 37: 460, 38: 470, 39: 480, 40: 490, 41: 500, 42: 510,
-    43: 520, 44: 530, 45: 540,
+    2: 94, 3: 110, 4: 110, 5: 140, 6: 140, 7: 170, 8: 170, 9: 170, 10: 170,
+    11: 220, 12: 220, 13: 220, 14: 220, 15: 264, 16: 264, 17: 264, 18: 264,
+    19: 264, 20: 264, 21: 264, 22: 264, 23: 264, 24: 264, 25: 264, 26: 264,
+    27: 264, 28: 264, 29: 264, 30: 264, 31: 264, 32: 264, 33: 264, 34: 264,
+    35: 264, 36: 264, 37: 264, 38: 264, 39: 264, 40: 264, 41: 264, 42: 264,
+    43: 264, 44: 264, 45: 264,
   };
   const BONUS_MALUS_COEFFICIENTS = {
     1: 0.7, 2: 0.8, 3: 0.9, 4: 1, 5: 1.2, 6: 1.4, 7: 1.6, 8: 2, 9: 2.5, 10: 3, 11: 3.5,
@@ -1897,8 +1900,10 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 
   function renderHints() {
     const v = readVehicle();
-    $('#cvHint').innerHTML = `Tarif RC de base : <b>${formatCurrency(CV_TARIF_BASE[v.cv] || 140)} DT</b>`;
-    $('#bmHint').innerHTML = `Coefficient appliqué à la RC : <b>× ${BONUS_MALUS_COEFFICIENTS[v.classBM] || 1}</b>`;
+    const baseRC = CV_TARIF_BASE[v.cv] || 140;
+    const coefRC = BONUS_MALUS_COEFFICIENTS[v.classBM] || 1;
+    $('#cvHint').innerHTML = `Tarif RC de base (classe 4) : <b>${formatCurrency(baseRC)} DT</b>`;
+    $('#bmHint').innerHTML = `Coefficient × ${String(coefRC).replace('.', ',')} : prime nette RC <b>${formatCurrency(baseRC * coefRC)} DT</b>`;
     const age = vehicleAgeYears();
     const hint = $('#ageHint');
     if (!$('#pmec').value) { hint.className = 'hint'; hint.textContent = ''; return; }

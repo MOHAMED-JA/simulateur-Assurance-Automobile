@@ -35,6 +35,7 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 - French UI. Currency formatting: three decimals with comma thousands separators (e.g. `2,935.140 DT`).
 - localStorage keys in use and to stay compatible: `theme`, `userFormData`, `savedOffers`.
 - Usage is fixed to "Privé ou Affaires".
+- RC-RTI net premium = base tariff (class 4) by fiscal horsepower × bonus-malus coefficient. Base tariff in DT: 2 CV 94; 3–4 CV 110; 5–6 CV 140; 7–10 CV 170; 11–14 CV 220; 15 CV and more 264 (reference: the agency's calculation workbook). Coefficients: class 1 → 0.7 … class 11 → 3.5.
 - Twelve guarantees: RC-RTI, Défenses et Recours, Incendie, Vol, Dommages au véhicule, Dommages et collision, Bris de glaces, PTA, Individuel Accident, CAT/NAT, Emeutes et Mouvements populaires, Assistance Automobile.
 - Formule basique (confirmed current behavior): the nine base guarantees are included and locked; Dommages au véhicule, Dommages et collision and Bris de glaces can still be added. Formule personnalisée: everything can be toggled except RC-RTI.
 - Dommages au véhicule excludes Dommages et collision and Bris de glaces, and vice versa. Collision is unavailable for vehicles over 10 years, Dommages au véhicule for vehicles over 5 years.
