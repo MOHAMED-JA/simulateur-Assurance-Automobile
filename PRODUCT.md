@@ -25,6 +25,7 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 
 - Inputs come from the vehicle's registration document (carte grise): number of seats, fiscal horsepower (CV), first registration date (PMEC/DPMEC), plus catalogue value (valeur à neuf) and market value (valeur vénale).
 - Three-step flow: 1. Véhicule, 2. Garanties, 3. Résumé; then the offer.
+- No amount is shown before it means something: the premium TTC and the fixed fees (coût du contrat, FSSR, FPAC, FGA) appear only once the catalogue and market values are entered and the Garanties step has been opened.
 - A "Formulaire Proposant" captures the insured person (nom, prénom, CIN, adresse, mobile, email, agence), the vehicle (marque, modèle, DPMEC) and the contract (type renouvelable/ferme, date d'effet).
 - The offer is printed on paper for the client.
 - Saved quotes ("Mes devis") live only in the browser's localStorage; the user can reload, delete, and compare exactly two.

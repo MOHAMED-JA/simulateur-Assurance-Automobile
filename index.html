@@ -297,7 +297,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .view-tab .icon { width: 19px; height: 19px; }
 @media (hover: hover) { .view-tab:not(.is-active):hover { background: rgb(255 255 255 / .12); } }
 .view-tab.is-active { background: #fff; color: var(--traffic-blue); box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3.5px var(--traffic-blue); }
-.mobile-meter.is-off { display: none !important; }
+.mobile-meter.is-off, .mobile-meter.is-waiting { display: none !important; }
 .intro-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .brand-glyph {
   flex: none; width: 38px; height: 38px; border-radius: 8px;
@@ -1271,14 +1271,14 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
         <div class="sign sign--meter" id="meterSign">
           <p class="meter-label">Prime totale TTC</p>
           <p class="meter-value" aria-live="polite"><span class="num" id="primeFinale">—</span><span class="meter-unit">DT</span></p>
-          <p class="meter-wait" id="meterWait">Saisissez la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule pour calculer la prime.</p>
+          <p class="meter-wait" id="meterWait">Saisissez la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.</p>
           <dl class="meter-meta">
             <div><dt>Formule</dt><dd id="meterFormula">Basique</dd></div>
             <div><dt>Fractionnement</dt><dd id="meterFraction">Annuel</dd></div>
             <div><dt>Réduction</dt><dd id="meterReduction">0 %</dd></div>
           </dl>
         </div>
-        <div class="panel costs">
+        <div class="panel costs" id="costsPanel" hidden>
           <h2 class="panel-title">Coûts additionnels</h2>
           <dl class="cost-lines">
             <div><dt>Total prime nette + taxes</dt><dd id="totalPrimeNette">0.000 DT</dd></div>
@@ -1568,6 +1568,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
    * ------------------------------------------------------------------ */
   const state = {
     step: 0,
+    guaranteesChosen: false, // passe à true à l'ouverture de l'étape 2 (Garanties)
     formula: 'basique',
     reduction: 0,
     g: Object.fromEntries(GUARANTEES.map(d => [d.id, { enabled: d.enabled, franchise: d.franchise, capital: d.capital }])),
@@ -1858,6 +1859,13 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     const targets = [$('#primeFinale'), $('#mobilePrime')];
     $('#meterSign').classList.toggle('is-waiting', !q.ready);
     $('#meterWait').hidden = q.ready;
+    $('#costsPanel').hidden = !q.ready;
+    $('#mobileMeter').classList.toggle('is-waiting', !q.ready);
+    if (!q.ready) {
+      $('#meterWait').innerHTML = q.missing.length
+        ? 'Saisissez la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.'
+        : 'Valeurs du véhicule saisies. Choisissez les <b>garanties</b> à l’étape 2 pour calculer la prime.';
+    }
     $('#meterFormula').textContent = state.formula === 'basique' ? 'Basique' : 'Personnalisée';
     $('#meterFraction').textContent = q.vehicle.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel';
     $('#meterReduction').textContent = state.reduction + NNBSP + '%';
@@ -1929,7 +1937,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     $('#reductionPlate').textContent = state.reduction;
   }
 
-  // La prime n'est calculée qu'une fois les deux valeurs du véhicule saisies
+  // La prime n'est affichée qu'une fois les deux valeurs du véhicule saisies
+  // et les garanties choisies (étape 2 ouverte au moins une fois)
   let showErrors = false;
   function missingInputs() {
     const miss = [];
@@ -1969,7 +1978,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     applyRules();
     lastQuote = computeQuote();
     const miss = missingInputs();
-    lastQuote.ready = miss.length === 0;
+    lastQuote.ready = miss.length === 0 && state.guaranteesChosen;
+    lastQuote.missing = miss;
     renderGuarantees();
     renderResults(lastQuote);
     renderMeter(lastQuote);
@@ -2012,6 +2022,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   function goToStep(step, opts = {}) {
     if (step > 1 && !opts.force && !isReady()) { requireReady(); return; }
     state.step = step;
+    if (step > 1 && !state.guaranteesChosen) { state.guaranteesChosen = true; refresh(); }
     [1, 2, 3].forEach(n => {
       const el = $('#step' + n);
       const show = n === step;
