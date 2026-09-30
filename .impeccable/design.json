@@ -1,202 +1,537 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-28T19:50:20Z",
+  "generatedAt": "2026-09-30T10:00:28Z",
   "title": "Design System: Simulateur Assurance Automobile",
   "extensions": {
     "colorMeta": {
-      "traffic-blue": {
+      "cobalt": {
         "role": "primary",
-        "displayName": "Traffic Blue (RAL 5017)",
-        "canonical": "#0b4f94",
+        "displayName": "Electric Cobalt",
+        "canonical": "oklch(53.3% 0.221 265.8)",
         "tonalRamp": [
-          "#052647",
-          "#093f77",
-          "#0c59a6",
-          "#1072d6",
-          "#3893f0",
-          "#7ab7f5",
-          "#b8d9fa",
-          "#e7f2fd"
+          "#010629",
+          "#0a1c5c",
+          "#193694",
+          "#2a52d0",
+          "#4877f8",
+          "#76a0ff",
+          "#a5c8ff",
+          "#d7eeff"
         ]
       },
-      "traffic-green": {
+      "cobalt-deep": {
+        "role": "primary",
+        "displayName": "Deep Cobalt",
+        "canonical": "oklch(46.5% 0.202 266.1)",
+        "tonalRamp": [
+          "#020727",
+          "#0d1e57",
+          "#1d388d",
+          "#3055c7",
+          "#4e79ee",
+          "#7aa1ff",
+          "#a9c8ff",
+          "#d9eeff"
+        ]
+      },
+      "cobalt-mist": {
+        "role": "primary",
+        "displayName": "Cobalt Mist",
+        "canonical": "oklch(96.2% 0.017 271.2)",
+        "tonalRamp": [
+          "#090b12",
+          "#22252d",
+          "#3f424b",
+          "#5e616b",
+          "#7e828d",
+          "#a1a5b0",
+          "#c5c9d4",
+          "#eaeefa"
+        ]
+      },
+      "cobalt-edge": {
+        "role": "primary",
+        "displayName": "Cobalt Edge",
+        "canonical": "oklch(88.0% 0.053 272.2)",
+        "tonalRamp": [
+          "#090b13",
+          "#202433",
+          "#3b4156",
+          "#58607d",
+          "#7881a0",
+          "#9da4bd",
+          "#c3c8dc",
+          "#eaeefb"
+        ]
+      },
+      "ink-card": {
         "role": "secondary",
-        "displayName": "Traffic Green (RAL 6024)",
-        "canonical": "#11763f",
+        "displayName": "Ink Card",
+        "canonical": "oklch(19.4% 0.034 267.6)",
         "tonalRamp": [
-          "#0a4324",
-          "#106f3c",
-          "#169c53",
-          "#1dc96b",
-          "#44e48d",
-          "#82edb3",
-          "#bcf5d6",
-          "#e9fcf1"
+          "#090b10",
+          "#21252e",
+          "#3c424f",
+          "#5a6173",
+          "#7a8295",
+          "#9ea5b5",
+          "#c4c9d5",
+          "#ebeef6"
         ]
       },
-      "traffic-yellow": {
-        "role": "tertiary",
-        "displayName": "Traffic Yellow (RAL 1023)",
-        "canonical": "#f5b400",
+      "on-ink-muted": {
+        "role": "secondary",
+        "displayName": "On-ink Muted",
+        "canonical": "oklch(74.7% 0.032 265.3)",
         "tonalRamp": [
-          "#4c3800",
-          "#805e00",
-          "#b28300",
-          "#e6a900",
-          "#ffc629",
-          "#ffd970",
-          "#ffebb2",
-          "#fff8e5"
+          "#090b10",
+          "#21252e",
+          "#3c424f",
+          "#596172",
+          "#7a8294",
+          "#9ea5b4",
+          "#c4c9d5",
+          "#ebeef6"
         ]
       },
-      "traffic-red": {
-        "role": "tertiary",
-        "displayName": "Traffic Red (RAL 3020)",
-        "canonical": "#c4161c",
-        "tonalRamp": [
-          "#45080a",
-          "#730d10",
-          "#a01217",
-          "#ce171d",
-          "#e93e44",
-          "#f17f83",
-          "#f7babc",
-          "#fce8e9"
-        ]
-      },
-      "traffic-black": {
+      "ground": {
         "role": "neutral",
-        "displayName": "Traffic Black (RAL 9017)",
-        "canonical": "#1b1d21",
+        "displayName": "Cool Ground",
+        "canonical": "oklch(97.6% 0.003 264.5)",
         "tonalRamp": [
-          "#22252a",
-          "#393e46",
-          "#505662",
-          "#676f7e",
-          "#89909f",
-          "#b0b5bf",
-          "#d5d7dd",
-          "#f1f2f4"
+          "#0b0b0c",
+          "#242526",
+          "#414243",
+          "#606163",
+          "#818284",
+          "#a4a5a7",
+          "#c8c9cb",
+          "#edeef0"
         ]
       },
-      "concrete": {
+      "surface": {
         "role": "neutral",
-        "displayName": "Concrete",
-        "canonical": "#e5e5e2",
+        "displayName": "Surface",
+        "canonical": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
-          "#282824",
-          "#43433c",
-          "#5e5e54",
-          "#79796c",
-          "#9a9a8e",
-          "#bbbbb4",
-          "#dbdbd7",
-          "#f3f3f2"
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
         ]
       },
-      "traffic-white": {
+      "surface-sunk": {
         "role": "neutral",
-        "displayName": "Traffic White (RAL 9016)",
-        "canonical": "#ffffff",
+        "displayName": "Sunk Surface",
+        "canonical": "oklch(96.6% 0.005 258.3)",
         "tonalRamp": [
-          "#262626",
-          "#404040",
-          "#595959",
-          "#737373",
-          "#949494",
-          "#b8b8b8",
-          "#d9d9d9",
-          "#f2f2f2"
+          "#0a0b0d",
+          "#242527",
+          "#404244",
+          "#606164",
+          "#818285",
+          "#a3a5a8",
+          "#c7c9cc",
+          "#edeff2"
         ]
       },
-      "muted-ink": {
+      "hairline": {
         "role": "neutral",
-        "displayName": "Muted Ink",
-        "canonical": "#525c68",
+        "displayName": "Hairline",
+        "canonical": "oklch(92.7% 0.007 260.7)",
         "tonalRamp": [
-          "#22262b",
-          "#383f47",
-          "#4f5864",
-          "#657280",
-          "#8793a1",
-          "#afb7c0",
-          "#d4d8dd",
-          "#f1f2f4"
+          "#090b0e",
+          "#232529",
+          "#404246",
+          "#5f6166",
+          "#808287",
+          "#a2a5aa",
+          "#c6c9ce",
+          "#eceff4"
         ]
       },
-      "night-asphalt": {
+      "hairline-strong": {
         "role": "neutral",
-        "displayName": "Night Asphalt",
-        "canonical": "#141414",
+        "displayName": "Hairline Strong",
+        "canonical": "oklch(86.3% 0.014 262.4)",
         "tonalRamp": [
-          "#262626",
-          "#404040",
-          "#595959",
-          "#737373",
-          "#949494",
-          "#b8b8b8",
-          "#d9d9d9",
-          "#f2f2f2"
+          "#080b11",
+          "#21252c",
+          "#3e4249",
+          "#5d6169",
+          "#7e828b",
+          "#a0a5ae",
+          "#c4c9d2",
+          "#eaeff8"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(19.7% 0.028 264.9)",
+        "tonalRamp": [
+          "#090b0f",
+          "#22252c",
+          "#3d424d",
+          "#5a6170",
+          "#7b8292",
+          "#9fa5b2",
+          "#c4c9d3",
+          "#ebeef5"
+        ]
+      },
+      "slate": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "oklch(50.1% 0.028 262.0)",
+        "tonalRamp": [
+          "#090b0f",
+          "#21252c",
+          "#3c424d",
+          "#596270",
+          "#7a8392",
+          "#9ea5b2",
+          "#c4c9d3",
+          "#ebeff5"
+        ]
+      },
+      "tile-off": {
+        "role": "neutral",
+        "displayName": "Tile Off",
+        "canonical": "oklch(95.4% 0.005 258.3)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#242527",
+          "#404244",
+          "#606164",
+          "#818285",
+          "#a3a5a8",
+          "#c7c9cc",
+          "#edeff2"
+        ]
+      },
+      "tile-off-ink": {
+        "role": "neutral",
+        "displayName": "Tile Off Ink",
+        "canonical": "oklch(66.1% 0.026 262.1)",
+        "tonalRamp": [
+          "#090b0f",
+          "#21252c",
+          "#3d424c",
+          "#5a626f",
+          "#7b8391",
+          "#9fa5b1",
+          "#c4c9d2",
+          "#ebeff4"
+        ]
+      },
+      "success": {
+        "role": "state",
+        "displayName": "Success",
+        "canonical": "oklch(53.3% 0.108 164.3)",
+        "tonalRamp": [
+          "#001007",
+          "#002d1e",
+          "#064f37",
+          "#147252",
+          "#409573",
+          "#76b598",
+          "#a8d5c0",
+          "#d9f7e8"
+        ]
+      },
+      "success-mist": {
+        "role": "state",
+        "displayName": "Success Mist",
+        "canonical": "oklch(96.1% 0.017 164.7)",
+        "tonalRamp": [
+          "#050d09",
+          "#1d2823",
+          "#3a4540",
+          "#59655f",
+          "#798680",
+          "#9ca9a2",
+          "#bfcdc6",
+          "#e4f2eb"
+        ]
+      },
+      "success-ink": {
+        "role": "state",
+        "displayName": "Success Ink",
+        "canonical": "oklch(48.2% 0.097 164.8)",
+        "tonalRamp": [
+          "#000f08",
+          "#052d1f",
+          "#144d38",
+          "#247154",
+          "#4a9375",
+          "#7bb39a",
+          "#abd4c1",
+          "#dcf6e9"
+        ]
+      },
+      "amber": {
+        "role": "state",
+        "displayName": "Amber",
+        "canonical": "oklch(76.9% 0.159 71.3)",
+        "tonalRamp": [
+          "#180600",
+          "#3d1b00",
+          "#663400",
+          "#924e00",
+          "#b77000",
+          "#d2984e",
+          "#ecc18d",
+          "#ffe9c8"
+        ]
+      },
+      "amber-mist": {
+        "role": "state",
+        "displayName": "Amber Mist",
+        "canonical": "oklch(97.6% 0.024 83.4)",
+        "tonalRamp": [
+          "#0d0b07",
+          "#28251e",
+          "#464138",
+          "#676053",
+          "#898174",
+          "#aaa499",
+          "#cdc9c0",
+          "#f1eee8"
+        ]
+      },
+      "amber-ink": {
+        "role": "state",
+        "displayName": "Amber Ink",
+        "canonical": "oklch(47.9% 0.112 59.9)",
+        "tonalRamp": [
+          "#160700",
+          "#391d02",
+          "#60360c",
+          "#8a511a",
+          "#af733f",
+          "#cb9971",
+          "#e7c1a3",
+          "#ffe9d6"
+        ]
+      },
+      "danger": {
+        "role": "state",
+        "displayName": "Danger",
+        "canonical": "oklch(58.1% 0.196 29.5)",
+        "tonalRamp": [
+          "#200000",
+          "#4b0402",
+          "#7c130b",
+          "#b02419",
+          "#d84d3d",
+          "#f08070",
+          "#ffb0a2",
+          "#ffdfd5"
+        ]
+      },
+      "danger-mist": {
+        "role": "state",
+        "displayName": "Danger Mist",
+        "canonical": "oklch(96.0% 0.017 26.6)",
+        "tonalRamp": [
+          "#110908",
+          "#2d2221",
+          "#4a3f3d",
+          "#6a5e5c",
+          "#8c7f7d",
+          "#afa19f",
+          "#d4c5c3",
+          "#faebe9"
+        ]
+      },
+      "danger-ink": {
+        "role": "state",
+        "displayName": "Danger Ink",
+        "canonical": "oklch(50.0% 0.182 29.5)",
+        "tonalRamp": [
+          "#1f0000",
+          "#490905",
+          "#781a12",
+          "#ab2d21",
+          "#d35343",
+          "#eb8474",
+          "#ffb2a5",
+          "#ffe0d7"
+        ]
+      },
+      "night-ground": {
+        "role": "neutral",
+        "displayName": "Night Ground",
+        "canonical": "oklch(16.4% 0.018 263.9)",
+        "tonalRamp": [
+          "#070b13",
+          "#21252e",
+          "#3d424c",
+          "#5c616c",
+          "#7d828e",
+          "#9fa5b1",
+          "#c3c9d5",
+          "#e8effb"
+        ]
+      },
+      "night-surface": {
+        "role": "neutral",
+        "displayName": "Night Surface",
+        "canonical": "oklch(21.0% 0.029 266.1)",
+        "tonalRamp": [
+          "#090b0f",
+          "#22252d",
+          "#3d424e",
+          "#5a6171",
+          "#7b8293",
+          "#9fa5b3",
+          "#c4c9d4",
+          "#ebeef5"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Ink",
+        "canonical": "oklch(93.9% 0.012 264.5)",
+        "tonalRamp": [
+          "#090b10",
+          "#22252b",
+          "#3f4248",
+          "#5e6168",
+          "#7f828a",
+          "#a1a5ad",
+          "#c5c9d1",
+          "#ebeff7"
+        ]
+      },
+      "night-cobalt": {
+        "role": "neutral",
+        "displayName": "Night Cobalt",
+        "canonical": "oklch(55.9% 0.215 267.7)",
+        "tonalRamp": [
+          "#020629",
+          "#0e1c5b",
+          "#203692",
+          "#3351ce",
+          "#5076f5",
+          "#7b9fff",
+          "#a9c7ff",
+          "#d9eeff"
+        ]
+      },
+      "night-card": {
+        "role": "neutral",
+        "displayName": "Night Ink Card",
+        "canonical": "oklch(25.3% 0.049 267.8)",
+        "tonalRamp": [
+          "#080b12",
+          "#202532",
+          "#3a4255",
+          "#56617b",
+          "#77829e",
+          "#9ba5bc",
+          "#c2c9db",
+          "#eaeefa"
+        ]
+      },
+      "constat-yellow": {
+        "role": "content",
+        "displayName": "Constat Yellow",
+        "canonical": "oklch(90.5% 0.184 98.8)",
+        "tonalRamp": [
+          "#120a00",
+          "#312300",
+          "#544000",
+          "#7a5f00",
+          "#9c8100",
+          "#baa634",
+          "#d9cb80",
+          "#f8f0c1"
+        ]
+      },
+      "constat-green": {
+        "role": "content",
+        "displayName": "Constat Green",
+        "canonical": "oklch(65.4% 0.122 176.4)",
+        "tonalRamp": [
+          "#00100b",
+          "#002f24",
+          "#005041",
+          "#00755f",
+          "#119780",
+          "#64b7a3",
+          "#9dd7c8",
+          "#d3f8ee"
         ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Hero sign title only."
+        "purpose": "Home headline only; first word in cobalt."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Step titles."
+        "purpose": "Step and section titles."
       },
       "figure": {
         "displayName": "Figure",
-        "purpose": "Premium TTC on the meter sign, tabular."
+        "purpose": "The premium on the ink card; reduction figure and proposal prices at smaller sizes."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Panel titles, legends, guarantee names, dialog titles."
+        "purpose": "Legends, panel, dialog and formula titles."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Running text and table cells."
+        "purpose": "Running text and descriptions."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Field labels and buttons."
+        "purpose": "Field labels and table heads."
       },
       "hint": {
         "displayName": "Hint",
-        "purpose": "Explanations under fields."
+        "purpose": "Help lines under fields."
       }
     },
     "shadows": [
       {
-        "name": "panel",
-        "value": "0 1px 2px rgb(16 24 32 / .06), 0 10px 24px -14px rgb(16 24 32 / .24)",
-        "purpose": "White panels and formula cards."
+        "name": "ring-small",
+        "value": "0 0 0 1px #e4e7ec, 0 1px 2px rgb(16 24 40 / .05), 0 2px 6px -2px rgb(16 24 40 / .08)",
+        "purpose": "Panels, cards, active tabs."
       },
       {
-        "name": "sign",
-        "value": "0 2px 4px rgb(16 24 32 / .16), 0 18px 36px -18px rgb(16 24 32 / .5)",
-        "purpose": "Blue sign panels, with the inset keyline."
-      },
-      {
-        "name": "sign-keyline",
-        "value": "inset 0 0 0 5px #0b4f94, inset 0 0 0 7px rgb(255 255 255 / .94)",
-        "purpose": "The white keyline inside every sign."
+        "name": "large",
+        "value": "0 2px 6px rgb(16 24 40 / .08), 0 24px 48px -18px rgb(16 24 40 / .38)",
+        "purpose": "The ink premium card."
       },
       {
         "name": "pop",
-        "value": "0 24px 64px -18px rgb(10 16 24 / .5)",
+        "value": "0 32px 80px -24px rgb(16 24 40 / .45)",
         "purpose": "Dialogs."
+      },
+      {
+        "name": "button-lift",
+        "value": "inset 0 1px 0 rgb(255 255 255 / .16), 0 1px 2px rgb(16 24 40 / .16), 0 6px 14px -6px rgb(47 91 234 / .6)",
+        "purpose": "Primary buttons, day mode only."
+      },
+      {
+        "name": "tray",
+        "value": "0 -1px 0 #e4e7ec, 0 -14px 32px -20px rgb(16 24 40 / .38)",
+        "purpose": "The action bar once stuck to the bottom."
       }
     ],
     "motion": [
       {
         "name": "ease-out",
         "value": "cubic-bezier(.16, 1, .3, 1)",
-        "purpose": "Entrances, step changes, dialogs, arrow slide."
+        "purpose": "Arrivals, step changes, dialogs, thumbs and switches."
       },
       {
         "name": "meter-roll",
@@ -204,14 +539,14 @@
         "purpose": "The premium figure rolling to its new value."
       },
       {
-        "name": "headlight-sweep",
+        "name": "card-light",
         "value": "1s cubic-bezier(.45, 0, .2, 1), at most once every 1.6s",
-        "purpose": "A retroreflective highlight crossing the premium sign when the figure changes, and the hero sign once on arrival (the authored moment)."
+        "purpose": "A soft light crossing the ink card when the premium changes (the authored moment); once on the home example card."
       },
       {
-        "name": "lane-paint",
+        "name": "step-line",
         "value": "600ms ease-out on background-size",
-        "purpose": "The green lane marking painting itself between step milestones."
+        "purpose": "The cobalt fill of the step line painting forward."
       },
       {
         "name": "step-arrival",
@@ -222,135 +557,135 @@
         "name": "row-arrival",
         "value": "400ms ease-out, translateY 8px, 18ms stagger, once per step entry",
         "purpose": "Guarantee rows and result rows entering as a list."
+      },
+      {
+        "name": "segmented-thumb",
+        "value": "340ms ease-out translateX",
+        "purpose": "The Fractionnement thumb sliding between options."
       }
     ],
     "breakpoints": [
-      {
-        "name": "desktop",
-        "value": "1024px"
-      },
-      {
-        "name": "tablet",
-        "value": "760px"
-      },
       {
         "name": "phone",
         "value": "560px"
       },
       {
-        "name": "guarantee-rows (container)",
-        "value": "700px"
+        "name": "small-tablet",
+        "value": "760px"
       },
       {
-        "name": "results-table (container)",
-        "value": "620px"
+        "name": "intro-stack",
+        "value": "900px"
+      },
+      {
+        "name": "desktop",
+        "value": "1024px"
       }
     ]
   },
   "components": [
     {
-      "name": "Blue Button",
+      "name": "Primary Button",
       "kind": "button",
-      "refersTo": "button-blue",
-      "description": "Navigation actions: Suivant, Imprimer, Charger, Comparer.",
-      "html": "<button class=\"ds-btn ds-btn-blue\">Suivant : Garanties <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4.5 12h15M13 5.5l6.5 6.5-6.5 6.5\"/></svg></button>",
-      "css": ".ds-btn{--bg:#0b4f94;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px;border:0;border-radius:8px;background:var(--bg);color:#fff;font:700 1rem/1.1 Overpass,system-ui,sans-serif;cursor:pointer;box-shadow: inset 0 0 0 2px var(--bg), inset 0 0 0 3.5px rgba(255,255,255,.88), 0 1px 2px rgba(0,0,0,.18);transition:background-color .15s} .ds-btn-blue:hover{--bg:#083e75} .ds-btn:focus-visible{outline:3px solid #1b1d21;outline-offset:2px}"
+      "refersTo": "button-primary",
+      "description": "Every forward action: Suivant, Voir l'offre, Commencer la simulation, Enregistrer.",
+      "html": "<button class=\"ds-btn-primary\">Suivant : Résumé <svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4.5 12h15M13 5.5l6.5 6.5-6.5 6.5\"/></svg></button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;border:0;border-radius:10px;background:#2f5bea;color:#fff;font:600 .98rem Geist, Segoe UI, system-ui, sans-serif;letter-spacing:-.005em;cursor:pointer;box-shadow:inset 0 1px 0 rgb(255 255 255/.16),0 1px 2px rgb(16 24 40/.16),0 6px 14px -6px rgb(47 91 234/.6);transition:background-color .15s ease,transform .12s ease} .ds-btn-primary svg{transition:transform .2s cubic-bezier(.16,1,.3,1)} .ds-btn-primary:hover{background:#2448c8} .ds-btn-primary:hover svg{transform:translateX(3px)} .ds-btn-primary:active{transform:translateY(1px)} .ds-btn-primary:focus-visible{outline:2px solid #2f5bea;outline-offset:2px}"
     },
     {
-      "name": "Green Button",
+      "name": "Secondary Button",
       "kind": "button",
-      "refersTo": "button-green",
-      "description": "Confirm and finish: Commencer, Voir l'offre, Enregistrer.",
-      "html": "<button class=\"ds-btn-green\">Voir l'offre</button>",
-      "css": ".ds-btn-green{--bg:#11763f;display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border:0;border-radius:8px;background:var(--bg);color:#fff;font:700 1rem/1.1 Overpass,system-ui,sans-serif;cursor:pointer;box-shadow: inset 0 0 0 2px var(--bg), inset 0 0 0 3.5px rgba(255,255,255,.88), 0 1px 2px rgba(0,0,0,.18);} .ds-btn-green:hover{--bg:#0b5c30} .ds-btn-green:focus-visible{outline:3px solid #1b1d21;outline-offset:2px}"
-    },
-    {
-      "name": "Ghost Button",
-      "kind": "button",
-      "refersTo": "button-ghost",
-      "description": "Secondary actions: Précédent, Fermer, Réinitialiser.",
-      "html": "<button class=\"ds-btn-ghost\">Précédent</button>",
-      "css": ".ds-btn-ghost{min-height:48px;padding:0 20px;border:0;border-radius:8px;background:#fff;color:#1b1d21;font:700 1rem/1.1 Overpass,system-ui,sans-serif;box-shadow:inset 0 0 0 1.5px #8f918d;cursor:pointer} .ds-btn-ghost:hover{background:#f2f2f0;box-shadow:inset 0 0 0 1.5px #1b1d21} .ds-btn-ghost:focus-visible{outline:3px solid #1b1d21;outline-offset:2px}"
+      "refersTo": "button-secondary",
+      "description": "Précédent, Partager, Propositions en 3 formules, dialog secondary actions.",
+      "html": "<button class=\"ds-btn-secondary\">Précédent</button>",
+      "css": ".ds-btn-secondary{min-height:46px;padding:0 18px;border:0;border-radius:10px;background:#fff;color:#0f1522;font:600 .98rem Geist, Segoe UI, system-ui, sans-serif;cursor:pointer;box-shadow:inset 0 0 0 1px #cdd2db,0 1px 2px rgb(16 24 40/.05);transition:background-color .15s ease} .ds-btn-secondary:hover{background:#f2f4f7} .ds-btn-secondary:focus-visible{outline:2px solid #2f5bea;outline-offset:2px}"
     },
     {
       "name": "Field",
       "kind": "input",
       "refersTo": "input",
-      "description": "Text/number field with inline unit.",
-      "html": "<label class=\"ds-field\"><span>Valeur vénale</span><span class=\"ds-affix\"><input value=\"52000\"><b>DT</b></span></label>",
-      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font:700 .95rem Overpass,system-ui,sans-serif;color:#1b1d21} .ds-affix{position:relative} .ds-affix input{width:100%;min-height:48px;padding:11px 48px 9px 14px;border:1.5px solid #8f918d;border-radius:8px;background:#fff;font:400 1rem Overpass,system-ui,sans-serif;color:#1b1d21} .ds-affix input:hover{border-color:#1b1d21} .ds-affix input:focus-visible{outline:none;border-color:#0b4f94;box-shadow:0 0 0 3px rgba(11,79,148,.28)} .ds-affix b{position:absolute;right:14px;top:50%;transform:translateY(-45%);color:#525c68}"
+      "description": "Text, number and date fields with an optional unit suffix.",
+      "html": "<label class=\"ds-field\">Valeur vénale<span class=\"ds-affix\"><input value=\"53480\"><b>DT</b></span></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:7px;font:550 .9rem Geist, Segoe UI, system-ui, sans-serif;color:#0f1522} .ds-affix{position:relative} .ds-affix input{width:100%;min-height:46px;padding:11px 48px 10px 14px;border:1px solid #cdd2db;border-radius:10px;background:#fff;font:400 1rem Geist, Segoe UI, system-ui, sans-serif;color:#0f1522;box-shadow:0 1px 2px rgb(16 24 40/.05);transition:border-color .15s ease,box-shadow .15s ease} .ds-affix input:focus-visible{outline:none;border-color:#2f5bea;box-shadow:0 0 0 3px rgb(47 91 234/.22)} .ds-affix b{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-weight:550;font-size:.92rem;color:#5b6474}"
     },
     {
-      "name": "Premium Meter Sign",
-      "kind": "custom",
-      "refersTo": "sign-panel",
-      "description": "The blue direction panel carrying the live premium TTC.",
-      "html": "<div class=\"ds-sign\"><p>Prime totale TTC</p><p class=\"ds-fig\">2,935.140 <small>DT</small></p></div>",
-      "css": ".ds-sign{padding:24px 26px 22px;border-radius:12px;background:#0b4f94;color:#fff;font-family:Overpass,system-ui,sans-serif;box-shadow:inset 0 0 0 5px #0b4f94,inset 0 0 0 7px rgba(255,255,255,.94),0 2px 4px rgba(16,24,32,.16),0 18px 36px -18px rgba(16,24,32,.5)} .ds-sign p{margin:0;font-weight:700;color:#d3e2f4} .ds-sign .ds-fig{margin-top:4px;font-size:2.55rem;font-weight:800;letter-spacing:-.03em;color:#fff;font-variant-numeric:tabular-nums} .ds-fig small{font-size:1.1rem}"
+      "name": "Pill Tabs",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "Top-level sections and Sinistre sub-tabs; active item is a white thumb on a sunk track.",
+      "html": "<nav class=\"ds-tabs\"><button class=\"is-on\">Tarification</button><button>Sinistre</button></nav>",
+      "css": ".ds-tabs{display:inline-flex;gap:4px;padding:4px;border-radius:12px;background:#f2f4f7;box-shadow:inset 0 0 0 1px #e4e7ec} .ds-tabs button{min-height:36px;padding:0 14px;border:0;border-radius:9px;background:transparent;color:#5b6474;font:600 .92rem Geist, Segoe UI, system-ui, sans-serif;cursor:pointer;transition:background-color .15s ease,color .15s ease} .ds-tabs button:hover{color:#0f1522} .ds-tabs button.is-on{background:#fff;color:#0f1522;box-shadow:0 0 0 1px #e4e7ec,0 1px 2px rgb(16 24 40/.05),0 2px 6px -2px rgb(16 24 40/.08)} .ds-tabs button:focus-visible{outline:2px solid #2f5bea;outline-offset:2px}"
     },
     {
-      "name": "Service Tile",
-      "kind": "custom",
-      "refersTo": "service-tile",
-      "description": "Guarantee pictogram tile; grey when the guarantee is off.",
-      "html": "<span class=\"ds-tile\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4.5\" y=\"11\" width=\"15\" height=\"9.5\" rx=\"1.8\"/><path d=\"M8 11V7.6a4 4 0 0 1 7.7-1.6\"/><path d=\"M12 14.5v2.6\"/></svg></span><span class=\"ds-tile ds-tile-off\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"><path d=\"M3 8.3c5.9-2.4 12.1-2.4 18 0l-2.3 10.2H5.3z\"/></svg></span>",
-      "css": ".ds-tile{--bg:#0b4f94;display:inline-grid;place-items:center;width:44px;height:44px;margin-right:8px;border-radius:9px;background:var(--bg);color:#fff;box-shadow:inset 0 0 0 2.5px var(--bg),inset 0 0 0 3.8px rgba(255,255,255,.9)} .ds-tile-off{--bg:#b9bbb7}"
+      "name": "Premium Card",
+      "kind": "card",
+      "refersTo": "premium-card",
+      "description": "The signature: the live premium on the ink card, with the calculation dot and meta line.",
+      "html": "<div class=\"ds-premium\"><p class=\"ds-premium-label\">Prime totale TTC</p><p class=\"ds-premium-value\">760.753<small>DT</small></p><dl class=\"ds-premium-meta\"><div><dt>Formule</dt><dd>Basique</dd></div><div><dt>Fractionnement</dt><dd>Annuel</dd></div><div><dt>Réduction</dt><dd>0 %</dd></div></dl></div>",
+      "css": ".ds-premium{width:300px;padding:22px 24px 20px;border-radius:16px;background:#0e1424;color:#fff;font-family:Geist, Segoe UI, system-ui, sans-serif;box-shadow:inset 0 1px 0 rgb(255 255 255/.07),0 2px 6px rgb(16 24 40/.08),0 24px 48px -18px rgb(16 24 40/.38)} .ds-premium-label{display:flex;align-items:center;gap:8px;margin:0;font-size:.9rem;font-weight:500;color:#a3adc2} .ds-premium-label::before{content:\"\";width:7px;height:7px;border-radius:50%;background:#12805c;box-shadow:0 0 0 3px rgb(18 128 92/.25)} .ds-premium-value{margin:6px 0 0;font-size:2.6rem;font-weight:600;letter-spacing:-.045em;line-height:1.05;font-variant-numeric:tabular-nums} .ds-premium-value small{margin-left:8px;font-size:1rem;color:#a3adc2} .ds-premium-meta{display:flex;justify-content:space-between;gap:12px;margin:18px 0 0;padding-top:14px;border-top:1px solid rgb(255 255 255/.12)} .ds-premium-meta dt{font-size:.75rem;color:#a3adc2} .ds-premium-meta dd{margin:0;font-size:.92rem;font-weight:600}"
     },
     {
-      "name": "Attention Note",
+      "name": "Guarantee Switch Row",
       "kind": "custom",
-      "refersTo": "attention-note",
-      "description": "Yellow constraint note with warning triangle.",
-      "html": "<p class=\"ds-warn\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3.5L2.5 20h19z\"/><path d=\"M12 9.5v5M12 17.3v.2\"/></svg>Véhicule de 6 ans : Dommages au véhicule indisponible.</p>",
-      "css": ".ds-warn{display:flex;gap:8px;align-items:flex-start;margin:0;padding:8px 10px;border-radius:6px;background:#f5b400;color:#1b1d21;font:600 .85rem/1.35 Overpass,system-ui,sans-serif}"
+      "refersTo": "switch-on",
+      "description": "A guarantee: switch, icon on a cobalt mist tile, name and description.",
+      "html": "<label class=\"ds-grow\"><input type=\"checkbox\" checked><span class=\"ds-tile\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4.5\" y=\"11\" width=\"15\" height=\"9.5\" rx=\"1.8\"/><path d=\"M8 11V7.6a4 4 0 0 1 7.7-1.6\"/></svg></span><span><b>Vol</b><small>Perte du véhicule en cas de vol.</small></span></label>",
+      "css": ".ds-grow{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px #e4e7ec;font-family:Geist, Segoe UI, system-ui, sans-serif;cursor:pointer} .ds-grow input{appearance:none;width:40px;height:24px;margin:0;border-radius:999px;background:#cdd2db;display:grid;place-content:center start;padding:0 3px;transition:background-color .2s ease;cursor:pointer} .ds-grow input::before{content:\"\";width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgb(16 24 40/.28);transition:transform .24s cubic-bezier(.16,1,.3,1)} .ds-grow input:checked{background:#2f5bea} .ds-grow input:checked::before{transform:translateX(16px)} .ds-grow input:focus-visible{outline:2px solid #2f5bea;outline-offset:2px} .ds-tile{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#eef2fe;color:#2448c8;box-shadow:inset 0 0 0 1px #cbd6fb} .ds-grow b{display:block;font-weight:600;color:#0f1522} .ds-grow small{font-size:.86rem;color:#5b6474}"
+    },
+    {
+      "name": "Warning Note",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Attention notes (vehicle age, target not reachable): amber mist with amber ink.",
+      "html": "<p class=\"ds-warn\">Véhicule de plus de 5 ans : « Dommages au véhicule » n'est pas disponible.</p>",
+      "css": ".ds-warn{margin:0;padding:9px 11px;border-radius:10px;background:#fff6e5;color:#8a4b00;box-shadow:inset 0 0 0 1px rgb(242 160 28/.35);font:500 .85rem/1.4 Geist, Segoe UI, system-ui, sans-serif}"
     }
   ],
   "narrative": {
-    "northStar": "La Signalisation",
-    "overview": "The simulator is built like a road-sign system rather than a web app. A driver reads a sign at speed because its grammar never changes: a fixed color means a fixed thing, the white keyline frames the message, the pictogram names the subject before the words do. The interface borrows exactly that discipline. The agent \"drives\" a route of three stops (Véhicule, Garanties, Résumé), every constraint is signposted where it applies, and the answer, the premium TTC, is a large blue direction panel that stays in view and updates live.\n\nDensity is that of a working tool: tables of figures, twelve guarantees with their franchises and capitals, a fixed-fee breakdown. Expression lives in precise details (keylined panels, service-sign pictograms, milestone markers on the step route), never in decoration. There is no road scenery, no illustration, no gradient: the grammar is the brand. A night mode (\"Mode nuit\") swaps the concrete ground for asphalt while the signs keep their retroreflective colors. The printed offer is a white A4 document with one blue total panel.",
+    "northStar": "The Live Quote",
+    "overview": "A modern insurance product played straight, at the craft level of Alan and Lemonade for calm clarity and of Stripe and Linear for precision. The page is light, cool and quiet so that the one thing that moves, the premium, reads instantly: it lives on a deep ink card, set in large tabular figures, and recomputes as the agent flips coverage switches. Everything else is white surfaces on a cool near-white ground, drawn with 1px hairlines and soft layered shadows, with a single electric cobalt accent that means \"act, choose, progress\".\n\nDensity is that of a working tool: twelve guarantees with franchises and capitals, a line-by-line table of net premium, TUA and totals, a fixed-fee breakdown. Expression lives in precise details (switches, pill tabs with a sliding thumb, numbered step dots joined by a line that fills, a soft reflection crossing the ink card when the figure changes), never in decoration. Futuristic here means exact, fast and calm, not neon: no glow, no glass, no gradient text. Night mode swaps the ground and surfaces for deep blue-blacks and keeps every role.\n\nThe printed offer is a white A4 document with a cobalt rule, key-value grids and one cobalt total panel. The Sinistre section keeps the FTUSA constat amiable as a paper document in its own official yellow and green.",
     "keyCharacteristics": [
-      "Color is semantic: blue informs and navigates, yellow warns, red forbids or deletes, green confirms.",
-      "Signs carry an inset white keyline (5px of blue, then 2px of white) at every scale, from the hero panel to buttons and tiles.",
-      "One typeface, Overpass (Highway Gothic lineage), with tabular figures for every amount.",
-      "Light concrete ground by day, asphalt by night.",
-      "Motion is road motion, quiet and fast: a headlight reflection sweeps the premium sign when the figure changes (the authored moment), the green lane marking paints itself between milestones, steps arrive from the direction of travel, lists enter row by row once. Nothing bounces; reduced motion keeps only short fades."
+      "One accent, cobalt, for actions, selection and progress; green, amber and red only for state.",
+      "The premium always sits on the ink card; nothing else uses that surface except verdicts, proposal prices and toasts.",
+      "Hairlines (1px) and soft shadows, never heavy borders or keylines.",
+      "Geist throughout, tabular figures wherever numbers align.",
+      "Motion is quick and quiet: steps slide in from the direction of travel, lists enter row by row once, the ink card catches a passing light."
     ],
     "rules": [
       {
-        "name": "The Traffic Code Rule",
-        "body": "A signal color is never used for decoration or for a meaning other than its own. If an element is not informing, warning, forbidding or confirming, it is neutral.",
+        "name": "The One Accent Rule",
+        "body": "Cobalt is the only hue that invites action. A second accent color never appears; state colors never decorate.",
         "section": "colors"
       },
       {
-        "name": "The Yellow Carries Black Rule",
-        "body": "Traffic Yellow always carries Traffic Black text; never white.",
+        "name": "The Ink Card Rule",
+        "body": "The deep ink surface is reserved for figures that answer the flow (the premium, proposal prices, Sinistre verdicts) and for toasts. Never use it for ordinary containers.",
         "section": "colors"
       },
       {
         "name": "The Tabular Figures Rule",
-        "body": "Every amount, rate and count is set with tabular numerals and three decimals for dinars (`2,935.140 DT`), so columns align and totals can be checked by eye.",
+        "body": "Every amount, rate and count is set with tabular figures, formatted with three decimals and comma thousands (2,935.140 DT), so columns align to the digit.",
         "section": "typography"
       },
       {
-        "name": "The Keyline Rule",
-        "body": "A sign is drawn with inset shadows, not borders: `inset 0 0 0 5px <sign color>, inset 0 0 0 7px white` for panels, 2px / 3.5px for buttons, 2.5px / 3.8px for tiles. The keyline follows the corner radius and changes color with the sign on hover.",
+        "name": "The No Glow Rule",
+        "body": "Shadows always carry an offset and a neutral tone. Colored shadows are allowed only under primary buttons in day mode; in night mode they are removed.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "**Do** give every new state its traffic color by meaning: blue to inform, yellow to warn, red to forbid or delete, green to confirm.",
-      "**Do** draw signs with the inset keyline (5px color, 2px white) and a neutral offset shadow.",
-      "**Do** set every amount in Overpass tabular figures with three decimals and \"DT\".",
-      "**Do** give each guarantee or concept a line pictogram on a blue service tile, drawn on the 24px grid with round caps.",
-      "**Do** keep the premium visible: the meter on desktop, the bottom bar on small screens.",
-      "**Do** keep motion on transform and opacity from an already-visible default: steps slide 26px from the direction of travel (440ms), rows rise 8px with an 18ms stagger, the fees panel unfolds when the premium first appears. Exits are faster than entrances; no bounce, no loop."
+      "**Do** keep the premium on the ink card, in tabular figures, and let only it catch the passing light.",
+      "**Do** use cobalt for every action, selection and progress indicator, and nothing else.",
+      "**Do** separate surfaces with 1px hairlines and soft offset shadows (see Elevation).",
+      "**Do** keep motion quick, on transform and opacity from an already-visible default: steps slide 26px from the direction of travel (440ms), rows rise 8px with an 18ms stagger once per entry, exits are faster than entrances; reduced motion keeps only short fades.",
+      "**Do** open in day mode; night mode stays one click away and keeps every role."
     ],
     "donts": [
-      "**Don't** use a signal color as decoration, or two signal colors for the same meaning.",
-      "**Don't** put white text on Traffic Yellow.",
-      "**Don't** add road scenery, illustrations, gradients, glows or glass; the grammar is the brand.",
-      "**Don't** use emoji or Unicode symbols as icons.",
-      "**Don't** introduce a second typeface or a monospace for figures."
+      "**Don't** add a second accent color or use green, amber or red as decoration.",
+      "**Don't** use glows, glass or blur panels, gradient text, or neon effects to signal \"futuristic\".",
+      "**Don't** reintroduce the road-signage keylines, RAL traffic palette or Overpass: that direction was replaced at the user's request (September 2026).",
+      "**Don't** show an amount before it means something: no premium or fees before the vehicle values are entered and the Garanties step is opened.",
+      "**Don't** put white text on amber."
     ]
   }
 }

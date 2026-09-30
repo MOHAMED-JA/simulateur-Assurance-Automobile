@@ -50,7 +50,8 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 
 - Product name: "Simulateur Assurance Automobile". Neutral: it carries no insurer's brand.
 - Developer credit stays visible: "Développé par Mohamed Aziz Jaouadi", linking to his LinkedIn profile.
-- The previous visual style (dark blue, red/blue gradients, rainbow borders, emoji icons) is explicitly discarded; the visual identity is free.
+- The previous visual style (dark blue, red/blue gradients, rainbow borders, emoji icons) is explicitly discarded; so is the road-signage direction that replaced it.
+- Visual direction chosen by the user (September 2026): the modern insurance-app standard, played straight, professional and "futuriste et moderne" in the sense of precise and calm, never neon. Craft reference: Alan and Lemonade (clarity), Stripe and Linear (precision, quiet motion). The app opens in light mode; the night mode must remain available.
 
 ## Evidence on Hand
 
