@@ -135,7 +135,7 @@ Density is that of a working tool: tables of figures, twelve guarantees with the
 - Signs carry an inset white keyline (5px of blue, then 2px of white) at every scale, from the hero panel to buttons and tiles.
 - One typeface, Overpass (Highway Gothic lineage), with tabular figures for every amount.
 - Light concrete ground by day, asphalt by night.
-- One authored motion: the premium figure rolls to its new value.
+- Motion is road motion, quiet and fast: a headlight reflection sweeps the premium sign when the figure changes (the authored moment), the green lane marking paints itself between milestones, steps arrive from the direction of travel, lists enter row by row once. Nothing bounces; reduced motion keeps only short fades.
 
 ## Colors
 
@@ -241,13 +241,14 @@ Rounded rectangles throughout, with radii that grow with the object: fields and 
 
 ### Navigation
 - **Top bar:** Traffic Blue band with a white keyline at its base, brand glyph (white square with a filled blue sign arrow), the full product name on every width (the tagline drops on phones), outlined white buttons for "Formulaire proposant", "Mes devis" (with a count badge) and the day/night toggle.
-- **Step route:** milestone markers (cap grey ahead, blue current, green done), labels in bold, lane line dashed ahead and solid green behind. Every marker is a button. Below 480px only the current step keeps its label so the lane line keeps real length.
+- **Step route:** milestone markers (cap grey ahead, blue current, green done), labels in bold, lane line dashed ahead and solid green behind. Every marker is a button. Below 480px only the current step keeps its label so the lane line keeps real length. On a step change the green marking paints from one milestone to the next (600ms) and the cap color fades to its new meaning.
+- **Action bar:** each step's navigation (Précédent, Suivant, Voir l'offre) sticks to the bottom of the screen while the step scrolls; once stuck it becomes a white tray with a hairline top and a soft upward shadow, and it rests in place at the end of the step. On phones it is one row (icon-only Précédent and Formulaire proposant, primary action filling the rest) and sits right above the premium bar.
 
 ### Dialogs
 - Blue header band with a white keyline base and a white close button; body scrolls; footer holds actions, primary on the right. The confirmation dialog uses a yellow header with the red-bordered warning triangle.
 
 ### Premium meter (signature)
-- The blue sign that answers the whole flow: "Prime totale TTC", the figure rolling to its new value in 460ms with an exponential ease-out, and a three-column detail (Formule, Fractionnement, Réduction) under a white rule. Below it, the fixed-fee breakdown panel ends with the TTC total in blue.
+- The blue sign that answers the whole flow: "Prime totale TTC", the figure rolling to its new value in 460ms with an exponential ease-out while a headlight reflection crosses the sign (1s, at most once every 1.6s), and a three-column detail (Formule, Fractionnement, Réduction) under a white rule. Below it, the fixed-fee breakdown panel ends with the TTC total in blue.
 
 ### Constat amiable (Sinistre)
 - A paper document that stays light in night mode: yellow A column, green B column, the 17 numbered circumstances in the middle, square boxes that receive a drawn blue cross, and the per-vehicle count of ticked boxes at the foot.
@@ -266,7 +267,7 @@ Rounded rectangles throughout, with radii that grow with the object: fields and 
 - **Do** set every amount in Overpass tabular figures with three decimals and "DT".
 - **Do** give each guarantee or concept a line pictogram on a blue service tile, drawn on the 24px grid with round caps.
 - **Do** keep the premium visible: the meter on desktop, the bottom bar on small screens.
-- **Do** let content start visible: entrances move by transform only; the premium roll is the one authored motion.
+- **Do** keep motion on transform and opacity from an already-visible default: steps slide 26px from the direction of travel (440ms), rows rise 8px with an 18ms stagger, the fees panel unfolds when the premium first appears. Exits are faster than entrances; no bounce, no loop.
 
 ### Don't:
 - **Don't** use a signal color as decoration, or two signal colors for the same meaning.

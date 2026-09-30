@@ -267,13 +267,24 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 .credit-plate a { font-weight: 700; text-decoration: none; }
 .credit-plate a:hover { text-decoration: underline; }
+.intro:not(.is-leaving) .sign--hero { animation: heroIn .7s var(--ease-out) backwards; }
+.intro:not(.is-leaving) .hero-arrow { animation: arrowIn .7s var(--ease-out) .18s backwards; }
+.intro:not(.is-leaving) .exits li { animation: exitIn .5s var(--ease-out) backwards; }
+.intro:not(.is-leaving) .exits li:nth-child(1) { animation-delay: .24s; }
+.intro:not(.is-leaving) .exits li:nth-child(2) { animation-delay: .31s; }
+.intro:not(.is-leaving) .exits li:nth-child(3) { animation-delay: .38s; }
+.intro:not(.is-leaving) .intro-actions { animation: rowIn .5s var(--ease-out) .42s backwards; }
+.intro:not([hidden]):not(.is-leaving) .sign--hero::after { animation: sweep 1.4s cubic-bezier(.45, 0, .2, 1) .75s; }
+@keyframes heroIn { from { opacity: 0; transform: translateY(18px) scale(.985); } }
+@keyframes arrowIn { from { opacity: 0; transform: translateX(-16px); } }
+@keyframes exitIn { from { opacity: 0; transform: translateX(-12px); } }
 .intro.is-leaving .sign--hero { transform: translateY(-18px); opacity: 0; }
 .intro.is-leaving .intro-actions { opacity: 0; transition: opacity .18s ease; }
 
 /* ==========================================================================
    Coque de l'application
    ========================================================================== */
-.app { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+.app { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; overflow-x: clip; }
 .app.is-entering .shell { animation: rise .42s var(--ease-out) both; }
 @keyframes rise { from { transform: translateY(12px); } to { transform: none; } }
 
@@ -337,9 +348,13 @@ button { -webkit-tap-highlight-color: transparent; }
 .route li:last-child { flex: 0 0 auto; }
 .route li:not(:last-child)::after {
   content: ""; flex: 1; height: 3px; margin: 0 14px; border-radius: 2px;
-  background: repeating-linear-gradient(90deg, var(--line-strong) 0 14px, transparent 14px 24px);
+  /* le marquage vert se « peint » d'une borne à l'autre */
+  background:
+    linear-gradient(var(--traffic-green), var(--traffic-green)) 0 0 / 0% 100% no-repeat,
+    repeating-linear-gradient(90deg, var(--line-strong) 0 14px, transparent 14px 24px);
+  transition: background-size .6s var(--ease-out);
 }
-.route li.is-done:not(:last-child)::after { background: var(--traffic-green); }
+.route li.is-done:not(:last-child)::after { background-size: 100% 100%, auto; }
 .route-btn {
   display: inline-flex; align-items: center; gap: 12px;
   padding: 4px 6px 4px 4px; border: 0; border-radius: 10px; background: transparent;
@@ -355,7 +370,7 @@ button { -webkit-tap-highlight-color: transparent; }
   display: grid; place-items: end center; padding-bottom: 4px;
   color: var(--ink); font-weight: 800; font-size: .95rem; line-height: 1;
   box-shadow: 0 1px 2px rgb(0 0 0 / .14);
-  transition: border-color .2s ease;
+  transition: border-color .2s ease, --cap .35s ease;
 }
 .is-current .borne { --cap: var(--traffic-blue); border-color: var(--ink); }
 .is-done .borne { --cap: var(--traffic-green); }
@@ -369,8 +384,17 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 .stage { min-width: 0; }
 .step { display: grid; gap: 20px; }
-.step.is-shown { animation: stepIn .32s var(--ease-out) both; }
-@keyframes stepIn { from { transform: translateY(8px); } to { transform: none; } }
+/* Entrée d'étape : le contenu arrive du sens de la marche (la barre d'actions reste fixe) */
+.step.is-shown > :not(.step-nav) { animation: stepIn .44s var(--ease-out) backwards; }
+.step.is-shown > :nth-child(2) { animation-delay: 45ms; }
+.step.is-shown > :nth-child(3) { animation-delay: 90ms; }
+.step.is-shown > :nth-child(n+4) { animation-delay: 130ms; }
+.step[data-dir="back"].is-shown > :not(.step-nav) { animation-name: stepInBack; }
+@keyframes stepIn { from { opacity: 0; transform: translateX(26px); } }
+@keyframes stepInBack { from { opacity: 0; transform: translateX(-26px); } }
+/* Listes (garanties, détail des primes) : arrivée ligne par ligne, une seule fois */
+.step.is-entering .g-row, .step.is-entering .results tbody tr { animation: rowIn .4s var(--ease-out) backwards; animation-delay: calc(110ms + var(--i, 0) * 18ms); }
+@keyframes rowIn { from { opacity: 0; transform: translateY(8px); } }
 
 .step-head { display: flex; align-items: center; gap: 16px; }
 .step-head h2 { font-size: clamp(1.5rem, 2.6vw, 1.9rem); font-weight: 800; letter-spacing: -0.015em; }
@@ -384,7 +408,18 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 .step-tile .icon { width: 28px; height: 28px; }
 
-.step-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
+/* Barre d'actions : reste visible en bas de l'écran pendant le défilement */
+.step-nav {
+  position: sticky; bottom: 0; z-index: 12;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin: -8px -16px 0; padding: 12px 16px;
+  border-radius: 14px 14px 0 0;
+  transition: background-color .22s ease, box-shadow .22s ease, bottom .28s var(--ease-out);
+}
+.step-nav.is-stuck {
+  background: var(--panel);
+  box-shadow: inset 0 1px 0 var(--line), 0 -16px 32px -22px rgb(16 24 32 / .5);
+}
 .step-nav-end { display: flex; gap: 12px; flex-wrap: wrap; margin-left: auto; }
 
 /* ==========================================================================
@@ -458,6 +493,18 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 }
 .segmented input:checked + span { background: var(--traffic-blue); color: #fff; box-shadow: inset 0 0 0 2px var(--traffic-blue), inset 0 0 0 3px rgb(255 255 255 / .85); }
 .segmented input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+@supports selector(:has(*)) {
+  .segmented { position: relative; }
+  .segmented::before {
+    content: ""; position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 12px) / 2);
+    border-radius: 7px; background: var(--traffic-blue);
+    box-shadow: inset 0 0 0 2px var(--traffic-blue), inset 0 0 0 3px rgb(255 255 255 / .85);
+    transition: transform .34s var(--ease-out);
+  }
+  .segmented:has(label:nth-child(2) input:checked)::before { transform: translateX(calc(100% + 4px)); }
+  .segmented span { position: relative; }
+  .segmented input:checked + span { background: transparent; box-shadow: none; }
+}
 
 /* Cases à cocher */
 .checkbox {
@@ -539,7 +586,12 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .g-title label { font-weight: 800; font-size: 1.05rem; cursor: pointer; }
 .g-row[data-state="locked"] .g-title label, .g-row[data-state="blocked"] .g-title label { cursor: default; }
 .g-desc { margin-top: 3px; font-size: .875rem; line-height: 1.45; color: var(--muted); max-width: 62ch; }
+.g-title label, .g-desc, .g-field { transition: opacity .22s ease; }
 .g-row[data-state="blocked"] .g-title label, .g-row[data-state="blocked"] .g-desc, .g-row[data-state="blocked"] .g-field { opacity: .55; }
+.g-tile.is-lit { animation: tileOn .34s var(--ease-out); }
+@keyframes tileOn { from { transform: scale(.84); } }
+.g-note:not([hidden]) { animation: noteIn .28s var(--ease-out) backwards; }
+@keyframes noteIn { from { opacity: 0; transform: translateY(-4px); } }
 .badge-mandatory {
   display: inline-flex; align-items: center; gap: 5px;
   font-size: .8rem; font-weight: 750; color: var(--blue-text);
@@ -651,6 +703,19 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
    ========================================================================== */
 .meter { position: sticky; top: 92px; display: grid; gap: 16px; }
 .sign--meter { padding: 24px 26px 22px; }
+/* Reflet de phares sur le panneau rétroréfléchissant : quand la prime change */
+.sign--meter, .sign--hero { position: relative; overflow: hidden; isolation: isolate; }
+.sign--meter::after, .sign--hero::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(100deg, transparent 32%, rgb(255 255 255 / .16) 45%, rgb(255 255 255 / .3) 50%, rgb(255 255 255 / .16) 55%, transparent 68%);
+  transform: translateX(-110%);
+}
+.sign--meter.is-sweep::after { animation: sweep 1s cubic-bezier(.45, 0, .2, 1); }
+@keyframes sweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
+.costs:not([hidden]) { animation: costsIn .45s var(--ease-out) backwards; }
+@keyframes costsIn { from { opacity: 0; transform: translateY(-10px); } }
+.meter-wait:not([hidden]) { animation: fadeIn .3s ease backwards; }
+@keyframes fadeIn { from { opacity: 0; } }
 .meter-label { font-size: 1rem; font-weight: 700; color: var(--on-sign-muted); }
 .meter-value { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .meter-value .num { font-size: clamp(2rem, 3.1vw, 2.55rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
@@ -710,6 +775,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 }
 .dialog[open] { display: flex; flex-direction: column; animation: dialogIn .3s var(--ease-out) both; }
 .dialog::backdrop { background: rgb(12 16 22 / .58); }
+.dialog[open]::backdrop { animation: fadeIn .3s ease backwards; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .38s; animation-timing-function: ease; }
 @keyframes dialogIn { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
 .dialog > form { display: contents; }
 .dialog-head {
@@ -864,7 +931,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .doc-qr svg { width: 104px; height: 104px; display: block; }
 
 /* Notifications */
-.toast-region { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 100; display: grid; gap: 8px; width: max-content; max-width: calc(100vw - 32px); pointer-events: none; }
+.toast-region { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 100; display: grid; gap: 8px; width: max-content; max-width: calc(100vw - 32px); pointer-events: none; }
 .toast {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 18px 11px 12px; border-radius: 10px;
@@ -890,7 +957,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .meter { position: static; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .mobile-meter { display: flex; }
   .app { padding-bottom: 72px; }
-  .toast-region { bottom: 92px; }
+  .toast-region { bottom: 150px; }
+  /* la barre d'actions se pose au-dessus du compteur mobile quand il est affiché */
+  .app:has(.mobile-meter.is-visible:not(.is-waiting):not(.is-off)) .step-nav { bottom: var(--dock-h, 58px); }
 }
 @media (max-width: 760px) {
   .top-btn .top-btn-text { display: none; }
@@ -940,9 +1009,13 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .reduction-plate { min-width: 76px; padding: 12px 10px 10px; }
   .reduction-plate strong { font-size: 1.6rem; }
   .reduction-plate small { font-size: .85rem; }
-  .step-nav { flex-direction: column-reverse; align-items: stretch; }
-  .step-nav > .btn, .step-nav-end, .step-nav-end .btn { width: 100%; }
-  .step-nav-end { flex-direction: column-reverse; }
+  .step-nav { flex-wrap: nowrap; gap: 8px; border-radius: 0; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .app:has(.mobile-meter.is-visible:not(.is-waiting):not(.is-off)) .step-nav { padding-bottom: 12px; }
+  .step-nav > span:empty { display: none; }
+  .step-nav-end { flex: 1; gap: 8px; flex-wrap: nowrap; min-width: 0; }
+  .step-nav .btn--blue, .step-nav .btn--green { flex: 1; min-width: 0; padding: 0 14px; }
+  .step-nav .btn--ghost { flex: none; width: 48px; padding: 0; }
+  .step-nav .btn-text { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .devis { grid-template-columns: auto minmax(0, 1fr) auto; }
   .devis-actions { grid-column: 1 / -1; justify-content: flex-end; }
   .compare-table th, .compare-table td { padding: 12px 6px; }
@@ -960,6 +1033,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  /* pas de déplacement : seuls de courts fondus signalent le changement d'étape et l'arrivée de la prime */
+  .step.is-shown > :not(.step-nav), .costs:not([hidden]), .dialog[open] { animation: rmFade .2s ease backwards !important; }
+  @keyframes rmFade { from { opacity: 0; } }
 }
 
 /* ==========================================================================
@@ -1205,7 +1281,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
             <ul class="g-list" id="garantiesList" aria-label="Garanties"></ul>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn btn--ghost" data-goto="1"><svg class="icon"><use href="#i-arrow-left"/></svg> Précédent</button>
+            <button type="button" class="btn btn--ghost" data-goto="1"><svg class="icon"><use href="#i-arrow-left"/></svg> <span class="btn-text">Précédent</span></button>
             <button type="button" class="btn btn--blue" data-goto="3">Suivant : Résumé <svg class="icon icon-slide"><use href="#i-arrow-right"/></svg></button>
           </div>
         </section>
@@ -1225,7 +1301,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
               <label class="label reduction-label" for="reductionSlider">Taux de réduction</label>
               <input class="range" type="range" id="reductionSlider" min="0" max="80" step="5" value="0" aria-valuetext="0 %">
               <div class="ticks" aria-hidden="true"><span>0 %</span><span>20 %</span><span>40 %</span><span>60 %</span><span>80 %</span></div>
-              <p class="hint">S'applique uniquement à : <b>Incendie, Vol, Dommages au véhicule, Dommages et collision, Bris de glaces</b>.</p>
+              <p class="hint">S'applique, en formule basique comme personnalisée, à : <b>Défenses et Recours, Incendie, Vol, Dommages au véhicule, Dommages et collision, PTA, Bris de glaces</b>.</p>
               <form class="target" id="targetForm" novalidate>
                 <div class="field">
                   <label for="targetPremium">Prime cible TTC</label>
@@ -1257,9 +1333,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
             </table>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn btn--ghost" data-goto="2"><svg class="icon"><use href="#i-arrow-left"/></svg> Précédent</button>
+            <button type="button" class="btn btn--ghost" data-goto="2"><svg class="icon"><use href="#i-arrow-left"/></svg> <span class="btn-text">Précédent</span></button>
             <div class="step-nav-end">
-              <button type="button" class="btn btn--ghost" id="stepProposantBtn"><svg class="icon"><use href="#i-user"/></svg> Remplir le formulaire proposant</button>
+              <button type="button" class="btn btn--ghost" id="stepProposantBtn"><svg class="icon"><use href="#i-user"/></svg> <span class="btn-text">Remplir le formulaire proposant</span></button>
               <button type="button" class="btn btn--green" id="voirOffreBtn">Voir l'offre <svg class="icon icon-slide"><use href="#i-arrow-right"/></svg></button>
             </div>
           </div>
@@ -1539,7 +1615,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   // Garanties comprises dans la formule basique (verrouillées)
   const BASIQUE_IDS = ['rc', 'defense', 'incendie', 'vol', 'pta', 'indacc', 'catnat', 'emeutes', 'assistance'];
   // Garanties auxquelles s'applique le taux de réduction (formules basique et personnalisée)
-  const REDUCTION_IDS = ['incendie', 'vol', 'collision', 'brisglace', 'dommages'];
+  // Garanties concernées par le taux de réduction, en formule basique comme personnalisée
+  const REDUCTION_IDS = ['defense', 'incendie', 'vol', 'dommages', 'collision', 'pta', 'brisglace'];
   // Dommages au véhicule : forfait et surprime (‰ de la valeur à neuf) selon la franchise
   const DOMMAGES_FRANCHISES = [0, 1, 2, 4, 8, 12, 16, 20];
   const DOMMAGES_BASE = [22, 21.75, 19, 15, 12.5, 9, 8, 6];
@@ -1746,6 +1823,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       const li = document.createElement('li');
       li.className = 'g-row';
       li.dataset.id = d.id;
+      li.style.setProperty('--i', GUARANTEES.indexOf(d));
       let franchiseHtml = '<span class="g-value"></span>';
       if (d.franchiseOptions) {
         franchiseHtml = `<select class="select" id="franchise_${d.id}" aria-label="Franchise ${escapeHtml(d.name)}">${d.franchiseOptions.map(o => `<option value="${o}">${o}${NNBSP}%</option>`).join('')}</select>`;
@@ -1801,7 +1879,10 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       const blocked = Boolean(st.reason);
       r.checkbox.checked = s.enabled;
       r.checkbox.disabled = st.locked || blocked;
-      r.row.dataset.state = blocked ? 'blocked' : (st.locked ? 'locked' : (s.enabled ? 'on' : 'off'));
+      const prevState = r.row.dataset.state;
+      const nextState = blocked ? 'blocked' : (st.locked ? 'locked' : (s.enabled ? 'on' : 'off'));
+      r.row.dataset.state = nextState;
+      if ((prevState === 'off' || prevState === 'blocked') && (nextState === 'on' || nextState === 'locked')) lightTile($('.g-tile', r.row));
       r.badge.hidden = !st.locked;
       r.note.hidden = !blocked;
       r.noteText.textContent = blocked ? st.reason : '';
@@ -1824,6 +1905,12 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     });
   }
 
+  function lightTile(tile) {
+    tile.classList.remove('is-lit');
+    void tile.offsetWidth; // relance l'animation
+    tile.classList.add('is-lit');
+  }
+
   function renderResults(q) {
     const body = $('#resultsTableBody');
     if (!q.ready) {
@@ -1834,8 +1921,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     if (!q.lines.length) {
       body.innerHTML = '<tr class="empty-row"><td colspan="5">Aucune garantie sélectionnée.</td></tr>';
     } else {
-      body.innerHTML = q.lines.map(r => `
-        <tr>
+      body.innerHTML = q.lines.map((r, i) => `
+        <tr style="--i:${i}">
           <th scope="row">${escapeHtml(r.name)}</th>
           <td data-label="Réduction" class="${r.showReduction ? 'is-reduced' : 'is-none'}">${r.showReduction ? q.rate.toFixed(0) + NNBSP + '%' : '—'}</td>
           <td data-label="Prime nette">${formatCurrency(r.primeNette)}</td>
@@ -1855,12 +1942,23 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 
   let meterValue = 0;
   let meterFrame = 0;
+  // Reflet de phares : au plus un passage toutes les 1,6 s, même pendant un glissement du curseur
+  let lastSweep = 0;
+  function sweepMeter() {
+    const sign = $('#meterSign');
+    const now = performance.now();
+    if (reduceMotion.matches || sign.classList.contains('is-sweep') || now - lastSweep < 1600) return;
+    lastSweep = now;
+    sign.classList.add('is-sweep');
+  }
+
   function renderMeter(q) {
     const targets = [$('#primeFinale'), $('#mobilePrime')];
     $('#meterSign').classList.toggle('is-waiting', !q.ready);
     $('#meterWait').hidden = q.ready;
     $('#costsPanel').hidden = !q.ready;
     $('#mobileMeter').classList.toggle('is-waiting', !q.ready);
+    if (q.ready) measureDock();
     if (!q.ready) {
       $('#meterWait').innerHTML = q.missing.length
         ? 'Saisissez la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.'
@@ -1880,6 +1978,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     }
     const to = q.primeFinale;
     const from = meterValue;
+    if (from !== to) sweepMeter();
     cancelAnimationFrame(meterFrame);
     const paint = v => targets.forEach(el => { el.textContent = formatCurrency(v); });
     if (reduceMotion.matches || from === to || !document.hasFocus()) {
@@ -1986,14 +2085,14 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     renderHints();
     renderReduction();
     renderValidation(miss);
+    updateStuckNav();
   }
 
   /* ------------------------------------------------------------------
    * Actions : formule, garanties, réduction
    * ------------------------------------------------------------------ */
   function setFormula(formula) {
-    state.formula = formula;
-    state.reduction = 0; // chaque changement de formule remet la réduction à 0 %
+    state.formula = formula; // le taux de réduction est conservé : il vaut pour les deux formules
     if (formula === 'basique') {
       GUARANTEES.forEach(d => { state.g[d.id].enabled = BASIQUE_IDS.includes(d.id); });
     } else {
@@ -2021,6 +2120,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
    * ------------------------------------------------------------------ */
   function goToStep(step, opts = {}) {
     if (step > 1 && !opts.force && !isReady()) { requireReady(); return; }
+    const dir = step < state.step ? 'back' : 'fwd';
     state.step = step;
     if (step > 1 && !state.guaranteesChosen) { state.guaranteesChosen = true; refresh(); }
     [1, 2, 3].forEach(n => {
@@ -2028,7 +2128,14 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       const show = n === step;
       el.hidden = !show;
       el.classList.toggle('is-shown', show && !opts.silent);
+      if (show && !opts.silent) {
+        el.dataset.dir = dir;
+        el.classList.add('is-entering');
+        clearTimeout(el.enterTimer);
+        el.enterTimer = setTimeout(() => el.classList.remove('is-entering'), 900);
+      }
     });
+    updateStuckNav();
     $$('#progressBar li').forEach(li => {
       const n = Number(li.dataset.step);
       li.classList.toggle('is-current', n === step);
@@ -2042,6 +2149,19 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       if (window.scrollY > top) window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
       heading.focus({ preventScroll: true });
     }
+  }
+
+  // Barre d'actions : fond et ombre seulement quand elle est collée en bas de l'écran
+  let stuckFrame = 0;
+  function updateStuckNav() {
+    cancelAnimationFrame(stuckFrame);
+    stuckFrame = requestAnimationFrame(() => {
+      $$('.step-nav').forEach(nav => {
+        const step = nav.closest('.step');
+        const stuck = !step.hidden && step.getBoundingClientRect().bottom - nav.getBoundingClientRect().bottom > 1;
+        nav.classList.toggle('is-stuck', stuck);
+      });
+    });
   }
 
   // Rubriques : tarification (devis) ou sinistre (constat et barème FTUSA)
@@ -2058,6 +2178,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     $('#openDevisBtn').hidden = sin;
     $('#mobileMeter').classList.toggle('is-off', sin);
     if (sin && window.Sinistre) window.Sinistre.mount($('#sinistreView'));
+    if (!sin) rewatchMeter();
     history.replaceState(null, '', window.location.href.split('#')[0] + (sin ? '#sinistre' : ''));
     window.scrollTo(0, 0);
   }
@@ -2100,11 +2221,15 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     if (meta) meta.content = dark ? '#0d58a6' : '#0b4f94';
   }
   function toggleTheme() {
-    const dark = document.documentElement.dataset.theme !== 'dark';
-    if (dark) document.documentElement.dataset.theme = 'dark';
-    else delete document.documentElement.dataset.theme;
-    store.set('theme', dark ? 'dark' : 'light');
-    applyThemeUi();
+    const apply = () => {
+      const dark = document.documentElement.dataset.theme !== 'dark';
+      if (dark) document.documentElement.dataset.theme = 'dark';
+      else delete document.documentElement.dataset.theme;
+      store.set('theme', dark ? 'dark' : 'light');
+      applyThemeUi();
+    };
+    if (document.startViewTransition && !reduceMotion.matches) document.startViewTransition(apply);
+    else apply();
   }
 
   /* ------------------------------------------------------------------
@@ -2645,13 +2770,28 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   /* ------------------------------------------------------------------
    * Compteur mobile : visible quand le panneau principal sort de l'écran
    * ------------------------------------------------------------------ */
+  let meterIO = null;
+  // Hauteur du compteur mobile, pour poser la barre d'actions juste au-dessus
+  function measureDock() {
+    const h = $('#mobileMeter').offsetHeight;
+    if (h) document.documentElement.style.setProperty('--dock-h', h + 'px');
+  }
   function watchMeter() {
     const bar = $('#mobileMeter');
     if (!('IntersectionObserver' in window)) { bar.classList.add('is-visible'); return; }
-    const io = new IntersectionObserver(entries => {
+    window.addEventListener('resize', measureDock);
+    meterIO = new IntersectionObserver(entries => {
       entries.forEach(e => bar.classList.toggle('is-visible', !e.isIntersecting && !$('#app').hidden));
+      measureDock();
+      updateStuckNav();
     }, { threshold: 0 });
-    io.observe($('#meterSign'));
+    meterIO.observe($('#meterSign'));
+  }
+  // Relance l'observation quand la page devient visible (l'état initial est lu pendant que l'application est masquée)
+  function rewatchMeter() {
+    if (!meterIO) return;
+    meterIO.unobserve($('#meterSign'));
+    meterIO.observe($('#meterSign'));
   }
 
   /* ------------------------------------------------------------------
@@ -2701,6 +2841,17 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     $('#startSinistreBtn').addEventListener('click', () => startSimulation('sinistre'));
     $$('.view-tab').forEach(t => t.addEventListener('click', () => showView(t.dataset.view)));
     $$('[data-goto]').forEach(btn => btn.addEventListener('click', () => goToStep(Number(btn.dataset.goto))));
+
+    // Mouvement : barre d'actions collée en bas, reflet du compteur
+    window.addEventListener('scroll', updateStuckNav, { passive: true });
+    window.addEventListener('resize', updateStuckNav);
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(updateStuckNav);
+      $$('#step1, #step2, #step3').forEach(el => ro.observe(el));
+    }
+    const endSweep = e => { if (e.animationName === 'sweep') $('#meterSign').classList.remove('is-sweep'); };
+    $('#meterSign').addEventListener('animationend', endSweep);
+    $('#meterSign').addEventListener('animationcancel', endSweep);
     $$('.theme-toggle').forEach(btn => btn.addEventListener('click', toggleTheme));
 
     // Formulaire proposant

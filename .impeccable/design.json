@@ -201,7 +201,27 @@
       {
         "name": "meter-roll",
         "value": "460ms exponential ease-out",
-        "purpose": "The premium figure rolling to its new value (the one authored motion)."
+        "purpose": "The premium figure rolling to its new value."
+      },
+      {
+        "name": "headlight-sweep",
+        "value": "1s cubic-bezier(.45, 0, .2, 1), at most once every 1.6s",
+        "purpose": "A retroreflective highlight crossing the premium sign when the figure changes, and the hero sign once on arrival (the authored moment)."
+      },
+      {
+        "name": "lane-paint",
+        "value": "600ms ease-out on background-size",
+        "purpose": "The green lane marking painting itself between step milestones."
+      },
+      {
+        "name": "step-arrival",
+        "value": "440ms ease-out, translateX 26px from the direction of travel, 45ms child stagger",
+        "purpose": "Step content arriving; the sticky action bar stays still."
+      },
+      {
+        "name": "row-arrival",
+        "value": "400ms ease-out, translateY 8px, 18ms stagger, once per step entry",
+        "purpose": "Guarantee rows and result rows entering as a list."
       }
     ],
     "breakpoints": [
@@ -293,7 +313,7 @@
       "Signs carry an inset white keyline (5px of blue, then 2px of white) at every scale, from the hero panel to buttons and tiles.",
       "One typeface, Overpass (Highway Gothic lineage), with tabular figures for every amount.",
       "Light concrete ground by day, asphalt by night.",
-      "One authored motion: the premium figure rolls to its new value."
+      "Motion is road motion, quiet and fast: a headlight reflection sweeps the premium sign when the figure changes (the authored moment), the green lane marking paints itself between milestones, steps arrive from the direction of travel, lists enter row by row once. Nothing bounces; reduced motion keeps only short fades."
     ],
     "rules": [
       {
@@ -323,7 +343,7 @@
       "**Do** set every amount in Overpass tabular figures with three decimals and \"DT\".",
       "**Do** give each guarantee or concept a line pictogram on a blue service tile, drawn on the 24px grid with round caps.",
       "**Do** keep the premium visible: the meter on desktop, the bottom bar on small screens.",
-      "**Do** let content start visible: entrances move by transform only; the premium roll is the one authored motion."
+      "**Do** keep motion on transform and opacity from an already-visible default: steps slide 26px from the direction of travel (440ms), rows rise 8px with an 18ms stagger, the fees panel unfolds when the premium first appears. Exits are faster than entrances; no bounce, no loop."
     ],
     "donts": [
       "**Don't** use a signal color as decoration, or two signal colors for the same meaning.",
