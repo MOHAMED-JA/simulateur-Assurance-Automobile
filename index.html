@@ -507,6 +507,7 @@ html[data-theme="dark"] .view-tab.is-active { background: var(--ink-card); }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
 .field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
 .label, .field > label { font-weight: 550; font-size: .9rem; }
+.label-optional { margin-left: 6px; font-size: .78rem; font-weight: 500; color: var(--muted); }
 .hint { font-size: .84rem; color: var(--muted); line-height: 1.45; }
 .hint b { color: var(--ink); font-weight: 600; }
 .hint-warn {
@@ -1630,10 +1631,9 @@ html[data-text="large"] { font-size: 112.5%; }
               <legend>Valeurs</legend>
               <div class="grid-2">
                 <div class="field">
-                  <label for="valeurCatalogue">Valeur catalogue</label>
-                  <div class="affix"><input class="input" type="number" id="valeurCatalogue" min="0" inputmode="decimal" placeholder="Ex. 68 000" required aria-describedby="vcError vcHint"><span class="affix-unit">DT</span></div>
-                  <p class="field-error" id="vcError" hidden><svg class="icon" aria-hidden="true"><use href="#i-warn"/></svg>Saisissez la valeur catalogue (valeur à neuf) du véhicule.</p>
-                  <p class="hint" id="vcHint">Valeur à neuf : capital de « Dommages au véhicule ».</p>
+                  <label for="valeurCatalogue">Valeur catalogue <span class="label-optional">facultatif</span></label>
+                  <div class="affix"><input class="input" type="number" id="valeurCatalogue" min="0" inputmode="decimal" placeholder="Ex. 68 000" aria-describedby="vcHint"><span class="affix-unit">DT</span></div>
+                  <p class="hint" id="vcHint">Valeur à neuf : utile seulement pour « Dommages au véhicule », dont elle est le capital.</p>
                 </div>
                 <div class="field">
                   <label for="valeurVenale">Valeur vénale</label>
@@ -1770,7 +1770,7 @@ html[data-text="large"] { font-size: 112.5%; }
           <p class="meter-label">Prime totale TTC</p>
           <p class="meter-value" aria-live="polite"><span class="num" id="primeFinale">—</span><span class="meter-unit">DT</span></p>
           <span class="delta delta--meter" id="meterDelta" aria-hidden="true" hidden></span>
-          <p class="meter-wait" id="meterWait">Saisissez la <b>date de PMEC</b>, la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.</p>
+          <p class="meter-wait" id="meterWait">Saisissez la <b>date de PMEC</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.</p>
           <dl class="meter-meta">
             <div><dt>Formule</dt><dd id="meterFormula">Basique</dd></div>
             <div><dt>Fractionnement</dt><dd id="meterFraction">Annuel</dd></div>
@@ -2274,6 +2274,10 @@ html[data-text="large"] { font-size: 112.5%; }
     if (age > 5) {
       G.dommages.enabled = false;
       next.dommages.reason = 'Véhicule > 5 ans : garantie non disponible.';
+    } else if (!(numberOf('valeurCatalogue') > 0)) {
+      // la valeur catalogue n'est demandée que pour cette garantie (c'est son capital)
+      G.dommages.enabled = false;
+      next.dommages.reason = 'Saisissez la valeur catalogue (étape 1) : elle sert de capital à cette garantie.';
     }
     const dommagesOn = G.dommages.enabled;
     const collisionOrBrisOn = G.collision.enabled || G.brisglace.enabled;
@@ -2510,7 +2514,7 @@ html[data-text="large"] { font-size: 112.5%; }
   function renderResults(q) {
     const body = $('#resultsTableBody');
     if (!q.ready) {
-      body.innerHTML = '<tr class="empty-row"><td colspan="5">Complétez le véhicule (étape 1) : date de PMEC, valeur catalogue et valeur vénale, pour afficher le détail des primes.</td></tr>';
+      body.innerHTML = '<tr class="empty-row"><td colspan="5">Complétez le véhicule (étape 1) : date de PMEC et valeur vénale, pour afficher le détail des primes.</td></tr>';
       $('#resultsTableFoot').innerHTML = '';
       return;
     }
@@ -2665,7 +2669,6 @@ html[data-text="large"] { font-size: 112.5%; }
   function missingInputs() {
     const miss = [];
     if (!$('#pmec').value || pmecInFuture()) miss.push('pmec');
-    if (!(numberOf('valeurCatalogue') > 0)) miss.push('valeurCatalogue');
     if (!(numberOf('valeurVenale') > 0)) miss.push('valeurVenale');
     return miss;
   }
@@ -2673,7 +2676,7 @@ html[data-text="large"] { font-size: 112.5%; }
     $('#pmecError span').textContent = pmecInFuture()
       ? 'La date de PMEC ne peut pas être dans le futur.'
       : 'Saisissez la date de première mise en circulation (PMEC) du véhicule.';
-    [['pmec', 'pmecError'], ['valeurCatalogue', 'vcError'], ['valeurVenale', 'vvError']].forEach(([id, err]) => {
+    [['pmec', 'pmecError'], ['valeurVenale', 'vvError']].forEach(([id, err]) => {
       const bad = showErrors && miss.includes(id);
       $('#' + err).hidden = !bad;
       $('#' + id).closest('.field').classList.toggle('is-invalid', bad);
@@ -2698,7 +2701,7 @@ html[data-text="large"] { font-size: 112.5%; }
     toast(miss.length === 1 && pmecInFuture() ? 'La date de PMEC ne peut pas être dans le futur.' : `Saisissez ${listMissing(miss)} pour continuer.`, 'warn');
     return false;
   }
-  // « la date de PMEC, la valeur catalogue et la valeur vénale »
+  // « la date de PMEC et la valeur vénale »
   const MISSING_LABELS = { pmec: 'la date de PMEC', valeurCatalogue: 'la valeur catalogue', valeurVenale: 'la valeur vénale' };
   function listMissing(miss, wrap) {
     const parts = miss.map(id => wrap ? wrap(MISSING_LABELS[id]) : MISSING_LABELS[id]);

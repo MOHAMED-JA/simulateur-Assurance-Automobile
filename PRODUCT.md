@@ -42,6 +42,7 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 - Tariffs confirmed by the user (1 October 2026): the application's values are the reference (Assistance 100 DT, Dommages et collision 30 + 8 % of the capital, Bris de glaces 9 % of the capital); the agency workbook is the one to correct.
 - Twelve guarantees: RC-RTI, Défenses et Recours, Incendie, Vol, Dommages au véhicule, Dommages et collision, Bris de glaces, PTA, Individuel Accident, CAT/NAT, Emeutes et Mouvements populaires, Assistance Automobile.
 - Formule basique (confirmed current behavior): the nine base guarantees are included and locked; Dommages au véhicule, Dommages et collision and Bris de glaces can still be added. Formule personnalisée: everything can be toggled except RC-RTI.
+- Step 1 requires only the PMEC date and the valeur vénale. The valeur catalogue is optional (user decision, 1 October 2026): it is the capital of Dommages au véhicule, which stays unavailable until it is entered.
 - Dommages au véhicule excludes Dommages et collision and Bris de glaces, and vice versa. Collision is unavailable for vehicles over 10 years, Dommages au véhicule for vehicles over 5 years.
 - Reduction rate 0 to 80% in 5% steps, applied in both formulas (basique and personnalisée) to: Défenses et Recours, Incendie, Vol, Dommages au véhicule, Dommages et collision, PTA, Bris de glaces. Changing the formula keeps the rate.
 - Fractionnement semestriel halves net premiums; fixed fees are unchanged: coût du contrat 25.000, FSSR 0.500, FPAC 0.300, FGA 3.000 DT.
