@@ -316,9 +316,58 @@ html[data-theme="dark"] .btn--blue, html[data-theme="dark"] .btn--green { box-sh
 }
 .exit-name { font-weight: 600; line-height: 1.6; }
 .exit-detail { font-size: .86rem; line-height: 1.4; color: var(--muted); }
-.credit-plate { font-size: .88rem; color: var(--muted); }
-.credit-plate a { font-weight: 600; text-decoration: none; }
-@media (hover: hover) { .credit-plate a:hover { text-decoration: underline; } }
+/* Signature de l'auteur : cadre à liseré dégradé, monogramme, lien LinkedIn */
+.credit {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; gap: 14px; max-width: 100%;
+  padding: 10px 12px 10px 10px; border: 1px solid transparent; border-radius: 16px;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(115deg, var(--accent-line), var(--line) 38%, var(--line) 62%, var(--accent-line)) border-box;
+  box-shadow: var(--shadow-xs);
+  color: var(--ink); text-decoration: none;
+  transition: transform .25s var(--ease-out), box-shadow .25s ease;
+}
+/* reflet, comme sur la carte de la prime */
+.credit::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--accent) 9%, transparent) 50%, transparent 70%);
+  transform: translateX(-110%);
+}
+.credit-mono {
+  flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+  color: #fff; font-size: .9rem; font-weight: 650; letter-spacing: .02em;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .22), 0 6px 14px -8px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+.credit-text { display: grid; gap: 1px; min-width: 0; }
+.credit-label { font-size: .76rem; font-weight: 500; letter-spacing: .01em; color: var(--muted); }
+.credit-name { font-size: .98rem; font-weight: 650; letter-spacing: -.01em; color: var(--accent-text); }
+.credit-go {
+  flex: none; display: inline-flex; align-items: center; gap: 2px; margin-left: 4px; padding: 5px 6px 5px 7px;
+  border-radius: 10px; background: var(--accent-soft); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+.credit-go .icon { width: 17px; height: 17px; }
+.credit-arrow { transition: transform .25s var(--ease-out); }
+.credit:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (hover: hover) {
+  .credit:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--accent) 55%, transparent); background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(115deg, var(--accent), var(--accent-line) 45%, var(--accent-line) 55%, var(--accent)) border-box; }
+  .credit:hover::after { animation: sweep 1s cubic-bezier(.45, 0, .2, 1); }
+  .credit:hover .credit-arrow { transform: translate(2px, -2px); }
+}
+.credit:active { transform: scale(.985); }
+.credit--footer { padding: 8px 10px 8px 8px; gap: 12px; }
+.credit--footer .credit-mono { width: 36px; height: 36px; border-radius: 10px; font-size: .8rem; }
+.credit-name, .credit-label { white-space: nowrap; }
+@media (max-width: 420px) {
+  .credit { display: flex; width: 100%; gap: 10px; }
+  .credit-mono, .credit--footer .credit-mono { width: 36px; height: 36px; border-radius: 10px; font-size: .8rem; }
+  .credit-name { font-size: .94rem; }
+  .credit-go { margin-left: auto; padding: 6px; }
+  .credit-arrow { display: none; }
+}
 
 /* Exemple réel de simulation, à droite */
 .intro-preview { position: relative; min-width: 0; }
@@ -906,8 +955,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
   display: flex; justify-content: center;
   font-size: .88rem; color: var(--muted);
 }
-.site-footer a { font-weight: 600; text-decoration: none; margin-left: .3em; }
-@media (hover: hover) { .site-footer a:hover { text-decoration: underline; } }
+
 
 /* ==========================================================================
    Dialogues
@@ -1476,6 +1524,8 @@ html[data-text="large"] { font-size: 112.5%; }
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5.2 3.5h10.6l3.7 3.7v11.6c0 .9-.8 1.7-1.7 1.7H5.2c-.9 0-1.7-.8-1.7-1.7V5.2c0-.9.8-1.7 1.7-1.7z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.8h16M9.3 6.8V4.2h5.4v2.6M6.3 6.8l.9 13.2h9.6l.9-13.2M10 10.8v5.4M14 10.8v5.4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-linkedin" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M8 10.5v6M8 7.6v.1M11.6 16.5v-6M11.6 13.2c0-1.6 1-2.7 2.4-2.7s2.2 1 2.2 2.6v3.4"/></symbol>
+  <symbol id="i-arrow-out" viewBox="0 0 24 24"><path d="M8 16L16 8M9.5 8H16v6.5"/></symbol>
   <symbol id="i-present" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8.5 20h7"/><path d="M8 12.5l2.6-2.8 2.2 1.9L16 8"/></symbol>
   <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 19.5L11.3 4.5h1.4L19 19.5M7.6 13.8h8.8"/></symbol>
   <symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></symbol>
@@ -1529,7 +1579,11 @@ html[data-text="large"] { font-size: 112.5%; }
         <li><span class="exit-tag" aria-hidden="true">2</span><span class="exit-name">Garanties</span><span class="exit-detail">Formule, franchises et capitaux</span></li>
         <li><span class="exit-tag" aria-hidden="true">3</span><span class="exit-name">Résumé</span><span class="exit-detail">Primes, taxes et offre imprimable</span></li>
       </ol>
-      <p class="credit-plate">Application développée par <a href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener">Mohamed Aziz Jaouadi</a></p>
+      <a class="credit" href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%D9%85%D8%AD%D9%85%D8%AF-%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AC%D9%88%D8%A7%D8%AF%D9%8A-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener" aria-label="Application développée par Mohamed Aziz Jaouadi : profil LinkedIn (nouvel onglet)">
+        <span class="credit-mono" aria-hidden="true">MJ</span>
+        <span class="credit-text" aria-hidden="true"><span class="credit-label">Application développée par</span><span class="credit-name">Mohamed Aziz Jaouadi</span></span>
+        <span class="credit-go" aria-hidden="true"><svg class="icon credit-in"><use href="#i-linkedin"/></svg><svg class="icon credit-arrow"><use href="#i-arrow-out"/></svg></span>
+      </a>
     </div>
     <figure class="intro-preview" aria-labelledby="previewTitle">
       <div class="sign preview-card" id="previewCard">
@@ -1807,7 +1861,11 @@ html[data-text="large"] { font-size: 112.5%; }
   </section>
 
   <footer class="site-footer">
-    <p>Développé par<a href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener">Mohamed Aziz Jaouadi</a></p>
+    <a class="credit credit--footer" href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%D9%85%D8%AD%D9%85%D8%AF-%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AC%D9%88%D8%A7%D8%AF%D9%8A-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener" aria-label="Application développée par Mohamed Aziz Jaouadi : profil LinkedIn (nouvel onglet)">
+        <span class="credit-mono" aria-hidden="true">MJ</span>
+        <span class="credit-text" aria-hidden="true"><span class="credit-label">Application développée par</span><span class="credit-name">Mohamed Aziz Jaouadi</span></span>
+        <span class="credit-go" aria-hidden="true"><svg class="icon credit-in"><use href="#i-linkedin"/></svg><svg class="icon credit-arrow"><use href="#i-arrow-out"/></svg></span>
+      </a>
   </footer>
 
   <div class="mobile-meter" id="mobileMeter" aria-hidden="true">
