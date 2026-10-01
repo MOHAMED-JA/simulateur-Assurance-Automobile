@@ -6,6 +6,12 @@
 <title>Simulateur Assurance Automobile</title>
 <meta name="description" content="Simulez une prime d'assurance automobile en trois étapes : véhicule, garanties, résumé. Détail des primes nettes, TUA et frais, offre imprimable et comparateur de devis.">
 <meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Simulateur Auto">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="canonical" href="https://mohamed-ja.github.io/simulateur-Assurance-Automobile/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Simulateur Assurance Automobile">
@@ -160,7 +166,18 @@ h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
 ol, ul { padding: 0; list-style: none; }
 a { color: var(--accent-text); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 button, input, select, textarea { font: inherit; color: inherit; }
-button { -webkit-tap-highlight-color: transparent; }
+html { -webkit-tap-highlight-color: transparent; }
+/* réponse immédiate au toucher, pas de sélection de texte sur les commandes */
+button, a, label, summary, [role="button"], .range { touch-action: manipulation; }
+button, summary, [role="button"], .btn, .top-btn, .view-tab, .route-btn, .chip, .sin-tab { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.top-btn:active, .view-tab:active, .icon-btn:active, .route-btn:active { transform: scale(.96); }
+.top-btn, .view-tab, .icon-btn, .route-btn { transition-property: background-color, color, box-shadow, transform; transition-duration: .15s; }
+/* application installée : pas de rebond de page, contenu écarté de l'encoche */
+@media (display-mode: standalone) {
+  html, body { overscroll-behavior-y: none; }
+  .topbar { padding-top: env(safe-area-inset-top, 0px); }
+  .intro { padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+}
 ::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); color: var(--ink); }
 :focus { outline: none; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -246,7 +263,7 @@ html[data-theme="dark"] .btn--blue, html[data-theme="dark"] .btn--green { box-sh
    ========================================================================== */
 .intro {
   position: relative; isolation: isolate;
-  min-height: 100vh; min-height: 100dvh;
+  min-height: 100vh; min-height: 100svh;
   display: flex; flex-direction: column;
   padding: 16px var(--gutter) 28px;
 }
@@ -259,6 +276,7 @@ html[data-theme="dark"] .btn--blue, html[data-theme="dark"] .btn--green { box-sh
           mask-image: radial-gradient(ellipse 70% 60% at 50% 38%, #000 20%, transparent 75%);
 }
 .intro-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; max-width: 1200px; margin: 0 auto; }
+.intro-tools { display: flex; align-items: center; gap: 8px; }
 .intro-brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: .98rem; letter-spacing: -0.01em; }
 .intro-stage {
   flex: 1; width: 100%; max-width: 1200px; margin: 0 auto;
@@ -293,7 +311,7 @@ html[data-theme="dark"] .btn--blue, html[data-theme="dark"] .btn--green { box-sh
 .exit-detail { font-size: .86rem; line-height: 1.4; color: var(--muted); }
 .credit-plate { font-size: .88rem; color: var(--muted); }
 .credit-plate a { font-weight: 600; text-decoration: none; }
-.credit-plate a:hover { text-decoration: underline; }
+@media (hover: hover) { .credit-plate a:hover { text-decoration: underline; } }
 
 /* Exemple réel de simulation, à droite */
 .intro-preview { position: relative; min-width: 0; }
@@ -400,7 +418,7 @@ html[data-theme="dark"] .view-tab.is-active { background: var(--ink-card); }
   padding: 4px 8px 4px 4px; border: 0; border-radius: 999px; background: transparent;
   cursor: pointer; color: var(--muted); font-weight: 600; font-size: .95rem;
 }
-.route-btn:hover .route-label { color: var(--ink); }
+@media (hover: hover) { .route-btn:hover .route-label { color: var(--ink); } }
 .borne {
   --cap: var(--surface);
   flex: none; width: 30px; height: 30px; border-radius: 50%;
@@ -490,7 +508,7 @@ html[data-theme="dark"] .view-tab.is-active { background: var(--ink-card); }
   transition: border-color .15s ease, box-shadow .15s ease;
 }
 .input::placeholder { color: var(--muted); opacity: .8; }
-.input:hover, .select:hover { border-color: color-mix(in srgb, var(--ink) 30%, var(--line-strong)); }
+@media (hover: hover) { .input:hover, .select:hover { border-color: color-mix(in srgb, var(--ink) 30%, var(--line-strong)); } }
 .input:focus-visible, .select:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
 .select {
   appearance: none; -webkit-appearance: none; padding-right: 42px; cursor: pointer;
@@ -646,7 +664,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .g-row[data-state="locked"] .g-title label, .g-row[data-state="blocked"] .g-title label { cursor: default; }
 .g-desc { margin-top: 3px; font-size: .86rem; line-height: 1.45; color: var(--muted); max-width: 62ch; }
 .g-title label, .g-desc, .g-field { transition: opacity .22s ease; }
-.g-row[data-state="blocked"] .g-title label, .g-row[data-state="blocked"] .g-desc, .g-row[data-state="blocked"] .g-field { opacity: .5; }
+/* garantie indisponible : grisée mais lisible ; la note rouge dit pourquoi */
+.g-row[data-state="blocked"] .g-title label, .g-row[data-state="blocked"] .g-value { color: var(--muted); }
+.g-row[data-state="blocked"] .g-field .select { opacity: .6; }
 .g-tile.is-lit { animation: tileOn .34s var(--ease-out); }
 @keyframes tileOn { from { transform: scale(.84); } }
 .g-note:not([hidden]) { animation: noteIn .28s var(--ease-out) backwards; }
@@ -823,7 +843,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   font-size: .88rem; color: var(--muted);
 }
 .site-footer a { font-weight: 600; text-decoration: none; margin-left: .3em; }
-.site-footer a:hover { text-decoration: underline; }
+@media (hover: hover) { .site-footer a:hover { text-decoration: underline; } }
 
 /* ==========================================================================
    Dialogues
@@ -1041,7 +1061,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   background: rgb(255 255 255 / .12); color: #fff; font: inherit; font-weight: 650; font-size: .9rem;
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / .2);
 }
-.toast-action:hover { background: rgb(255 255 255 / .2); }
+@media (hover: hover) { .toast-action:hover { background: rgb(255 255 255 / .2); } }
 .toast-action:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .toast {
   display: flex; align-items: center; gap: 10px;
@@ -1073,6 +1093,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 @keyframes previewIn { from { opacity: 0; transform: translateY(24px) scale(.98); } }
 .intro-stage { transition: transform .26s var(--ease-out), opacity .22s ease; }
 .intro.is-leaving .intro-stage { transform: translateY(-14px); opacity: 0; }
+
+/* Téléphone à l'horizontale : le contenu s'écarte de l'encoche */
+.topbar-inner, .shell, .intro { padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); }
 
 /* ==========================================================================
    Adaptation aux écrans
@@ -1164,6 +1187,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .share-body { width: 100%; }
   .share-actions .btn { flex: 1 1 auto; }
   .hero-title { font-size: clamp(2.3rem, 11vw, 3rem); }
+  .install-long { display: none; }
+  .intro-brand-name { display: none; } /* le grand titre juste en dessous porte déjà le nom */
   .preview-card { padding: 22px 20px 18px; }
 }
 @media (max-width: 480px) {
@@ -1265,10 +1290,13 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 </svg>
 
 <!-- ============================ Accueil ============================ -->
-<section class="intro" id="homeIntro" aria-labelledby="introTitle">
+<section class="intro" id="homeIntro" role="main" aria-labelledby="introTitle">
   <div class="intro-top">
-    <p class="intro-brand"><span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span>Simulateur Assurance Automobile</p>
-    <button type="button" class="icon-btn theme-toggle" aria-label="Activer le mode nuit"><svg class="icon"><use href="#i-moon"/></svg></button>
+    <p class="intro-brand"><span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span><span class="intro-brand-name">Simulateur Assurance Automobile</span></p>
+    <div class="intro-tools">
+      <button type="button" class="btn btn--ghost btn--sm install-btn" hidden><svg class="icon"><use href="#i-download"/></svg> Installer<span class="install-long">&nbsp;l'application</span></button>
+      <button type="button" class="icon-btn theme-toggle" aria-label="Activer le mode nuit"><svg class="icon"><use href="#i-moon"/></svg></button>
+    </div>
   </div>
   <div class="intro-stage">
     <div class="intro-copy">
@@ -1321,6 +1349,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
       <nav class="top-actions" aria-label="Outils">
         <button type="button" class="top-btn" id="openProposantBtn" aria-label="Formulaire proposant"><svg class="icon"><use href="#i-user"/></svg><span class="top-btn-text">Formulaire proposant</span></button>
         <button type="button" class="top-btn" id="openDevisBtn" aria-label="Mes devis"><svg class="icon"><use href="#i-folder"/></svg><span class="top-btn-text">Mes devis</span><span class="count" id="devisCount">0</span></button>
+        <button type="button" class="top-btn install-btn" aria-label="Installer l'application" hidden><svg class="icon"><use href="#i-download"/></svg><span class="top-btn-text">Installer</span></button>
         <button type="button" class="top-btn top-btn--icon theme-toggle" aria-label="Activer le mode nuit"><svg class="icon"><use href="#i-moon"/></svg></button>
       </nav>
     </div>
@@ -1532,7 +1561,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     </div>
   </div>
 
-  <section class="sinistre" id="sinistreView" hidden aria-labelledby="sinTitle">
+  <section class="sinistre" id="sinistreView" role="main" hidden aria-labelledby="sinTitle">
     <div class="sin-shell">
       <header class="step-head sin-head">
         <span class="step-tile" aria-hidden="true"><svg class="icon"><use href="#i-warn"/></svg></span>
@@ -3192,7 +3221,41 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     if (el.value !== v) el.value = v;
   }
 
+  /* ------------------------------------------------------------------
+   * Application installable, utilisable hors connexion
+   * ------------------------------------------------------------------ */
+  let installPrompt = null;
+  const setInstallable = on => $$('.install-btn').forEach(btn => { btn.hidden = !on; });
+  function watchInstall() {
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault(); // le bouton « Installer » remplace la bannière du navigateur
+      installPrompt = e;
+      setInstallable(true);
+    });
+    window.addEventListener('appinstalled', () => {
+      installPrompt = null;
+      setInstallable(false);
+      toast('Application installée : retrouvez-la sur l’écran d’accueil.');
+    });
+    $$('.install-btn').forEach(btn => btn.addEventListener('click', async () => {
+      if (!installPrompt) return;
+      const prompt = installPrompt;
+      installPrompt = null;
+      setInstallable(false);
+      prompt.prompt();
+      try { await prompt.userChoice; } catch (e) {}
+    }));
+    window.addEventListener('offline', () => toast('Hors connexion : la simulation reste disponible ; le partage par WhatsApp ou e-mail attendra le réseau.', 'warn'));
+    window.addEventListener('online', () => toast('Connexion rétablie.'));
+    const secure = location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname);
+    if ('serviceWorker' in navigator && secure) {
+      const register = () => navigator.serviceWorker.register('sw.js').catch(() => {});
+      if (document.readyState === 'complete') register(); else window.addEventListener('load', register);
+    }
+  }
+
   function init() {
+    watchInstall();
     applyThemeUi();
     buildSelects();
     $('#pmec').max = todayIso(); // vide par défaut : la date se lit sur la carte grise

@@ -1,0 +1,24 @@
+{
+  "name": "Simulateur Assurance Automobile",
+  "short_name": "Simulateur Auto",
+  "description": "Prime d'assurance automobile en 3 étapes, offre imprimable, devis enregistrés et constat amiable avec le barème FTUSA.",
+  "lang": "fr",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f7f9",
+  "theme_color": "#ffffff",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Nouvelle simulation", "short_name": "Tarification", "url": "./", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Sinistre : constat et barème FTUSA", "short_name": "Sinistre", "url": "./#sinistre", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

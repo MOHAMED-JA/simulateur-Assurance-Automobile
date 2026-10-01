@@ -277,6 +277,9 @@ A white A4 document in either theme: shield mark and date over a 2px cobalt rule
 ### Notifications
 Ink toasts at the top of the screen (below the top bar), never over the bottom action bar. When a dialog is open they appear inside it, above its footer. A toast may carry one action ("Annuler") for 6 seconds.
 
+### Installed app
+The icon is the shield mark on flat Electric Cobalt (rounded square; full-bleed for maskable and Apple icons). The "Installer" button is a secondary button that exists only while the browser offers installation (in the top bar and on the home screen, shortened to "Installer" on phones). Offline and back-online states are announced by toasts, never by a permanent banner.
+
 ### Mes devis
 A wide dialog: search field with the primary "Nouveau devis" beside it, a one-line summary in Slate (count, average, range, formula split), secondary data actions (Exporter, Sauvegarder, Restaurer), then rows named by client with vehicle facts and date, the premium, secondary "Charger" and danger "Supprimer". The comparator marks every differing value in cobalt with a 2px cobalt rule and states the premium gap.
 

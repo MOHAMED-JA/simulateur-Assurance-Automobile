@@ -34,6 +34,7 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 ## Capabilities and Constraints
 
 - Static single page (`index.html`), no build step, deployed to GitHub Pages from `main` by `.github/workflows/static.yml`. No backend.
+- Installable web app: `manifest.webmanifest` (standalone, shortcuts Tarification and Sinistre, icons in `assets/icons/`) and a service worker `sw.js` that serves the network first and falls back to its cache offline (a page that takes more than 4 s falls back too). Bump `VERSION` in `sw.js` whenever the precached file list changes. An "Installer" button appears only when the browser offers installation (Chrome, Edge, Android); on iPhone the user adds it from Safari's Share menu.
 - French UI. Currency formatting: three decimals with comma thousands separators (e.g. `2,935.140 DT`).
 - localStorage keys in use and to stay compatible: `theme`, `userFormData`, `savedOffers`.
 - Usage is fixed to "Privé ou Affaires".
