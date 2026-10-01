@@ -288,6 +288,9 @@ A white A4 document in either theme: shield mark and date over a 2px cobalt rule
 ### Notifications
 Ink toasts at the top of the screen (below the top bar), never over the bottom action bar. When a dialog is open they appear inside it, above its footer. A toast may carry one action ("Annuler") for 6 seconds.
 
+### Home motion
+The home screen has one entrance pass and two pointer effects, all off under reduced motion. Entrance: the shield draws itself (1.1s); each title line rises out of a mask (0.9s, 100ms apart) and a single soft light crosses "Simulateur"; the copy rows follow at 60ms steps; the cobalt line traces across the three steps and each number lights cobalt as it passes; the example card rises, its premium counts up from zero (0.9s) and its chips, lines and switches arrive in sequence; one shine crosses "Commencer la simulation" (again on hover). Ambient: a faint cobalt halo drifts behind the card (18s, alternate) and the "Exemple à essayer" tag carries a softly pulsing green live dot. With a mouse, the dot grid lights cobalt within 180px of the cursor and the example card tilts up to 3° toward it with a faint white glare. On phones, the card and the author credit fade and rise in when scrolled into view, and the count-up starts then.
+
 ### Home example
 The ink preview card on the home screen is a working mini-simulator ("Exemple à essayer"): CV chips (4, 5, 7, 11) and two switches (Dommages et collision, Dommages au véhicule, never both). It prices the example vehicle with the real engine and the same rules as the app, rolls the figure, shows the +/− chip and the light sweep, and a Slate caption below invites the visitor to try it.
 
