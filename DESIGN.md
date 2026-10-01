@@ -33,6 +33,11 @@ colors:
   night-card: "#18213a"
   constat-yellow: "#ffe01a"
   constat-green: "#00a88e"
+  viz-rc: "#2a78d6"
+  viz-vehicle: "#eb6834"
+  viz-other: "#1baf7a"
+  viz-taxes: "#eda100"
+  viz-fees: "#e87ba4"
 typography:
   display:
     fontFamily: "Geist, Segoe UI, system-ui, sans-serif"
@@ -184,8 +189,11 @@ A restrained palette: cool neutrals, one saturated cobalt, a deep ink surface fo
 ### Content colors (Sinistre)
 - **Constat Yellow** (#ffe01a) and **Constat Green** (#00a88e): vehicles A and B exactly as on the FTUSA form, with their soft columns; sketch cars use #ffd23f and #22a87a. They identify vehicles only and carry no UI meaning. Road signs drawn in sketches keep their real colors.
 
+### Data colors (premium breakdown)
+- **Categorical five** for "Où va votre prime" only, in fixed order: RC-RTI #2a78d6, vehicle guarantees #eb6834, other guarantees #1baf7a, TUA taxes #eda100, fixed fees #e87ba4. In dark mode the same slots step to #3987e5, #d95926, #199e70, #c98500, #d55181; the printed offer always keeps the light steps. Both sets pass the colorblind and contrast checks of the data-visualization validator; the legend always shows the amount and the percentage next to each swatch, so identity never rests on color alone.
+
 ### Named Rules
-**The One Accent Rule.** Cobalt is the only hue that invites action. A second accent color never appears; state colors never decorate.
+**The One Accent Rule.** Cobalt is the only hue that invites action. A second accent color never appears; state colors never decorate. The data colors above are the single exception: they identify parts of a chart, never a button, link or state, and appear nowhere else.
 
 **The Ink Card Rule.** The deep ink surface is reserved for figures that answer the flow (the premium, proposal prices, Sinistre verdicts) and for toasts. Never use it for ordinary containers.
 
@@ -277,8 +285,11 @@ A white A4 document in either theme: shield mark and date over a 2px cobalt rule
 ### Notifications
 Ink toasts at the top of the screen (below the top bar), never over the bottom action bar. When a dialog is open they appear inside it, above its footer. A toast may carry one action ("Annuler") for 6 seconds.
 
+### Premium breakdown chart
+"Où va votre prime" is a single horizontal stacked bar (16px, 2px surface gaps, 4px rounded data end) with a legend of five tiles: swatch and name, then the amount in DT and the share in percent. Hovering a segment shows an ink tooltip with the amount, share and name. It appears in step 3 once the quote is ready and in the printed offer above the total, where the legend sits on one row of five.
+
 ### Installed app
-The icon is the shield mark on flat Electric Cobalt (rounded square; full-bleed for maskable and Apple icons). The "Installer" button is a secondary button that exists only while the browser offers installation (in the top bar and on the home screen, shortened to "Installer" on phones). Offline and back-online states are announced by toasts, never by a permanent banner.
+The icon is the shield mark on flat Electric Cobalt (rounded square; full-bleed for maskable and Apple icons). The "Installer" button (secondary, in the top bar and on the home screen, shortened to "Installer" on phones) is hidden only when the app already runs installed. It opens the "Installer l'application" dialog: a QR code to the public address with `#installer`, two step cards (Android Chrome, iPhone Safari; the visitor's own system comes first on Cobalt Mist with a "Votre appareil" chip), the address with a copy button and a link to the printable poster `assets/qr/installer-application.png`. When the browser offers installation, a primary "Installer sur cet appareil" button appears in the dialog. On a phone the QR moves below the steps. Offline and back-online states are announced by toasts, never by a permanent banner.
 
 ### Mes devis
 A wide dialog: search field with the primary "Nouveau devis" beside it, a one-line summary in Slate (count, average, range, formula split), secondary data actions (Exporter, Sauvegarder, Restaurer), then rows named by client with vehicle facts and date, the premium, secondary "Charger" and danger "Supprimer". The comparator marks every differing value in cobalt with a 2px cobalt rule and states the premium gap.

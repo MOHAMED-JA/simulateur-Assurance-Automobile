@@ -468,6 +468,31 @@
           "#9dd7c8",
           "#d3f8ee"
         ]
+      },
+      "viz-rc": {
+        "role": "data",
+        "displayName": "Data Blue (RC-RTI)",
+        "canonical": "oklch(57.5% 0.163 255.5)"
+      },
+      "viz-vehicle": {
+        "role": "data",
+        "displayName": "Data Orange (vehicle guarantees)",
+        "canonical": "oklch(67.1% 0.175 40.6)"
+      },
+      "viz-other": {
+        "role": "data",
+        "displayName": "Data Green (other guarantees)",
+        "canonical": "oklch(66.9% 0.141 162.1)"
+      },
+      "viz-taxes": {
+        "role": "data",
+        "displayName": "Data Gold (TUA taxes)",
+        "canonical": "oklch(76.4% 0.161 75.1)"
+      },
+      "viz-fees": {
+        "role": "data",
+        "displayName": "Data Pink (fixed fees)",
+        "canonical": "oklch(71.6% 0.141 357.4)"
       }
     },
     "typographyMeta": {
