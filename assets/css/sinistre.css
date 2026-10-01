@@ -55,7 +55,7 @@ html[data-theme="dark"] .sin-tab[aria-selected="true"] { background: var(--ink-c
 .cst-col small { font-size: .66rem; font-weight: 650; letter-spacing: .06em; }
 .cst-col b { font-size: 1.7rem; font-weight: 750; }
 .cst-col--a { background: var(--cst-a); color: #1b1d21; }
-.cst-col--b { background: var(--cst-b); color: #fff; }
+.cst-col--b { background: var(--cst-b); color: #04302a; }
 .cst-mid { display: grid; gap: 2px; place-content: center; padding: 10px 12px; text-align: center; font-size: .82rem; color: #525c68; }
 .cst-mid strong { font-size: 1rem; color: #1b1d21; }
 .cst-rows .cst-row { border-top: 1px solid #ecece8; }
@@ -86,7 +86,7 @@ html[data-theme="dark"] .sin-tab[aria-selected="true"] { background: var(--ink-c
 .constat-foot { border-top: 2px solid #1b1d21; }
 .cst-count { display: grid; place-items: center; padding: 10px 0; font-weight: 750; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
 .cst-count--a { background: var(--cst-a); }
-.cst-count--b { background: var(--cst-b); color: #fff; }
+.cst-count--b { background: var(--cst-b); color: #04302a; }
 .cst-count-label { display: grid; place-items: center; padding: 8px 10px; font-size: .82rem; font-weight: 600; text-align: center; color: #525c68; }
 
 /* ---------- Blocs de précisions ---------- */

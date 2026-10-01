@@ -892,6 +892,15 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 }
 .doc-grid div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--doc-line); font-size: .94rem; }
 .doc-grid dt { color: var(--doc-muted); }
+.doc-grid dd.is-blank { flex: 0 0 46%; align-self: flex-end; height: 1.1em; border-bottom: 1px dotted #9aa3b2; }
+.offer-note {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  max-width: 760px; margin: 0 auto 14px; padding: 10px 12px; border-radius: 12px;
+  background: var(--surface); color: var(--muted); font-size: .88rem; line-height: 1.4;
+  box-shadow: 0 0 0 1px var(--line), var(--shadow-xs);
+}
+.offer-note .icon { width: 18px; height: 18px; color: var(--accent-text); flex: none; }
+.offer-note span { flex: 1 1 260px; }
 .doc-grid dd { font-weight: 600; text-align: right; overflow-wrap: anywhere; }
 .doc-table { width: 100%; border-collapse: collapse; font-size: .94rem; }
 .doc-table th, .doc-table td { padding: 9px 4px; border-bottom: 1px solid var(--doc-line); }
@@ -911,8 +920,16 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .doc-assist p { font-weight: 650; color: var(--doc-accent); }
 .doc-assist ul { list-style: disc; padding-left: 18px; font-size: .94rem; line-height: 1.6; }
 
-/* Mes devis */
-.devis-list { margin: 12px -24px 0; }
+/* Mes devis : recherche, synthèse, données */
+.devis-toolbar { flex: none; display: flex; gap: 12px; align-items: center; padding: 16px 22px 0; }
+.devis-search { position: relative; flex: 1; min-width: 0; }
+.devis-search .icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+.devis-search .input { padding-left: 40px; }
+.devis-search .input::-webkit-search-cancel-button { cursor: pointer; }
+.devis-meta { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 22px 12px; border-bottom: 1px solid var(--line); }
+.devis-stats { font-size: .86rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.devis-data { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.devis-list { margin: 0 -24px; }
 .devis {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 14px;
   padding: 16px 24px;
@@ -923,6 +940,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .devis-main { min-width: 0; cursor: pointer; }
 .devis-title { display: block; font-weight: 600; }
 .devis-sub { display: block; margin-top: 2px; font-size: .86rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.devis-date { display: block; margin-top: 1px; font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .devis-prime { font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .devis-actions { display: flex; gap: 8px; }
 .empty-state { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 40px 12px 28px; color: var(--muted); }
@@ -940,14 +958,32 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .compare-col-sub { display: block; font-size: .84rem; font-weight: 500; color: var(--muted); }
 .compare-table tbody th { font-weight: 550; color: var(--muted); width: 24%; }
 .compare-prime { font-size: 1.25rem; font-weight: 650; letter-spacing: -0.02em; }
-.best-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; padding: 3px 9px; border-radius: 999px; background: var(--success-soft); color: var(--success-text); font-size: .76rem; font-weight: 600; }
+.best-badge { display: flex; width: fit-content; align-items: center; gap: 5px; margin-top: 6px; padding: 3px 9px; border-radius: 999px; background: var(--success-soft); color: var(--success-text); font-size: .76rem; font-weight: 600; }
 .best-badge .icon { width: 13px; height: 13px; stroke-width: 2.6; }
 .compare-list { display: grid; gap: 3px; font-size: .9rem; }
 .compare-list li { display: flex; justify-content: space-between; gap: 10px; }
 .compare-list li span:last-child { font-weight: 600; white-space: nowrap; }
+.compare-legend { display: flex; align-items: center; gap: 8px; padding-top: 18px; font-size: .86rem; color: var(--muted); }
+.compare-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+.compare-table td.is-diff, .compare-list li.is-diff span { color: var(--accent-text); font-weight: 600; }
+.compare-table td.is-diff { box-shadow: inset 2px 0 0 var(--accent); }
+.compare-list li.is-missing span { color: var(--muted); font-weight: 400; text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent); }
+.compare-gap { display: block; margin-top: 6px; font-size: .84rem; font-weight: 550; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* Prime cible (calcul inversé du taux) */
-.target { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--line); }
+.target-box { margin-top: 4px; border-top: 1px solid var(--line); }
+.target-box summary {
+  display: flex; align-items: center; gap: 8px; padding: 14px 0 2px; list-style: none; cursor: pointer;
+  font-weight: 600; font-size: .92rem; color: var(--accent-text);
+}
+.target-box summary::-webkit-details-marker { display: none; }
+.target-box summary::before {
+  content: ""; width: 7px; height: 7px; margin: 0 3px 2px 1px; border: solid currentColor; border-width: 0 1.8px 1.8px 0;
+  transform: rotate(-45deg); transition: transform .2s var(--ease-out);
+}
+.target-box[open] summary::before { transform: rotate(45deg); margin-bottom: 4px; }
+.target-box summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.target { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding-top: 12px; }
 .target .field { flex: 1 1 220px; }
 .target .btn { flex: none; }
 .calc-result { flex-basis: 100%; display: flex; gap: 8px; align-items: flex-start; font-size: .9rem; font-weight: 550; line-height: 1.45; }
@@ -998,7 +1034,15 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .doc-qr svg { width: 104px; height: 104px; display: block; }
 
 /* Notifications */
-.toast-region { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 100; display: grid; gap: 8px; width: max-content; max-width: calc(100vw - 32px); pointer-events: none; }
+.toast-region { position: fixed; left: 50%; top: 80px; transform: translateX(-50%); z-index: 100; display: grid; gap: 8px; width: max-content; max-width: calc(100vw - 32px); pointer-events: none; }
+.toast-region.toast-region--dialog { position: absolute; top: auto; bottom: 86px; z-index: 5; }
+.toast-action {
+  margin-left: 6px; padding: 5px 11px; border: 0; border-radius: 8px; cursor: pointer; pointer-events: auto;
+  background: rgb(255 255 255 / .12); color: #fff; font: inherit; font-weight: 650; font-size: .9rem;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .2);
+}
+.toast-action:hover { background: rgb(255 255 255 / .2); }
+.toast-action:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .toast {
   display: flex; align-items: center; gap: 10px;
   padding: 11px 16px 11px 11px; border-radius: 12px;
@@ -1011,8 +1055,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .toast .icon { width: 14px; height: 14px; stroke-width: 2.8; }
 .toast--warn i { background: var(--warning); color: #0f1522; }
 .toast--warn .icon { stroke-width: 2.4; }
-@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes toastOut { to { opacity: 0; transform: translateY(6px); } }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(-6px); } }
 
 .print-root { display: none; }
 
@@ -1039,7 +1083,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .mobile-meter { display: flex; }
   html { scroll-padding-bottom: 156px; }
   .app { padding-bottom: 72px; }
-  .toast-region { bottom: 150px; }
+  .toast-region { top: 80px; }
   /* la barre d'actions se pose au-dessus du compteur mobile quand il est affiché */
   .app:has(.mobile-meter.is-visible:not(.is-waiting):not(.is-off)) .step-nav { bottom: var(--dock-h, 58px); }
 }
@@ -1048,6 +1092,12 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .intro-preview { max-width: 520px; width: 100%; }
 }
 @media (max-width: 760px) {
+  .toast-region { top: 126px; }
+  .devis-toolbar { flex-wrap: wrap; padding: 14px 16px 0; }
+  .devis-search { flex-basis: 100%; }
+  .devis-toolbar .btn { flex: 1; }
+  .devis-meta { padding: 10px 16px; }
+  .devis-data { margin-left: 0; }
   .top-btn .top-btn-text { display: none; }
   .top-btn { padding: 0; justify-content: center; position: relative; }
   .top-btn .count { position: absolute; top: -5px; right: -6px; min-width: 18px; height: 18px; font-size: .7rem; }
@@ -1085,7 +1135,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .dialog--confirm { height: auto; margin: auto 0 0; border-radius: 18px 18px 0 0; }
   .confirm-body { padding-left: 24px; }
   .dialog-scroll { padding: 4px 16px 20px; }
-  .devis-list { margin: 8px -16px 0; }
+  .devis-list { margin: 0 -16px; }
   .devis { padding: 14px 16px; }
   .dialog-foot { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
   .dialog-foot .btn { flex: 1 1 auto; }
@@ -1106,6 +1156,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   .step-nav .btn--ghost { flex: none; width: 48px; padding: 0; }
   .step-nav .btn-text { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .devis { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .devis-sub { white-space: normal; }
   .devis-actions { grid-column: 1 / -1; justify-content: flex-end; }
   .compare-table th, .compare-table td { padding: 12px 6px; }
   .compare-list li { flex-direction: column; gap: 0; }
@@ -1172,6 +1223,10 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 <!-- Pictogrammes (tracé 24 px, trait homogène) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.2l7 2.8v5.1c0 4.4-3 7.9-7 9.1-4-1.2-7-4.7-7-9.1V6z"/><path d="M8.9 11.9l2.2 2.2 4.1-4.3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7.5 9L12 4.5 16.5 9M5 19.5h14"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4.5 12h15M13 5.5l6.5 6.5-6.5 6.5"/></symbol>
   <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19.5 12h-15M11 5.5L4.5 12l6.5 6.5"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
@@ -1257,7 +1312,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     <div class="topbar-inner">
       <div class="brand">
         <span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span>
-        <p class="brand-name"><b class="brand-lead">Simulateur </b>Assurance Automobile<span>Simple, visuel et immédiatement opérationnel</span></p>
+        <h1 class="brand-name"><b class="brand-lead">Simulateur </b>Assurance Automobile<span>Simple, visuel et immédiatement opérationnel</span></h1>
       </div>
       <nav class="view-tabs" aria-label="Rubriques">
         <button type="button" class="view-tab is-active" data-view="devis" aria-current="page"><svg class="icon"><use href="#i-receipt"/></svg>Tarification</button>
@@ -1311,7 +1366,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
                 </div>
                 <div class="field">
                   <label for="pmec">Date de PMEC</label>
-                  <input class="input" type="date" id="pmec">
+                  <input class="input" type="date" id="pmec" aria-describedby="pmecError ageHint">
+                  <p class="field-error" id="pmecError" hidden><svg class="icon" aria-hidden="true"><use href="#i-warn"/></svg><span>Saisissez la date de première mise en circulation (PMEC) du véhicule.</span></p>
                   <p class="hint" id="ageHint"></p>
                 </div>
               </div>
@@ -1406,6 +1462,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
               <input class="range" type="range" id="reductionSlider" min="0" max="80" step="5" value="0" aria-valuetext="0 %">
               <div class="ticks" aria-hidden="true"><span>0 %</span><span>20 %</span><span>40 %</span><span>60 %</span><span>80 %</span></div>
               <p class="hint">S'applique, en formule basique comme personnalisée, à : <b>Défenses et Recours, Incendie, Vol, Dommages au véhicule, Dommages et collision, PTA, Bris de glaces</b>.</p>
+              <details class="target-box" id="targetBox">
+              <summary>Trouver le taux pour une prime cible</summary>
               <form class="target" id="targetForm" novalidate>
                 <div class="field">
                   <label for="targetPremium">Prime cible TTC</label>
@@ -1414,11 +1472,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
                 <button type="submit" class="btn btn--blue">Trouver le taux</button>
                 <p class="calc-result" id="targetResult" aria-live="polite" hidden></p>
               </form>
+              </details>
             </div>
-          </div>
-          <div class="tools-bar">
-            <button type="button" class="btn btn--ghost" id="openPacksBtn"><svg class="icon"><use href="#i-compare"/></svg> Propositions en 3 formules</button>
-            <button type="button" class="btn btn--ghost" id="openShareBtn"><svg class="icon"><use href="#i-share"/></svg> Partager la simulation</button>
           </div>
           <div class="panel table-panel">
             <table class="results">
@@ -1436,6 +1491,10 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
               <tfoot id="resultsTableFoot"></tfoot>
             </table>
           </div>
+          <div class="tools-bar">
+            <button type="button" class="btn btn--ghost" id="openPacksBtn"><svg class="icon"><use href="#i-compare"/></svg> Propositions en 3 formules</button>
+            <button type="button" class="btn btn--ghost" id="openShareBtn"><svg class="icon"><use href="#i-share"/></svg> Partager la simulation</button>
+          </div>
           <div class="step-nav">
             <button type="button" class="btn btn--ghost" data-goto="2"><svg class="icon"><use href="#i-arrow-left"/></svg> <span class="btn-text">Précédent</span></button>
             <div class="step-nav-end">
@@ -1451,7 +1510,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
         <div class="sign sign--meter" id="meterSign">
           <p class="meter-label">Prime totale TTC</p>
           <p class="meter-value" aria-live="polite"><span class="num" id="primeFinale">—</span><span class="meter-unit">DT</span></p>
-          <p class="meter-wait" id="meterWait">Saisissez la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.</p>
+          <p class="meter-wait" id="meterWait">Saisissez la <b>date de PMEC</b>, la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.</p>
           <dl class="meter-meta">
             <div><dt>Formule</dt><dd id="meterFormula">Basique</dd></div>
             <div><dt>Fractionnement</dt><dd id="meterFraction">Annuel</dd></div>
@@ -1559,7 +1618,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     <h2 id="offerDialogTitle">Offre d'assurance</h2>
     <button type="button" class="icon-btn" data-close aria-label="Fermer"><svg class="icon"><use href="#i-close"/></svg></button>
   </header>
-  <div class="dialog-scroll">
+  <div class="dialog-scroll" tabindex="0" role="region" aria-label="Contenu de l'offre">
+    <p class="offer-note" id="offerNote" hidden><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>Proposant non renseigné : ses champs restent en blanc sur l'offre, à compléter à la main.</span><button type="button" class="btn btn--sm btn--ghost" id="offerFillBtn">Remplir le formulaire</button></p>
     <article class="offer-doc" id="offerDoc">
       <header class="doc-head">
         <div class="doc-brand"><span class="doc-glyph"><svg class="icon"><use href="#i-shield"/></svg></span>Simulateur Assurance Automobile</div>
@@ -1614,16 +1674,32 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     <button type="button" class="btn btn--ghost" data-close>Fermer</button>
     <span class="spacer"></span>
     <button type="button" class="btn btn--ghost" id="shareOfferBtn"><svg class="icon"><use href="#i-share"/></svg> Partager</button>
-    <button type="button" class="btn btn--green" id="saveOfferBtn"><svg class="icon"><use href="#i-save"/></svg> Enregistrer</button>
+    <button type="button" class="btn btn--ghost" id="saveOfferBtn"><svg class="icon"><use href="#i-save"/></svg> Enregistrer</button>
     <button type="button" class="btn btn--blue" id="printOfferBtn"><svg class="icon"><use href="#i-print"/></svg> Imprimer</button>
   </footer>
 </dialog>
 
-<dialog class="dialog" id="savedOffersModal" aria-labelledby="savedOffersTitle">
+<dialog class="dialog dialog--wide" id="savedOffersModal" aria-labelledby="savedOffersTitle">
   <header class="dialog-head">
-    <h2 id="savedOffersTitle">Mes devis enregistrés</h2>
+    <h2 id="savedOffersTitle">Mes devis</h2>
     <button type="button" class="icon-btn" data-close aria-label="Fermer"><svg class="icon"><use href="#i-close"/></svg></button>
   </header>
+  <div class="devis-toolbar">
+    <div class="devis-search">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" type="search" id="devisSearch" placeholder="Rechercher : client, CIN, mobile, marque, 7 CV…" aria-label="Rechercher un devis" autocomplete="off">
+    </div>
+    <button type="button" class="btn btn--blue" id="newQuoteBtn"><svg class="icon"><use href="#i-plus"/></svg> Nouveau devis</button>
+  </div>
+  <div class="devis-meta">
+    <p class="devis-stats" id="devisStats" aria-live="polite"></p>
+    <div class="devis-data">
+      <button type="button" class="btn btn--ghost btn--sm" id="exportCsvBtn"><svg class="icon"><use href="#i-download"/></svg> Exporter (Excel)</button>
+      <button type="button" class="btn btn--ghost btn--sm" id="backupBtn"><svg class="icon"><use href="#i-save"/></svg> Sauvegarder</button>
+      <button type="button" class="btn btn--ghost btn--sm" id="restoreBtn"><svg class="icon"><use href="#i-upload"/></svg> Restaurer</button>
+      <input type="file" id="restoreInput" accept=".json,application/json" hidden>
+    </div>
+  </div>
   <div class="dialog-scroll"><div id="savedOffersList"></div></div>
   <footer class="dialog-foot" id="savedOffersFoot">
     <p class="compare-hint" id="compareHint" aria-live="polite">Cochez deux devis pour les comparer.</p>
@@ -2018,7 +2094,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   function renderResults(q) {
     const body = $('#resultsTableBody');
     if (!q.ready) {
-      body.innerHTML = '<tr class="empty-row"><td colspan="5">Saisissez la valeur catalogue et la valeur vénale du véhicule (étape 1) pour afficher le détail des primes.</td></tr>';
+      body.innerHTML = '<tr class="empty-row"><td colspan="5">Complétez le véhicule (étape 1) : date de PMEC, valeur catalogue et valeur vénale, pour afficher le détail des primes.</td></tr>';
       $('#resultsTableFoot').innerHTML = '';
       return;
     }
@@ -2065,8 +2141,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     if (q.ready) measureDock();
     if (!q.ready) {
       $('#meterWait').innerHTML = q.missing.length
-        ? 'Saisissez la <b>valeur catalogue</b> et la <b>valeur vénale</b> du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.'
-        : 'Valeurs du véhicule saisies. Choisissez les <b>garanties</b> à l’étape 2 pour calculer la prime.';
+        ? `Saisissez ${listMissing(q.missing, t => t.replace(/^(la |le )/, '$1<b>') + '</b>')} du véhicule, puis choisissez les <b>garanties</b> pour calculer la prime.`
+        : 'Véhicule complet. Choisissez les <b>garanties</b> à l’étape 2 pour calculer la prime.';
     }
     $('#meterFormula').textContent = state.formula === 'basique' ? 'Basique' : 'Personnalisée';
     $('#meterFraction').textContent = q.vehicle.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel';
@@ -2143,14 +2219,20 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   // La prime n'est affichée qu'une fois les deux valeurs du véhicule saisies
   // et les garanties choisies (étape 2 ouverte au moins une fois)
   let showErrors = false;
+  const todayIso = () => new Date().toISOString().split('T')[0];
+  const pmecInFuture = () => Boolean($('#pmec').value) && $('#pmec').value > todayIso();
   function missingInputs() {
     const miss = [];
+    if (!$('#pmec').value || pmecInFuture()) miss.push('pmec');
     if (!(numberOf('valeurCatalogue') > 0)) miss.push('valeurCatalogue');
     if (!(numberOf('valeurVenale') > 0)) miss.push('valeurVenale');
     return miss;
   }
   function renderValidation(miss) {
-    [['valeurCatalogue', 'vcError'], ['valeurVenale', 'vvError']].forEach(([id, err]) => {
+    $('#pmecError span').textContent = pmecInFuture()
+      ? 'La date de PMEC ne peut pas être dans le futur.'
+      : 'Saisissez la date de première mise en circulation (PMEC) du véhicule.';
+    [['pmec', 'pmecError'], ['valeurCatalogue', 'vcError'], ['valeurVenale', 'vvError']].forEach(([id, err]) => {
       const bad = showErrors && miss.includes(id);
       $('#' + err).hidden = !bad;
       $('#' + id).closest('.field').classList.toggle('is-invalid', bad);
@@ -2172,8 +2254,14 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     const el = $('#' + miss[0]);
     el.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'center' });
     el.focus({ preventScroll: true });
-    toast(miss.length === 2 ? 'Saisissez la valeur catalogue et la valeur vénale pour continuer.' : (miss[0] === 'valeurCatalogue' ? 'Saisissez la valeur catalogue pour continuer.' : 'Saisissez la valeur vénale pour continuer.'), 'warn');
+    toast(miss.length === 1 && pmecInFuture() ? 'La date de PMEC ne peut pas être dans le futur.' : `Saisissez ${listMissing(miss)} pour continuer.`, 'warn');
     return false;
+  }
+  // « la date de PMEC, la valeur catalogue et la valeur vénale »
+  const MISSING_LABELS = { pmec: 'la date de PMEC', valeurCatalogue: 'la valeur catalogue', valeurVenale: 'la valeur vénale' };
+  function listMissing(miss, wrap) {
+    const parts = miss.map(id => wrap ? wrap(MISSING_LABELS[id]) : MISSING_LABELS[id]);
+    return parts.length > 1 ? parts.slice(0, -1).join(', ') + ' et ' + parts[parts.length - 1] : parts[0];
   }
   function closeAllDialogs() { $$('dialog[open]').forEach(d => d.close()); }
 
@@ -2342,17 +2430,41 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   function openDialog(dlg) { if (!dlg.open) dlg.showModal(); }
   function closeDialog(dlg) { if (dlg.open) dlg.close(); }
 
-  function toast(message, kind) {
-    const region = $('#toastRegion');
+  // Message bref ; avec `action`, un bouton (par exemple « Annuler ») reste disponible 6 s
+  // Une fenêtre ouverte rend le reste de la page inerte : le message s'affiche alors dans la fenêtre
+  function toastHost() {
+    const dlg = $$('dialog[open]').pop();
+    if (!dlg) return $('#toastRegion');
+    let host = $('.toast-region--dialog', dlg);
+    if (!host) {
+      host = document.createElement('div');
+      host.className = 'toast-region toast-region--dialog';
+      host.setAttribute('role', 'status');
+      host.setAttribute('aria-live', 'polite');
+      dlg.appendChild(host);
+    }
+    return host;
+  }
+  function toast(message, kind, action) {
+    const region = toastHost();
     const el = document.createElement('div');
-    el.className = 'toast';
     el.className = 'toast' + (kind === 'warn' ? ' toast--warn' : '');
     el.innerHTML = `<i>${icon(kind === 'warn' ? 'i-warn' : 'i-check')}</i><span>${escapeHtml(message)}</span>`;
-    region.appendChild(el);
-    setTimeout(() => {
+    const leave = () => {
+      if (el.classList.contains('is-leaving')) return;
       el.classList.add('is-leaving');
       setTimeout(() => el.remove(), 240);
-    }, 2600);
+    };
+    if (action) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'toast-action';
+      btn.textContent = action.label;
+      btn.addEventListener('click', () => { leave(); action.run(); });
+      el.appendChild(btn);
+    }
+    region.appendChild(el);
+    setTimeout(leave, action ? 6000 : 2600);
   }
 
   /* Formulaire proposant */
@@ -2405,7 +2517,9 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   }
   function populateOffer() {
     const fd = readUserForm();
-    const set = (id, v) => { $('#' + id).textContent = v || '-'; };
+    // champ vide : une ligne à compléter à la main plutôt qu'un tiret
+    const set = (id, v) => { const el = $('#' + id); el.textContent = v || ''; el.classList.toggle('is-blank', !v); };
+    $('#offerNote').hidden = ['nom', 'prenom', 'cin', 'mobile'].some(k => fd[k] && String(fd[k]).trim());
     set('offreNom', fd.nom); set('offrePrenom', fd.prenom); set('offreCIN', fd.cin); set('offreAdresse', fd.adresse);
     set('offreMobile', fd.mobile); set('offreEmail', fd.email); set('offreAgence', fd.agence);
     set('offreMarque', fd.marque); set('offreModele', fd.modele);
@@ -2479,32 +2593,79 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     renderSavedOffers();
     openDialog($('#savedOffersModal'));
   }
+  // Libellés d'un devis enregistré : le client d'abord, puis le véhicule et la formule
+  const primeOf = o => parseFloat(String((o.data && o.data.primeTotal) || '').replace(/[^\d.]/g, '')) || 0;
+  const userOf = o => (o.data && o.data.userInfo) || {};
+  const vehOf = o => (o.data && o.data.vehicleInfo) || {};
+  function offerTitle(o) {
+    const u = userOf(o);
+    return [u.prenom, u.nom].filter(x => x && String(x).trim()).join(' ') || 'Client non renseigné';
+  }
+  function offerFacts(o) {
+    const u = userOf(o); const v = vehOf(o);
+    const car = [u.marque, u.modele].filter(x => x && String(x).trim()).join(' ');
+    const rate = parseFloat(v.tauxReduction) || 0;
+    return [car, v.cv ? `${v.cv} CV` : '', v.classBonusMalus ? `Classe ${v.classBonusMalus}` : '',
+      v.formula === 'personnalisee' ? 'Personnalisée' : (v.formula ? 'Basique' : ''),
+      v.fractionnement === 'semestriel' ? 'Semestriel' : '', rate ? `Réduction ${rate}${NNBSP}%` : ''].filter(Boolean);
+  }
+  const fold = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  function offerMatches(o, query) {
+    if (!query) return true;
+    const u = userOf(o); const v = vehOf(o);
+    let q = fold(query);
+    const cvs = [];
+    q = q.replace(/(\d+)\s*cv\b/g, (m, n) => { cvs.push(n); return ' '; });
+    if (cvs.some(n => String(v.cv) !== n)) return false;
+    const hay = fold([offerTitle(o), u.cin, u.mobile, u.email, u.marque, u.modele, u.agence, o.date, (o.data && o.data.primeTotal)].join(' '));
+    return q.split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+  }
+  function renderDevisStats(all, shown) {
+    const el = $('#devisStats');
+    if (!all.length) { el.textContent = ''; return; }
+    const primes = shown.map(primeOf).filter(x => x > 0);
+    const avg = primes.length ? primes.reduce((a, b) => a + b, 0) / primes.length : 0;
+    const perso = shown.filter(o => vehOf(o).formula === 'personnalisee').length;
+    const parts = [
+      shown.length === all.length ? `${all.length} devis` : `${shown.length} devis sur ${all.length}`,
+      primes.length ? `prime moyenne ${formatCurrency(avg)} DT` : '',
+      primes.length > 1 ? `de ${formatCurrency(Math.min(...primes))} à ${formatCurrency(Math.max(...primes))} DT` : '',
+      shown.length ? `${shown.length - perso} basique · ${perso} personnalisée` : '',
+    ].filter(Boolean);
+    el.textContent = parts.join(' · ');
+  }
   function renderSavedOffers() {
     const offers = readOffers();
     const list = $('#savedOffersList');
+    const query = $('#devisSearch').value.trim();
     selectedOfferIds = selectedOfferIds.filter(id => offers.some(o => o.id === id));
     $('#savedOffersFoot').hidden = offers.length < 2;
+    $$('#exportCsvBtn, #backupBtn').forEach(btn => { btn.disabled = !offers.length; });
+    const shown = offers.filter(o => offerMatches(o, query));
+    renderDevisStats(offers, shown);
     if (!offers.length) {
-      list.innerHTML = `<div class="empty-state"><span class="step-tile">${icon('i-folder')}</span><strong>Aucun devis enregistré.</strong><p>Ouvrez « Voir l'offre » à l'étape Résumé, puis choisissez « Enregistrer ».</p></div>`;
+      list.innerHTML = `<div class="empty-state"><span class="step-tile">${icon('i-folder')}</span><strong>Aucun devis enregistré.</strong><p>Ouvrez « Voir l'offre » à l'étape Résumé, puis choisissez « Enregistrer ». Vous pouvez aussi restaurer une sauvegarde.</p></div>`;
+      updateCompareButton();
+      return;
+    }
+    if (!shown.length) {
+      list.innerHTML = `<div class="empty-state"><span class="step-tile">${icon('i-search')}</span><strong>Aucun devis ne correspond à « ${escapeHtml(query)} ».</strong><p>Essayez un nom, un numéro de CIN ou de mobile, une marque ou une puissance (7 CV).</p></div>`;
       updateCompareButton();
       return;
     }
     list.innerHTML = '<ul class="devis-list"></ul>';
     const ul = $('.devis-list', list);
-    offers.slice().reverse().forEach(offer => {
-      const u = (offer.data && offer.data.userInfo) || {};
-      const who = [u.prenom, u.nom].filter(Boolean).join(' ');
-      const car = [u.marque, u.modele].filter(Boolean).join(' ');
-      const sub = [who, car].filter(Boolean).join('\u2002·\u2002') || 'Proposant non renseigné';
+    shown.slice().reverse().forEach(offer => {
+      const facts = offerFacts(offer);
       const li = document.createElement('li');
       li.className = 'devis';
       li.innerHTML = `
-        <input type="checkbox" class="checkbox" id="devis_${offer.id}" data-offer-id="${offer.id}" aria-label="Sélectionner pour comparer">
-        <label class="devis-main" for="devis_${offer.id}"><span class="devis-title">Devis du ${escapeHtml(offer.date || '')}</span><span class="devis-sub">${escapeHtml(sub)}</span></label>
+        <input type="checkbox" class="checkbox" id="devis_${offer.id}" data-offer-id="${offer.id}" aria-label="Sélectionner pour comparer : ${escapeHtml(offerTitle(offer))}">
+        <label class="devis-main" for="devis_${offer.id}"><span class="devis-title">${escapeHtml(offerTitle(offer))}</span><span class="devis-sub">${escapeHtml(facts.join(' · '))}</span><span class="devis-date">${escapeHtml(offer.date || '')}</span></label>
         <span class="devis-prime">${escapeHtml((offer.data && offer.data.primeTotal) || '')}</span>
         <span class="devis-actions">
-          <button type="button" class="btn btn--blue btn--sm" data-load>Charger</button>
-          <button type="button" class="btn btn--danger btn--sm" data-delete aria-label="Supprimer le devis du ${escapeHtml(offer.date || '')}">${icon('i-trash')}<span>Supprimer</span></button>
+          <button type="button" class="btn btn--ghost btn--sm" data-load>Charger</button>
+          <button type="button" class="btn btn--danger btn--sm" data-delete aria-label="Supprimer le devis : ${escapeHtml(offerTitle(offer))}, ${escapeHtml(offer.date || '')}">${icon('i-trash')}<span>Supprimer</span></button>
         </span>`;
       const cb = $('.checkbox', li);
       cb.checked = selectedOfferIds.includes(offer.id);
@@ -2533,11 +2694,109 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     hint.textContent = ready ? 'Deux devis sélectionnés.' : 'Cochez deux devis pour les comparer.';
     hint.classList.toggle('is-ready', ready);
   }
+  // Suppression annulable : le devis revient à sa place pendant 6 s
   function deleteOffer(id) {
-    writeOffers(readOffers().filter(o => o.id !== id));
+    const offers = readOffers();
+    const index = offers.findIndex(o => o.id === id);
+    if (index < 0) return;
+    const [removed] = offers.splice(index, 1);
+    writeOffers(offers);
     selectedOfferIds = selectedOfferIds.filter(x => x !== id);
     renderSavedOffers();
-    toast('Devis supprimé.');
+    toast('Devis supprimé.', null, {
+      label: 'Annuler',
+      run: () => {
+        const current = readOffers();
+        if (current.some(o => o.id === removed.id)) return;
+        current.splice(Math.min(index, current.length), 0, removed);
+        writeOffers(current);
+        if ($('#savedOffersModal').open) renderSavedOffers();
+        toast('Devis restauré.');
+      },
+    });
+  }
+
+  /* Données : export Excel, sauvegarde, restauration */
+  function downloadFile(name, content, type) {
+    const url = URL.createObjectURL(new Blob([content], { type }));
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  const fileDate = () => new Date().toISOString().slice(0, 10);
+  // CSV au format Excel français : séparateur « ; », décimales à virgule, encodage UTF-8 avec BOM
+  function exportOffersCsv() {
+    const offers = readOffers();
+    if (!offers.length) return;
+    const cell = v => { const t = String(v == null ? '' : v); return /[";\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const dec = n => (Number(n) || 0).toFixed(3).replace('.', ',');
+    const head = ['Date', 'Client', 'CIN', 'Mobile', 'Email', 'Agence', 'Marque', 'Modèle', 'Puissance (CV)', 'Classe bonus-malus', 'Places', 'Valeur catalogue (DT)', 'Valeur vénale (DT)', 'PMEC', 'Formule', 'Fractionnement', 'Réduction (%)', 'Garanties', 'Prime totale TTC (DT)'];
+    const rows = offers.map(o => {
+      const u = userOf(o); const v = vehOf(o);
+      const gs = ((o.data && o.data.guarantees) || []).filter(g => g.enabled).map(g => (DEF[g.id] ? DEF[g.id].name : g.id)).join(' + ');
+      return [o.date, offerTitle(o) === 'Client non renseigné' ? '' : offerTitle(o), u.cin, u.mobile, u.email, u.agence, u.marque, u.modele, v.cv, v.classBonusMalus, v.places,
+        dec(v.valeurCatalogue), dec(v.valeurVenale), v.pmec ? formatDateFr(v.pmec) : '', v.formula === 'personnalisee' ? 'Personnalisée' : 'Basique',
+        v.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel', parseFloat(v.tauxReduction) || 0, gs, dec(primeOf(o))].map(cell).join(';');
+    });
+    downloadFile(`devis-${fileDate()}.csv`, '\ufeff' + [head.map(cell).join(';'), ...rows].join('\r\n'), 'text/csv;charset=utf-8');
+    toast(`${offers.length} devis exportés pour Excel.`);
+  }
+  function backupOffers() {
+    const offers = readOffers();
+    if (!offers.length) return;
+    const payload = { format: 'simulateur-assurance-automobile/devis', version: 1, exportedAt: new Date().toISOString(), offers };
+    downloadFile(`sauvegarde-devis-${fileDate()}.json`, JSON.stringify(payload, null, 1), 'application/json');
+    toast(`Sauvegarde de ${offers.length} devis téléchargée.`);
+  }
+  function restoreOffers(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      let incoming;
+      try {
+        const data = JSON.parse(reader.result);
+        incoming = Array.isArray(data) ? data : data && Array.isArray(data.offers) ? data.offers : null;
+      } catch (e) { incoming = null; }
+      const valid = (incoming || []).filter(o => o && typeof o === 'object' && o.id != null && o.data && typeof o.data === 'object');
+      if (!valid.length) { toast('Ce fichier ne contient pas de devis à restaurer.', 'warn'); return; }
+      const offers = readOffers();
+      const known = new Set(offers.map(o => String(o.id)));
+      const added = valid.filter(o => !known.has(String(o.id)));
+      writeOffers(offers.concat(added).sort((x, y) => Number(x.id) - Number(y.id)));
+      renderSavedOffers();
+      const skipped = valid.length - added.length;
+      toast(added.length ? `${added.length} devis restaurés${skipped ? ` (${skipped} déjà présents)` : ''}.` : 'Tous ces devis sont déjà présents.');
+    };
+    reader.onerror = () => toast('Lecture du fichier impossible.', 'warn');
+    reader.readAsText(file);
+  }
+
+  /* Nouveau devis : tout repart de zéro, annulable pendant 6 s */
+  function newQuote() {
+    const snapshot = { params: simulationParams(), user: store.get('userFormData'), chosen: state.guaranteesChosen, step: state.step };
+    GUARANTEES.forEach(d => { state.g[d.id] = { enabled: d.enabled, franchise: d.franchise, capital: d.capital }; });
+    $('#places').value = 5; $('#cv').value = '5'; $('#classBonusMalus').value = '4';
+    ['pmec', 'valeurCatalogue', 'valeurVenale'].forEach(id => { $('#' + id).value = ''; });
+    $$('input[name="fractionnement"]').forEach(r => { r.checked = r.value === 'annuel'; });
+    ['nom', 'prenom', 'cin', 'adresse', 'mobile', 'email', 'agence', 'marque', 'modele', 'dpmec'].forEach(id => { $('#' + id).value = ''; });
+    store.remove('userFormData');
+    state.reduction = 0;
+    state.guaranteesChosen = false;
+    showErrors = false;
+    setFormula('basique');
+    closeAllDialogs();
+    goToStep(1, { force: true });
+    toast('Nouveau devis : saisissez le véhicule.', null, {
+      label: 'Annuler',
+      run: () => {
+        applyParams(new URLSearchParams(snapshot.params));
+        if (snapshot.user) { store.set('userFormData', snapshot.user); loadUserFormData(); }
+        state.guaranteesChosen = snapshot.chosen;
+        refresh();
+        goToStep(snapshot.step || 1, { force: true });
+        toast('Devis précédent rétabli.');
+      },
+    });
   }
   function loadOffer(id) {
     const offer = readOffers().find(o => o.id === id);
@@ -2555,7 +2814,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     setValue('cv', v.cv);
     setValue('dpmec', v.dpmec);
     setValue('classBonusMalus', v.classBonusMalus);
-    if (v.pmec) setValue('pmec', v.pmec);
+    // anciens devis sans PMEC : la date du formulaire proposant (DPMEC) en tient lieu
+    if (v.pmec || v.dpmec) setValue('pmec', v.pmec || v.dpmec);
     if (v.fractionnement) $$('input[name="fractionnement"]').forEach(r => { r.checked = r.value === v.fractionnement; });
     const saved = Array.isArray(data.guarantees) ? data.guarantees : null;
     let formula = v.formula;
@@ -2589,25 +2849,43 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     const offers = readOffers();
     const selected = selectedOfferIds.map(id => offers.find(o => o.id === id)).filter(Boolean);
     if (selected.length !== 2) return;
-    const primeOf = o => parseFloat(String((o.data && o.data.primeTotal) || '').replace(/[^\d.]/g, '')) || 0;
     const primes = selected.map(primeOf);
     const best = primes[0] === primes[1] ? -1 : (primes[0] < primes[1] ? 0 : 1);
+    const gap = Math.abs(primes[0] - primes[1]);
     const nameOf = id => (DEF[id] ? DEF[id].name : String(id).toUpperCase());
-    const listOf = (items) => items.length ? `<ul class="compare-list">${items.map(([k, v]) => `<li><span>${escapeHtml(k)}</span><span>${escapeHtml(v)}</span></li>`).join('')}</ul>` : '-';
-    const cells = fn => selected.map((o, i) => `<td>${fn(o, i)}</td>`).join('');
-    const header = selected.map((o, i) => {
-      const u = (o.data && o.data.userInfo) || {};
-      const who = [u.prenom, u.nom].filter(Boolean).join(' ');
-      return `<th scope="col"><span class="compare-col-title">Offre ${i + 1}</span><span class="compare-col-sub">${escapeHtml(o.date || '')}</span>${who ? `<span class="compare-col-sub">${escapeHtml(who)}</span>` : ''}</th>`;
-    }).join('');
+    const capText = g => (typeof g.capital === 'number' ? formatCurrency(g.capital) + ' DT' : String(g.capital));
+    const gMap = o => new Map(((o.data && o.data.guarantees) || []).filter(g => g.enabled).map(g => [g.id, g]));
+    const maps = selected.map(gMap);
+    const detail = g => [g.capital != null && g.capital !== '' ? capText(g) : '', g.franchise != null && g.franchise !== '' ? `franchise ${g.franchise}${NNBSP}%` : ''].filter(Boolean).join(' · ');
+    const same = (a, b) => String(a) === String(b);
+    // une ligne simple : valeur par devis, surlignée quand elle diffère
+    const row = (label, values) => {
+      const diff = !same(values[0], values[1]);
+      return `<tr><th scope="row">${label}</th>${values.map(v => `<td class="${diff ? 'is-diff' : ''}">${escapeHtml(v || '-')}</td>`).join('')}</tr>`;
+    };
+    const header = selected.map((o, i) => `<th scope="col"><span class="compare-col-title">${escapeHtml(offerTitle(o))}</span><span class="compare-col-sub">Devis ${i + 1} · ${escapeHtml(o.date || '')}</span></th>`).join('');
+    const veh = o => { const v = vehOf(o); return [v.cv ? `${v.cv} CV` : '', v.classBonusMalus ? `classe ${v.classBonusMalus}` : '', v.valeurVenale ? `valeur vénale ${formatCurrency(Number(v.valeurVenale))} DT` : ''].filter(Boolean).join(' · '); };
+    const formula = o => { const v = vehOf(o); return [v.formula === 'personnalisee' ? 'Personnalisée' : 'Basique', v.fractionnement === 'semestriel' ? 'semestriel' : 'annuel'].join(' · '); };
+    const guarantees = i => {
+      const mine = maps[i]; const other = maps[1 - i];
+      const items = GUARANTEES.filter(d => mine.has(d.id)).map(d => {
+        const g = mine.get(d.id); const o = other.get(d.id);
+        const diff = !o || !same(detail(g), detail(o));
+        return `<li class="${diff ? 'is-diff' : ''}"><span>${escapeHtml(nameOf(d.id))}</span><span>${escapeHtml(detail(g) || 'incluse')}</span></li>`;
+      });
+      const missing = GUARANTEES.filter(d => !mine.has(d.id) && other.has(d.id)).map(d => `<li class="is-missing"><span>${escapeHtml(nameOf(d.id))}</span><span>non incluse</span></li>`);
+      return `<ul class="compare-list">${items.concat(missing).join('')}</ul>`;
+    };
     const html = `
+      <p class="compare-legend"><span class="compare-dot" aria-hidden="true"></span>En bleu : ce qui diffère entre les deux devis.</p>
       <table class="compare-table">
         <thead><tr><th scope="col"><span class="sr-only">Critère</span></th>${header}</tr></thead>
         <tbody>
-          <tr><th scope="row">Prime totale</th>${cells((o, i) => `<span class="compare-prime">${escapeHtml((o.data && o.data.primeTotal) || '-')}</span>${i === best ? `<br><span class="best-badge">${icon('i-check')}Prime la plus basse</span>` : ''}`)}</tr>
-          <tr><th scope="row">Taux de réduction</th>${cells(o => { const tr = o.data && o.data.vehicleInfo && o.data.vehicleInfo.tauxReduction; return tr ? escapeHtml(tr) + NNBSP + '%' : '-'; })}</tr>
-          <tr><th scope="row">Franchises</th>${cells(o => listOf(((o.data && o.data.guarantees) || []).filter(g => g.enabled && g.franchise != null && g.franchise !== '').map(g => [nameOf(g.id), g.franchise + NNBSP + '%'])))}</tr>
-          <tr><th scope="row">Capitaux</th>${cells(o => listOf(((o.data && o.data.guarantees) || []).filter(g => g.enabled && g.capital != null && g.capital !== '').map(g => [nameOf(g.id), typeof g.capital === 'number' ? formatCurrency(g.capital) : String(g.capital)])))}</tr>
+          <tr><th scope="row">Prime totale TTC</th>${selected.map((o, i) => `<td><span class="compare-prime">${escapeHtml((o.data && o.data.primeTotal) || '-')}</span>${i === best ? `<span class="best-badge">${icon('i-check')}La moins chère</span>` : (best >= 0 ? `<span class="compare-gap">+${formatCurrency(gap)} DT par rapport à l'autre devis</span>` : '')}</td>`).join('')}</tr>
+          ${row('Véhicule', selected.map(veh))}
+          ${row('Formule', selected.map(formula))}
+          ${row('Réduction', selected.map(o => (parseFloat(vehOf(o).tauxReduction) || 0) + NNBSP + '%'))}
+          <tr><th scope="row">Garanties</th>${selected.map((o, i) => `<td>${guarantees(i)}</td>`).join('')}</tr>
         </tbody>
       </table>`;
     $('#comparisonTableContainer').innerHTML = html;
@@ -2841,6 +3119,18 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     if (!hash) return false;
     const q = new URLSearchParams(hash);
     if (!q.has('cv') || !q.has('g')) return false;
+    applyParams(q);
+    history.replaceState(null, '', window.location.href.split('#')[0]);
+    $('#homeIntro').hidden = true;
+    $('#app').hidden = false;
+    showView('devis');
+    goToStep(3, { focus: false, silent: true });
+    $('#step3Title').focus({ preventScroll: true });
+    toast('Simulation ouverte depuis un lien partagé.');
+    return true;
+  }
+  // Remplit le véhicule, les garanties et la réduction à partir des paramètres d'un lien
+  function applyParams(q) {
     const num = (k, min, max) => { const n = parseFloat(q.get(k)); return isFinite(n) && n >= min && n <= max ? n : null; };
     const inList = (k, list) => { const n = parseFloat(q.get(k)); return list.includes(n) ? n : null; };
     const places = num('p', 1, 99); if (places != null) $('#places').value = places;
@@ -2861,14 +3151,6 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     const ic = inList('ic', DEF.indacc.capitalOptions); if (ic != null) state.g.indacc.capital = ic;
     const r = num('r', 0, 80); state.reduction = r != null ? Math.round(r / 5) * 5 : 0;
     refresh();
-    history.replaceState(null, '', window.location.href.split('#')[0]);
-    $('#homeIntro').hidden = true;
-    $('#app').hidden = false;
-    showView('devis');
-    goToStep(3, { focus: false, silent: true });
-    $('#step3Title').focus({ preventScroll: true });
-    toast('Simulation ouverte depuis un lien partagé.');
-    return true;
   }
 
   /* ------------------------------------------------------------------
@@ -2913,9 +3195,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   function init() {
     applyThemeUi();
     buildSelects();
-    const today = new Date().toISOString().split('T')[0];
-    $('#pmec').value = today;
-    $('#pmec').max = today;
+    $('#pmec').max = todayIso(); // vide par défaut : la date se lit sur la carte grise
     buildGuaranteeList();
     loadUserFormData();
     updateDevisCount();
@@ -2967,6 +3247,7 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
     // Offre
     $('#voirOffreBtn').addEventListener('click', voirOffre);
     $('#proceedWithoutFormBtn').addEventListener('click', () => { closeDialog($('#confirmationModal')); openOffer(); });
+    $('#offerFillBtn').addEventListener('click', () => { closeDialog($('#offreAssuranceModal')); openUserForm(); });
     $('#cancelWithoutFormBtn').addEventListener('click', () => { closeDialog($('#confirmationModal')); openUserForm(); });
     $('#saveOfferBtn').addEventListener('click', saveOffer);
     $('#printOfferBtn').addEventListener('click', printOffer);
@@ -2983,6 +3264,12 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 
     // Mes devis & comparateur
     $('#openDevisBtn').addEventListener('click', openSavedOffers);
+    $('#devisSearch').addEventListener('input', renderSavedOffers);
+    $('#newQuoteBtn').addEventListener('click', newQuote);
+    $('#exportCsvBtn').addEventListener('click', exportOffersCsv);
+    $('#backupBtn').addEventListener('click', backupOffers);
+    $('#restoreBtn').addEventListener('click', () => $('#restoreInput').click());
+    $('#restoreInput').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (f) restoreOffers(f); e.target.value = ''; });
     $('#compareOffersButton').addEventListener('click', openCompareOffers);
 
     // Fermeture des dialogues (bouton, clic sur le fond)

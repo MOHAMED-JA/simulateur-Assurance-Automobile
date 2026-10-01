@@ -25,10 +25,11 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 
 - Inputs come from the vehicle's registration document (carte grise): number of seats, fiscal horsepower (CV), first registration date (PMEC/DPMEC), plus catalogue value (valeur à neuf) and market value (valeur vénale).
 - Three-step flow: 1. Véhicule, 2. Garanties, 3. Résumé; then the offer.
-- No amount is shown before it means something: the premium TTC and the fixed fees (coût du contrat, FSSR, FPAC, FGA) appear only once the catalogue and market values are entered and the Garanties step has been opened.
+- No amount is shown before it means something: the premium TTC and the fixed fees (coût du contrat, FSSR, FPAC, FGA) appear only once the PMEC date and the catalogue and market values are entered and the Garanties step has been opened.
+- The PMEC date starts empty and is required (it drives eligibility: Dommages au véhicule over 5 years, Dommages et collision over 10 years); a future date is refused.
 - A "Formulaire Proposant" captures the insured person (nom, prénom, CIN, adresse, mobile, email, agence), the vehicle (marque, modèle, DPMEC) and the contract (type renouvelable/ferme, date d'effet).
 - The offer is printed on paper for the client.
-- Saved quotes ("Mes devis") live only in the browser's localStorage; the user can reload, delete, and compare exactly two.
+- Saved quotes ("Mes devis") live only in the browser's localStorage. "Mes devis" lists them by client name with the vehicle and formula, searches by name, CIN, mobile, brand or power ("7 CV"), summarizes count, average and range of premiums, loads, deletes (undoable for 6 s) and compares exactly two (premium gap and differing items highlighted). It exports an Excel-ready CSV (";" separator, decimal comma, UTF-8 BOM), downloads a JSON backup and restores one (merging by id), and starts a "Nouveau devis" (undoable).
 
 ## Capabilities and Constraints
 
@@ -37,6 +38,7 @@ A single, dependable page that encodes a specific tariff (barème) end to end: R
 - localStorage keys in use and to stay compatible: `theme`, `userFormData`, `savedOffers`.
 - Usage is fixed to "Privé ou Affaires".
 - RC-RTI net premium = base tariff (class 4) by fiscal horsepower × bonus-malus coefficient. Base tariff in DT: 2 CV 94; 3–4 CV 110; 5–6 CV 140; 7–10 CV 170; 11–14 CV 220; 15 CV and more 264 (reference: the agency's calculation workbook). Coefficients: class 1 → 0.7 … class 11 → 3.5.
+- Tariffs confirmed by the user (1 October 2026): the application's values are the reference (Assistance 100 DT, Dommages et collision 30 + 8 % of the capital, Bris de glaces 9 % of the capital); the agency workbook is the one to correct.
 - Twelve guarantees: RC-RTI, Défenses et Recours, Incendie, Vol, Dommages au véhicule, Dommages et collision, Bris de glaces, PTA, Individuel Accident, CAT/NAT, Emeutes et Mouvements populaires, Assistance Automobile.
 - Formule basique (confirmed current behavior): the nine base guarantees are included and locked; Dommages au véhicule, Dommages et collision and Bris de glaces can still be added. Formule personnalisée: everything can be toggled except RC-RTI.
 - Dommages au véhicule excludes Dommages et collision and Bris de glaces, and vice versa. Collision is unavailable for vehicles over 10 years, Dommages au véhicule for vehicles over 5 years.

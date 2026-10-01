@@ -272,7 +272,13 @@ A switch (40 × 24px), an icon on a Cobalt Mist tile (Tile Off when off or unava
 A paper document that stays light at night: yellow A column, green B column, the 17 numbered circumstances in the middle, square boxes that receive a drawn cross, and the count of ticked boxes at the foot. Verdict badges follow state colors (green non fautif, red fautif, amber partagé); the split bar uses the vehicle colors; case numbers sit on Cobalt Mist tiles.
 
 ### Printed offer
-A white A4 document in either theme: shield mark and date over a 2px cobalt rule, key-value grids with hairlines, the coverage table, a cobalt total panel, the assistance note on Cobalt Mist, the QR code. Fits one page.
+A white A4 document in either theme: shield mark and date over a 2px cobalt rule, key-value grids with hairlines, the coverage table, a cobalt total panel, the assistance note on Cobalt Mist, the QR code. Fits one page. Empty insured fields print as dotted lines to complete by hand, never as dashes; on screen a quiet note offers to fill the proposant form. The dialog footer has one primary action, Imprimer.
+
+### Notifications
+Ink toasts at the top of the screen (below the top bar), never over the bottom action bar. When a dialog is open they appear inside it, above its footer. A toast may carry one action ("Annuler") for 6 seconds.
+
+### Mes devis
+A wide dialog: search field with the primary "Nouveau devis" beside it, a one-line summary in Slate (count, average, range, formula split), secondary data actions (Exporter, Sauvegarder, Restaurer), then rows named by client with vehicle facts and date, the premium, secondary "Charger" and danger "Supprimer". The comparator marks every differing value in cobalt with a 2px cobalt rule and states the premium gap.
 
 ## Do's and Don'ts
 
