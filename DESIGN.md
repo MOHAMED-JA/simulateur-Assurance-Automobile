@@ -248,6 +248,7 @@ Gently rounded and consistent: 10px for buttons and fields, 12px for tiles and s
 - **Secondary:** white with a 1px Hairline Strong ring; hover fills with Sunk Surface.
 - **Danger:** danger-ink text with a danger ring; hover fills with Danger Mist. A solid Danger fill is kept for confirmed deletions.
 - **Focus:** 2px cobalt outline, 2px offset (white inside the ink card).
+- **Confirmation:** after "Enregistrer" or "Copier" the button itself turns Success Mist with a check that pops in and reads "Enregistré" or "Copié" for 1.8s, at constant width, and screen readers hear the full message. A second click during that time does nothing.
 
 ### Tabs and segmented controls
 - **Style:** a Sunk Surface track with a 1px ring; the active item is a white thumb with ring and small shadow (ink card color at night). In the Fractionnement control the thumb slides between options (340ms).
@@ -267,7 +268,9 @@ Gently rounded and consistent: 10px for buttons and fields, 12px for tiles and s
 - **Error / Disabled:** danger border and halo with an error line below; disabled at 55% opacity.
 
 ### Navigation
-- **Top bar:** white, sticky, hairline base; shield mark on a cobalt tile, product name, pill tabs (Tarification, Sinistre), and outlined tool buttons (Formulaire proposant, Mes devis with a cobalt count, theme). On phones the name wraps to two lines, tools become icon buttons, tabs take the full second row.
+- **Top bar:** white, sticky, hairline base; shield mark on a cobalt tile, product name, pill tabs (Tarification, Sinistre), and outlined tool buttons (search with its "Ctrl K" key cap, Formulaire proposant, Mes devis with a cobalt count, Installer, Affichage). Below 1180px the tools become 40px icon buttons and the tagline hides; on phones the name wraps to two lines, the search button hides and tabs take the full second row.
+- **Quick search (Ctrl K / ⌘ K):** a dialog near the top of the screen with one borderless field, results grouped under small Slate labels (Aller à / Actions, Devis, Garanties, Barème FTUSA), each row a 32px tile (icon, or the case number), title, one-line Slate detail and a right hint. The active row is Cobalt Mist; arrows move, Enter opens, Esc closes. Barème rows quote the case text and the X/Y split from `bareme-ftusa.js` only.
+- **Affichage menu:** the sun/moon/half-circle button opens a small popover: Thème (Clair, Sombre, Auto) and Taille du texte (Normale, Grande, 112.5%), both as segmented controls. Light stays the default; Auto follows the device.
 - **Steps:** numbered circles (upcoming: white with ring; current: cobalt with a mist halo; done: mist with cobalt number) joined by a 2px line whose cobalt fill paints forward (600ms) as steps are completed.
 
 ### Premium card (signature)
@@ -284,6 +287,15 @@ A white A4 document in either theme: shield mark and date over a 2px cobalt rule
 
 ### Notifications
 Ink toasts at the top of the screen (below the top bar), never over the bottom action bar. When a dialog is open they appear inside it, above its footer. A toast may carry one action ("Annuler") for 6 seconds.
+
+### Home example
+The ink preview card on the home screen is a working mini-simulator ("Exemple à essayer"): CV chips (4, 5, 7, 11) and two switches (Dommages et collision, Dommages au véhicule, never both). It prices the example vehicle with the real engine and the same rules as the app, rolls the figure, shows the +/− chip and the light sweep, and a Slate caption below invites the visitor to try it.
+
+### Opening the offer
+When the premium card (or the phone's premium bar) is on screen, it grows into the offer dialog in 460ms (View Transitions) while the backdrop fades in; without support or with reduced motion the dialog simply appears.
+
+### Client presentation
+"Présenter au client" opens a full-screen view (browser full screen when allowed) on the Cool Ground: a white header with the brand and "Quitter la présentation", then the client's name in cobalt, a large title, the vehicle line, the ink premium card (figure up to 5.8rem counting up in 900ms, Formule, Paiement, Réduction, Garanties under a hairline, a faint cobalt glow), the breakdown chart in its large size, the list of included guarantees with icon tiles and capitals, and the simulation QR code. Blocks rise in with a 70ms stagger.
 
 ### Premium breakdown chart
 "Où va votre prime" is a single horizontal stacked bar (16px, 2px surface gaps, 4px rounded data end) with a legend of five tiles: swatch and name, then the amount in DT and the share in percent. Hovering a segment shows an ink tooltip with the amount, share and name. It appears in step 3 once the quote is ready and in the printed offer above the total, where the legend sits on one row of five.

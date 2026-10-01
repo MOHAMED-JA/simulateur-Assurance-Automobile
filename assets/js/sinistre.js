@@ -879,5 +879,5 @@
     renderConstat();
   }
 
-  window.Sinistre = { mount, determine, PRESETS, swapInput, scene, CAS, loadPreset, showTab };
+  window.Sinistre = { mount, determine, PRESETS, swapInput, scene, CAS, loadPreset, showTab, focusCase };
 })();

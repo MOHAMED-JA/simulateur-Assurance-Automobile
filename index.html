@@ -33,7 +33,11 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%232f5bea'/%3E%3Cpath d='M16 6.5l8 3.2v5.7c0 4.9-3.4 8.8-8 10.1-4.6-1.3-8-5.2-8-10.1V9.7z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M12.4 15.8l2.5 2.5 4.9-5.1' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preload" href="assets/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>
-  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.dataset.theme = 'dark';
+    if (localStorage.getItem('textScale') === 'large') document.documentElement.dataset.text = 'large';
+  } catch (e) {}
 </script>
 <style>
 /* ==========================================================================
@@ -222,6 +226,9 @@ html[data-theme="dark"] .sign { box-shadow: inset 0 0 0 1px rgb(255 255 255 / .0
   transition: background-color .15s ease, color .15s ease, box-shadow .15s ease, transform .12s ease;
 }
 .btn .icon { width: 18px; height: 18px; }
+.btn.is-done { --btn-bg: var(--success-soft); --btn-fg: var(--success-text); --btn-ring: color-mix(in srgb, var(--success) 40%, transparent); }
+.btn.is-done .icon { stroke-width: 2.6; animation: tickIn .32s var(--ease-out) both; }
+@keyframes tickIn { from { opacity: 0; transform: scale(.6) rotate(-12deg); } }
 .btn--blue, .btn--green {
   --btn-bg: var(--accent);
   --btn-fg: #fff;
@@ -328,11 +335,22 @@ html[data-theme="dark"] .btn--blue, html[data-theme="dark"] .btn--green { box-sh
 .preview-lines li span:last-child { font-weight: 600; }
 .preview-lines .preview-more span { color: var(--on-ink-muted); font-weight: 450 !important; }
 .preview-switches { display: flex; flex-wrap: wrap; gap: 8px; }
-.preview-switch { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border-radius: 999px; background: rgb(255 255 255 / .06); box-shadow: inset 0 0 0 1px var(--on-ink-line); font-size: .8rem; font-weight: 550; }
-.preview-switch i { width: 26px; height: 16px; border-radius: 999px; background: rgb(255 255 255 / .18); position: relative; flex: none; }
-.preview-switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
-.preview-switch.is-on i { background: var(--accent); }
-.preview-switch.is-on i::after { left: 12px; }
+.preview-switch { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 6px 12px 6px 6px; border: 0; border-radius: 999px; background: rgb(255 255 255 / .06); box-shadow: inset 0 0 0 1px var(--on-ink-line); color: var(--on-ink); font: inherit; font-size: .8rem; font-weight: 550; cursor: pointer; transition: background-color .15s ease; }
+@media (hover: hover) { .preview-switch:hover { background: rgb(255 255 255 / .11); } }
+.preview-switch:focus-visible, .preview-cv input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
+.preview-switch i { width: 26px; height: 16px; border-radius: 999px; background: rgb(255 255 255 / .18); position: relative; flex: none; transition: background-color .2s ease; }
+.preview-switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform .25s var(--ease-out); }
+.preview-switch[aria-checked="true"] i { background: var(--accent); }
+.preview-switch[aria-checked="true"] i::after { transform: translateX(10px); }
+.preview-cv { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.preview-cv label { position: relative; }
+.preview-cv input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.preview-cv span { display: grid; place-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px; background: rgb(255 255 255 / .06); box-shadow: inset 0 0 0 1px var(--on-ink-line); color: var(--on-ink-muted); font-size: .8rem; font-weight: 600; font-variant-numeric: tabular-nums; transition: background-color .15s ease, color .15s ease; }
+.preview-cv input:checked + span { background: var(--accent); color: #fff; box-shadow: none; }
+@media (hover: hover) { .preview-cv input:not(:checked):hover + span { background: rgb(255 255 255 / .11); color: #fff; } }
+.preview-value { position: relative; }
+.delta--preview { margin-left: auto; align-self: center; }
+.preview-hint { margin-top: 12px; font-size: .84rem; color: var(--muted); line-height: 1.45; }
 
 /* ==========================================================================
    Coque de l'application
@@ -379,7 +397,7 @@ html[data-theme="dark"] .view-tab.is-active { background: var(--ink-card); }
 .mobile-meter.is-off, .mobile-meter.is-waiting { display: none !important; }
 .top-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .top-btn {
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
   min-height: 40px; padding: 0 12px;
   border: 0; border-radius: 10px; background: var(--surface); color: var(--ink);
   font-weight: 600; font-size: .92rem; cursor: pointer;
@@ -541,7 +559,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
 .usage-field small { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-weight: 500; font-size: .8rem; color: var(--muted); }
 .usage-field small .icon { width: 14px; height: 14px; }
 
-/* Contrôle segmenté (fractionnement) */
+/* Contrôle segmenté (fractionnement, menu Affichage) */
+.segmented.segmented--3 { grid-template-columns: repeat(3, 1fr); }
 .segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
 .segmented label { position: relative; }
 .segmented input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
@@ -561,6 +580,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { 
   }
   html[data-theme="dark"] .segmented::before { background: var(--ink-card); }
   .segmented:has(label:nth-child(2) input:checked)::before { transform: translateX(calc(100% + 4px)); }
+  .segmented--3::before { width: calc((100% - 16px) / 3); }
+  .segmented--3:has(label:nth-child(3) input:checked)::before { transform: translateX(calc(200% + 8px)); }
   .segmented span { position: relative; }
   .segmented input:checked + span { background: transparent; box-shadow: none; }
 }
@@ -900,8 +921,111 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
 .dialog::backdrop { background: rgb(10 14 22 / .42); }
 .dialog[open]::backdrop { animation: fadeIn .3s ease backwards; }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .38s; animation-timing-function: ease; }
+/* Ouverture de l'offre : la carte de la prime s'agrandit en document (le fond s'assombrit en fondu) */
+html.vt-offer::view-transition-old(root) { animation: none; }
+html.vt-offer::view-transition-new(root) { animation: fadeIn .3s ease both; }
+::view-transition-group(offer) { animation-duration: .46s; animation-timing-function: var(--ease-out); border-radius: 18px; overflow: clip; }
+::view-transition-old(offer), ::view-transition-new(offer) { height: 100%; object-fit: cover; object-position: top; mix-blend-mode: normal; }
+::view-transition-old(offer) { animation: none; object-fit: none; object-position: center; }
+::view-transition-new(offer) { animation: fadeIn .12s ease both; }
+.dialog.is-morphing[open], .dialog.is-morphing[open]::backdrop { animation: none; }
 @keyframes dialogIn { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
 .dialog > form { display: contents; }
+
+/* Présentation au client (plein écran) */
+.dialog.dialog--present { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; background: var(--bg); box-shadow: none; }
+.present-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 32px; padding: 14px clamp(16px, 4vw, 56px); background: var(--surface); border-bottom: 1px solid var(--line); }
+.present-brand { display: flex; align-items: center; gap: 12px; font-weight: 600; letter-spacing: -.01em; }
+.present-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; width: 100%; max-width: 1360px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr); gap: clamp(20px, 3vw, 40px); align-content: start; padding: 40px 32px; padding: clamp(20px, 4vw, 52px) clamp(16px, 4vw, 56px); }
+.present-main, .present-side { display: grid; gap: 22px; align-content: start; min-width: 0; }
+.present-main > p, .present-main > h2 { margin: 0; }
+.present-eyebrow { margin-bottom: -14px !important; color: var(--accent-text); font-weight: 600; }
+.present-title { font-size: clamp(1.9rem, 3.6vw, 3rem); font-weight: 650; line-height: 1.06; letter-spacing: -.04em; }
+.present-vehicle { margin-top: -12px !important; color: var(--muted); font-size: 1.05rem; }
+.present-price { position: relative; overflow: hidden; padding: 28px; padding: clamp(22px, 3vw, 32px); border-radius: 22px; background: var(--ink-card); color: #fff; box-shadow: 0 24px 48px -28px rgb(16 24 40 / .6); }
+.present-price::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 60%; height: 140%; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 34%, transparent), transparent); pointer-events: none; }
+.present-price > * { position: relative; }
+.present-price-label { color: var(--on-ink-muted); font-weight: 500; }
+.present-figure { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-top: 6px; }
+.present-figure .num { font-size: clamp(3rem, 7.4vw, 5.8rem); font-weight: 650; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.present-figure .unit { font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 600; color: var(--on-ink-muted); }
+.present-period { font-size: 1rem; color: var(--on-ink-muted); }
+.present-facts { display: flex; flex-wrap: wrap; gap: 10px 32px; margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--on-ink-line); }
+.present-facts dt { font-size: .8rem; color: var(--on-ink-muted); }
+.present-facts dd { margin: 2px 0 0; font-weight: 600; }
+.present-card { margin: 0; padding: 22px 24px; border-radius: 18px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), var(--shadow-xs); }
+.present-card h3 { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 1.05rem; font-weight: 650; }
+.present-count { padding: 2px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent-text); font-size: .78rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.present-list { display: grid; }
+.present-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.present-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.present-list i { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-style: normal; background: var(--accent-soft); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.present-list .icon { width: 18px; height: 18px; }
+.present-list b { font-weight: 600; }
+.present-list span { color: var(--muted); font-size: .86rem; text-align: right; font-variant-numeric: tabular-nums; }
+.present-qr { display: flex; align-items: center; gap: 18px; }
+.present-qr .share-qr { flex: none; box-shadow: none; }
+.present-qr .share-qr svg { width: 128px; height: 128px; }
+.present-qr figcaption { color: var(--muted); font-size: .9rem; line-height: 1.5; }
+.dialog--present[open] .present-anim { animation: presentIn .6s var(--ease-out) backwards; animation-delay: calc(var(--i, 0) * 70ms + 80ms); }
+@keyframes presentIn { from { opacity: 0; transform: translateY(14px); } }
+@media (max-width: 900px) { .present-body { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) {
+  .present-head .btn { padding: 0 12px; }
+  .present-brand-name, .present-quit-long { display: none; }
+  .present-qr { flex-direction: column; text-align: center; }
+}
+
+/* Recherche rapide (Ctrl K) */
+.kbd {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 5px;
+  background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line-strong), inset 0 -1px 0 var(--line-strong);
+  font: 600 .7rem/1 var(--font); color: var(--muted); white-space: nowrap;
+}
+.search-btn { color: var(--muted); }
+.search-btn { gap: 6px; padding: 0 8px 0 10px; }
+.search-btn .top-btn-text { display: none; }
+.dialog.dialog--palette { width: min(640px, calc(100vw - 32px)); max-height: min(580px, calc(100dvh - 20vh)); margin: 10vh auto auto; }
+.palette-search { flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.palette-search > .icon { width: 20px; height: 20px; color: var(--muted); flex: none; }
+.palette-input { flex: 1; min-width: 0; border: 0; padding: 4px 0; background: transparent; color: var(--ink); font: inherit; font-size: 1.05rem; outline: none; }
+.palette-input::placeholder { color: var(--muted); opacity: .8; }
+.palette-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 8px 10px; }
+.palette-group-label { padding: 12px 10px 6px; font-size: .74rem; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+.palette-item { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px; cursor: pointer; }
+.palette-item[aria-selected="true"] { background: var(--accent-soft); }
+.palette-item > i { font-style: normal; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); }
+.palette-item > i .icon { width: 17px; height: 17px; }
+.palette-item > i b { font-size: .8rem; font-weight: 650; color: var(--ink); font-variant-numeric: tabular-nums; }
+.palette-item[aria-selected="true"] > i { background: var(--surface); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.palette-text { min-width: 0; }
+.palette-title, .palette-sub { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.palette-title { font-weight: 600; font-size: .94rem; }
+.palette-sub { font-size: .8rem; color: var(--muted); }
+.palette-hint { font-size: .76rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.palette-empty { padding: 32px 16px; text-align: center; color: var(--muted); }
+.palette-foot { flex: none; display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 16px; border-top: 1px solid var(--line); font-size: .76rem; color: var(--muted); }
+.palette-foot span { display: inline-flex; align-items: center; gap: 4px; }
+.g-row.is-flash { animation: rowFlash 1.6s ease both; }
+@keyframes rowFlash { 0%, 40% { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent-line); } }
+
+/* Menu Affichage (thème, taille du texte) */
+.display-menu {
+  position: fixed; inset: auto; margin: 0; width: min(300px, calc(100vw - 24px)); padding: 14px;
+  border: 0; border-radius: 14px; background: var(--surface); color: var(--ink);
+  box-shadow: 0 0 0 1px var(--line), var(--shadow-pop);
+}
+@supports not selector(:popover-open) { .display-menu { display: none; } }
+.display-menu:popover-open { display: grid; gap: 14px; animation: menuIn .2s var(--ease-out) both; }
+@keyframes menuIn { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+.display-group { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: 8px; }
+.display-group legend { padding: 0; margin-bottom: 8px; font-size: .78rem; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+.display-menu .segmented span { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 0 6px; font-size: .86rem; }
+.display-menu .segmented .icon { width: 15px; height: 15px; }
+.display-hint { font-size: .76rem; color: var(--muted); line-height: 1.4; }
+.aa { font-size: 1.05rem; font-weight: 650; line-height: 1; }
+.aa--sm { font-size: .8rem; }
+html[data-text="large"] { font-size: 112.5%; }
 .dialog-head {
   flex: none; display: flex; align-items: center; gap: 14px;
   padding: 14px 14px 14px 22px;
@@ -1157,6 +1281,8 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
 .intro:not(.is-leaving) .intro-copy > :nth-child(n+5) { animation-delay: .24s; }
 .intro:not(.is-leaving) .intro-preview { animation: previewIn .8s var(--ease-out) .12s backwards; }
 .intro:not([hidden]):not(.is-leaving) .preview-card::after { animation: sweep 1.4s cubic-bezier(.45, 0, .2, 1) .8s; }
+.intro:not([hidden]):not(.is-leaving) .preview-card.is-sweep::after { animation: sweepAgain 1s cubic-bezier(.45, 0, .2, 1); }
+@keyframes sweepAgain { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
 @keyframes previewIn { from { opacity: 0; transform: translateY(24px) scale(.98); } }
 .intro-stage { transition: transform .26s var(--ease-out), opacity .22s ease; }
 .intro.is-leaving .intro-stage { transform: translateY(-14px); opacity: 0; }
@@ -1181,6 +1307,13 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
   .intro-stage { grid-template-columns: minmax(0, 1fr); padding-top: 28px; }
   .intro-preview { max-width: 520px; width: 100%; }
 }
+/* Barre du haut entre tablette et petit écran d'ordinateur : boutons en icônes (libellés dans aria-label) */
+@media (max-width: 1180px) {
+  .brand-name span { display: none; }
+  .top-btn .top-btn-text, .search-btn .kbd { display: none; }
+  .top-btn { width: 40px; padding: 0; justify-content: center; position: relative; }
+  .top-btn .count { position: absolute; top: -5px; right: -6px; min-width: 18px; height: 18px; font-size: .7rem; }
+}
 @media (max-width: 760px) {
   .toast-region { top: 126px; }
   .devis-toolbar { flex-wrap: wrap; padding: 14px 16px 0; }
@@ -1188,7 +1321,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
   .devis-toolbar .btn { flex: 1; }
   .devis-meta { padding: 10px 16px; }
   .devis-data { margin-left: 0; }
-  .top-btn .top-btn-text { display: none; }
+  .top-btn .top-btn-text, .search-btn .kbd { display: none; }
   .top-btn { padding: 0; justify-content: center; position: relative; }
   .top-btn .count { position: absolute; top: -5px; right: -6px; min-width: 18px; height: 18px; font-size: .7rem; }
   .brand-name span { display: none; }
@@ -1223,6 +1356,8 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
 @media (max-width: 560px) {
   .dialog { width: 100vw; max-width: 100vw; max-height: 100dvh; height: 100dvh; border-radius: 0; margin: 0; }
   .dialog--confirm { height: auto; margin: auto 0 0; border-radius: 18px 18px 0 0; }
+  .dialog.dialog--palette { width: 100vw; max-height: 100dvh; height: 100dvh; margin: 0; }
+  .search-btn, .palette-foot { display: none; }
   .confirm-body { padding-left: 24px; }
   .dialog-scroll { padding: 4px 16px 20px; }
   .devis-list { margin: 0 -16px; }
@@ -1340,6 +1475,9 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5.2 3.5h10.6l3.7 3.7v11.6c0 .9-.8 1.7-1.7 1.7H5.2c-.9 0-1.7-.8-1.7-1.7V5.2c0-.9.8-1.7 1.7-1.7z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.8h16M9.3 6.8V4.2h5.4v2.6M6.3 6.8l.9 13.2h9.6l.9-13.2M10 10.8v5.4M14 10.8v5.4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-present" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8.5 20h7"/><path d="M8 12.5l2.6-2.8 2.2 1.9L16 8"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 19.5L11.3 4.5h1.4L19 19.5M7.6 13.8h8.8"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
   <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="12" cy="18.5" r="1.1" fill="currentColor"/></symbol>
   <symbol id="i-ios-share" viewBox="0 0 24 24"><path d="M12 14.5V3.5M8.5 7L12 3.5 15.5 7"/><path d="M8.5 10.5H7a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5h-1.5"/></symbol>
@@ -1374,7 +1512,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
     <p class="intro-brand"><span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span><span class="intro-brand-name">Simulateur Assurance Automobile</span></p>
     <div class="intro-tools">
       <button type="button" class="btn btn--ghost btn--sm install-btn" aria-haspopup="dialog"><svg class="icon"><use href="#i-download"/></svg><span>Installer<span class="install-long"> l'application</span></span></button>
-      <button type="button" class="icon-btn theme-toggle" aria-label="Activer le mode nuit"><svg class="icon"><use href="#i-moon"/></svg></button>
+      <button type="button" class="icon-btn theme-toggle" aria-label="Affichage" popovertarget="displayMenu"><svg class="icon"><use href="#i-sun"/></svg></button>
     </div>
   </div>
   <div class="intro-stage">
@@ -1392,23 +1530,30 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
       </ol>
       <p class="credit-plate">Application développée par <a href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener">Mohamed Aziz Jaouadi</a></p>
     </div>
-    <figure class="intro-preview" aria-label="Exemple de simulation : 5 CV, classe 1, valeur 53 480 DT, formule basique, prime totale 760,753 DT">
-      <div class="sign preview-card" aria-hidden="true">
-        <div class="preview-head"><span>Prime totale TTC</span><span class="preview-tag">Exemple</span></div>
-        <p class="preview-value"><span class="num">760.753</span><small>DT</small></p>
-        <p class="preview-meta">5 CV · Classe 1 · Valeur 53,480 DT · Formule basique</p>
-        <ul class="preview-lines">
+    <figure class="intro-preview" aria-labelledby="previewTitle">
+      <div class="sign preview-card" id="previewCard">
+        <div class="preview-head"><span id="previewTitle">Prime totale TTC</span><span class="preview-tag">Exemple à essayer</span></div>
+        <p class="preview-value"><span class="num" id="previewPrime" aria-live="polite">760.753</span><small>DT</small><span class="delta delta--preview" id="previewDelta" aria-hidden="true" hidden></span></p>
+        <p class="preview-meta" id="previewMeta">5 CV · Classe 1 · Valeur 53,480 DT · Formule basique</p>
+        <fieldset class="preview-cv">
+          <legend class="sr-only">Puissance fiscale de l'exemple</legend>
+          <label><input type="radio" name="previewCv" value="4"><span>4 CV</span></label>
+          <label><input type="radio" name="previewCv" value="5" checked><span>5 CV</span></label>
+          <label><input type="radio" name="previewCv" value="7"><span>7 CV</span></label>
+          <label><input type="radio" name="previewCv" value="11"><span>11 CV</span></label>
+        </fieldset>
+        <ul class="preview-lines" id="previewLines">
           <li><span>RC-RTI</span><span>112.220</span></li>
           <li><span>Incendie</span><span>198.318</span></li>
           <li><span>Vol</span><span>174.958</span></li>
           <li class="preview-more"><span>+ 6 autres garanties, frais et taxes</span><span></span></li>
         </ul>
         <div class="preview-switches">
-          <span class="preview-switch is-on"><i></i>Défenses et Recours</span>
-          <span class="preview-switch is-on"><i></i>Assistance</span>
-          <span class="preview-switch"><i></i>Bris de glaces</span>
+          <button type="button" class="preview-switch" role="switch" aria-checked="false" data-g="collision"><i></i>Dommages et collision</button>
+          <button type="button" class="preview-switch" role="switch" aria-checked="false" data-g="dommages"><i></i>Dommages au véhicule</button>
         </div>
       </div>
+      <figcaption class="preview-hint">Essayez : changez la puissance ou ajoutez une garantie, la prime se recalcule avec le même moteur que la simulation.</figcaption>
     </figure>
   </div>
 </section>
@@ -1426,10 +1571,11 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
         <button type="button" class="view-tab" data-view="sinistre"><svg class="icon"><use href="#i-warn"/></svg>Sinistre</button>
       </nav>
       <nav class="top-actions" aria-label="Outils">
+        <button type="button" class="top-btn search-btn" id="openPaletteBtn" aria-label="Rechercher" aria-keyshortcuts="Control+K Meta+K"><svg class="icon"><use href="#i-search"/></svg><span class="top-btn-text">Rechercher</span><kbd class="kbd" data-kbd-k>Ctrl K</kbd></button>
         <button type="button" class="top-btn" id="openProposantBtn" aria-label="Formulaire proposant"><svg class="icon"><use href="#i-user"/></svg><span class="top-btn-text">Formulaire proposant</span></button>
         <button type="button" class="top-btn" id="openDevisBtn" aria-label="Mes devis"><svg class="icon"><use href="#i-folder"/></svg><span class="top-btn-text">Mes devis</span><span class="count" id="devisCount">0</span></button>
         <button type="button" class="top-btn install-btn" aria-label="Installer l'application" aria-haspopup="dialog"><svg class="icon"><use href="#i-download"/></svg><span class="top-btn-text">Installer</span></button>
-        <button type="button" class="top-btn top-btn--icon theme-toggle" aria-label="Activer le mode nuit"><svg class="icon"><use href="#i-moon"/></svg></button>
+        <button type="button" class="top-btn top-btn--icon theme-toggle" aria-label="Affichage" popovertarget="displayMenu"><svg class="icon"><use href="#i-sun"/></svg></button>
       </nav>
     </div>
   </header>
@@ -1606,6 +1752,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
           <div class="tools-bar">
             <button type="button" class="btn btn--ghost" id="openPacksBtn"><svg class="icon"><use href="#i-compare"/></svg> Propositions en 3 formules</button>
             <button type="button" class="btn btn--ghost" id="openShareBtn"><svg class="icon"><use href="#i-share"/></svg> Partager la simulation</button>
+            <button type="button" class="btn btn--ghost" id="openPresentBtn"><svg class="icon"><use href="#i-present"/></svg> Présenter au client</button>
           </div>
           <div class="step-nav">
             <button type="button" class="btn btn--ghost" data-goto="2"><svg class="icon"><use href="#i-arrow-left"/></svg> <span class="btn-text">Précédent</span></button>
@@ -1843,6 +1990,68 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
     <button type="button" class="btn btn--blue" id="printPacksBtn"><svg class="icon"><use href="#i-print"/></svg> Imprimer les propositions</button>
   </footer>
 </dialog>
+
+<dialog class="dialog dialog--present" id="presentModal" aria-labelledby="presentTitle">
+  <header class="present-head">
+    <p class="present-brand"><span class="brand-glyph" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span><span class="present-brand-name">Simulateur Assurance Automobile</span></p>
+    <button type="button" class="btn btn--ghost btn--sm" data-close aria-label="Quitter la présentation"><svg class="icon"><use href="#i-close"/></svg><span>Quitter<span class="present-quit-long"> la présentation</span></span></button>
+  </header>
+  <div class="present-body">
+    <section class="present-main">
+      <p class="present-eyebrow present-anim" style="--i: 0" id="presentFor">Proposition d'assurance automobile</p>
+      <h2 class="present-title present-anim" style="--i: 1" id="presentTitle">Formule basique</h2>
+      <p class="present-vehicle present-anim" style="--i: 2" id="presentVehicle"></p>
+      <div class="present-price present-anim" style="--i: 3">
+        <p class="present-price-label">Prime totale TTC</p>
+        <p class="present-figure"><span class="num" id="presentPrime">0.000</span><span class="unit">DT</span><span class="present-period" id="presentPeriod">par an</span></p>
+        <dl class="present-facts" id="presentFacts"></dl>
+      </div>
+      <section class="present-card present-anim" style="--i: 4" aria-labelledby="presentMixTitle">
+        <h3 id="presentMixTitle">Où va votre prime</h3>
+        <div id="presentMix"></div>
+      </section>
+    </section>
+    <aside class="present-side">
+      <section class="present-card present-anim" style="--i: 2" aria-labelledby="presentListTitle">
+        <h3 id="presentListTitle">Garanties incluses <span class="present-count" id="presentCount"></span></h3>
+        <ul class="present-list" id="presentList"></ul>
+      </section>
+      <figure class="present-card present-qr present-anim" style="--i: 3">
+        <div class="share-qr" id="presentQr"></div>
+        <figcaption>Scannez ce code pour retrouver cette proposition sur votre téléphone : véhicule, garanties et prime, sans données personnelles.</figcaption>
+      </figure>
+    </aside>
+  </div>
+</dialog>
+
+<dialog class="dialog dialog--palette" id="paletteModal" aria-label="Recherche rapide">
+  <div class="palette-search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input class="palette-input" id="paletteInput" type="text" role="combobox" aria-expanded="true" aria-controls="paletteList" aria-autocomplete="list" aria-label="Rechercher une action, un devis, une garantie ou un cas du barème" placeholder="Rechercher : action, client, garantie, cas du barème…" autocomplete="off" spellcheck="false">
+    <kbd class="kbd">Échap</kbd>
+  </div>
+  <div class="palette-list" id="paletteList" role="listbox" aria-label="Résultats"></div>
+  <p class="palette-foot" aria-hidden="true"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> parcourir</span><span><kbd class="kbd">Entrée</kbd> ouvrir</span><span><kbd class="kbd" data-kbd-k>Ctrl K</kbd> ouvrir ou fermer</span></p>
+</dialog>
+
+<div class="display-menu" id="displayMenu" popover aria-label="Affichage">
+  <fieldset class="display-group">
+    <legend>Thème</legend>
+    <div class="segmented segmented--3">
+      <label><input type="radio" name="themeChoice" value="light"><span><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg>Clair</span></label>
+      <label><input type="radio" name="themeChoice" value="dark"><span><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg>Sombre</span></label>
+      <label><input type="radio" name="themeChoice" value="auto"><span><svg class="icon" aria-hidden="true"><use href="#i-auto"/></svg>Auto</span></label>
+    </div>
+    <p class="display-hint">Auto suit le réglage clair ou sombre de l'appareil.</p>
+  </fieldset>
+  <fieldset class="display-group">
+    <legend>Taille du texte</legend>
+    <div class="segmented">
+      <label><input type="radio" name="textChoice" value="normal"><span><b class="aa aa--sm" aria-hidden="true">A</b>Normale</span></label>
+      <label><input type="radio" name="textChoice" value="large"><span><b class="aa" aria-hidden="true">A</b>Grande</span></label>
+    </div>
+  </fieldset>
+</div>
 
 <dialog class="dialog" id="installModal" aria-labelledby="installTitle" aria-describedby="installLead">
   <header class="dialog-head">
@@ -2635,26 +2844,69 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
   /* ------------------------------------------------------------------
    * Thème jour / nuit
    * ------------------------------------------------------------------ */
+  /* Affichage : thème clair (par défaut), sombre ou automatique, et taille du texte */
+  const THEME_LABELS = { light: 'thème clair', dark: 'thème sombre', auto: 'thème automatique' };
+  const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+  const hasPopover = typeof HTMLElement !== 'undefined' && HTMLElement.prototype.hasOwnProperty('popover');
+  function themeChoice() {
+    const t = store.get('theme');
+    return THEME_LABELS[t] ? t : 'light';
+  }
   function applyThemeUi() {
     const dark = document.documentElement.dataset.theme === 'dark';
+    const choice = themeChoice();
     $$('.theme-toggle').forEach(btn => {
-      btn.setAttribute('aria-label', dark ? 'Activer le mode jour' : 'Activer le mode nuit');
-      btn.title = dark ? 'Mode jour' : 'Mode nuit';
-      btn.innerHTML = icon(dark ? 'i-sun' : 'i-moon');
+      if (hasPopover) {
+        btn.setAttribute('aria-label', `Affichage : ${THEME_LABELS[choice]}`);
+        btn.title = 'Affichage';
+        btn.innerHTML = icon(choice === 'auto' ? 'i-auto' : dark ? 'i-moon' : 'i-sun');
+      } else {
+        btn.setAttribute('aria-label', dark ? 'Activer le mode jour' : 'Activer le mode nuit');
+        btn.title = dark ? 'Mode jour' : 'Mode nuit';
+        btn.innerHTML = icon(dark ? 'i-sun' : 'i-moon');
+      }
     });
+    $$('input[name="themeChoice"]').forEach(r => { r.checked = r.value === choice; });
+    $$('input[name="textChoice"]').forEach(r => { r.checked = r.value === (document.documentElement.dataset.text === 'large' ? 'large' : 'normal'); });
     const meta = $('meta[name="theme-color"]');
     if (meta) meta.content = dark ? '#121826' : '#ffffff';
   }
-  function toggleTheme() {
+  function setTheme(choice) {
+    const root = document.documentElement;
+    const dark = choice === 'dark' || (choice === 'auto' && darkScheme.matches);
     const apply = () => {
-      const dark = document.documentElement.dataset.theme !== 'dark';
-      if (dark) document.documentElement.dataset.theme = 'dark';
-      else delete document.documentElement.dataset.theme;
-      store.set('theme', dark ? 'dark' : 'light');
+      if (dark) root.dataset.theme = 'dark';
+      else delete root.dataset.theme;
+      store.set('theme', choice);
       applyThemeUi();
     };
-    if (document.startViewTransition && !reduceMotion.matches) document.startViewTransition(apply);
+    if (dark !== (root.dataset.theme === 'dark') && document.startViewTransition && !reduceMotion.matches) document.startViewTransition(apply);
     else apply();
+  }
+  // Sans menu (navigateur ancien) : le bouton bascule entre clair et sombre
+  function toggleTheme() {
+    if (hasPopover) return;
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+  }
+  function setTextScale(size) {
+    if (size === 'large') document.documentElement.dataset.text = 'large';
+    else delete document.documentElement.dataset.text;
+    store.set('textScale', size);
+    applyThemeUi();
+    updateStuckNav();
+  }
+  function watchDisplay() {
+    const menu = $('#displayMenu');
+    if (!hasPopover) { menu.remove(); return; }
+    // Le menu s'ouvre sous le bouton qui l'a appelé
+    $$('.theme-toggle').forEach(btn => btn.addEventListener('click', () => {
+      const r = btn.getBoundingClientRect();
+      menu.style.top = Math.round(r.bottom + 8) + 'px';
+      menu.style.right = Math.max(12, Math.round(window.innerWidth - r.right)) + 'px';
+    }));
+    $$('input[name="themeChoice"]').forEach(r => r.addEventListener('change', () => { if (r.checked) setTheme(r.value); }));
+    $$('input[name="textChoice"]').forEach(r => r.addEventListener('change', () => { if (r.checked) setTextScale(r.value); }));
+    darkScheme.addEventListener('change', () => { if (themeChoice() === 'auto') setTheme('auto'); });
   }
 
   /* ------------------------------------------------------------------
@@ -2677,6 +2929,39 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
       dlg.appendChild(host);
     }
     return host;
+  }
+  // Confirmation sur le bouton lui-même (« Copié », « Enregistré ») : l'action est vue là où elle a eu lieu
+  function confirmButton(btn, label, message) {
+    if (!btn) return;
+    clearTimeout(btn._doneTimer);
+    if (!btn.classList.contains('is-done')) {
+      btn._idle = btn.innerHTML;
+      btn.style.minWidth = btn.offsetWidth + 'px'; // pas de saut de largeur
+    }
+    btn.innerHTML = `${icon('i-check')}<span>${escapeHtml(label)}</span>`;
+    btn.classList.add('is-done');
+    announce(message || label);
+    btn._doneTimer = setTimeout(() => resetButton(btn), 1800);
+  }
+  function resetButton(btn) {
+    if (!btn || !btn.classList.contains('is-done')) return;
+    clearTimeout(btn._doneTimer);
+    btn.innerHTML = btn._idle;
+    btn.classList.remove('is-done');
+    btn.style.minWidth = '';
+  }
+  // Annonce pour les lecteurs d'écran, dans la fenêtre ouverte s'il y en a une
+  function announce(message) {
+    const parent = $$('dialog[open]').pop() || document.body;
+    let el = $(':scope > .sr-status', parent);
+    if (!el) {
+      el = document.createElement('p');
+      el.className = 'sr-only sr-status';
+      el.setAttribute('role', 'status');
+      parent.appendChild(el);
+    }
+    el.textContent = '';
+    setTimeout(() => { el.textContent = message; }, 60);
   }
   function toast(message, kind, action) {
     const region = toastHost();
@@ -2746,9 +3031,34 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
   function openOffer() {
     if (!requireReady()) return;
     populateOffer();
-    openDialog($('#offreAssuranceModal'));
+    const dlg = $('#offreAssuranceModal');
+    // La carte de la prime s'ouvre en document d'offre (View Transitions, si disponible)
+    const from = [$('#meterSign'), $('#mobileMeter')].find(el => {
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight;
+    });
+    if (!document.startViewTransition || reduceMotion.matches || !from || $$('dialog[open]').length) { openDialog(dlg); return; }
+    const root = document.documentElement;
+    from.style.viewTransitionName = 'offer';
+    root.classList.add('vt-offer');
+    const vt = document.startViewTransition(() => {
+      from.style.viewTransitionName = '';
+      dlg.style.viewTransitionName = 'offer';
+      dlg.classList.add('is-morphing');
+      openDialog(dlg);
+    });
+    vt.finished.finally(() => { dlg.style.viewTransitionName = ''; dlg.classList.remove('is-morphing'); root.classList.remove('vt-offer'); });
+  }
+  // Capital tel qu'il figure sur l'offre (texte « Illimité », « REM+PEC+VR » ou montant)
+  function offerCapital(d, vv) {
+    const s = state.g[d.id];
+    if (d.id === 'catnat' || d.id === 'emeutes') return formatCurrency(vv >= 20000 ? 20000 : vv * 0.8);
+    if (d.id === 'incendie' || d.id === 'vol') return formatCurrency(vv);
+    return typeof s.capital === 'string' ? s.capital : formatCurrency(s.capital);
   }
   function populateOffer() {
+    resetButton($('#saveOfferBtn')); // nouvelle ouverture : un nouvel enregistrement est possible
     const fd = readUserForm();
     // champ vide : une ligne à compléter à la main plutôt qu'un tiret
     const set = (id, v) => { const el = $('#' + id); el.textContent = v || ''; el.classList.toggle('is-blank', !v); };
@@ -2767,11 +3077,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
     $('#offreTableBody').innerHTML = GUARANTEES.filter(d => state.g[d.id].enabled).map(d => {
       const s = state.g[d.id];
       const franchise = d.hasFranchise && s.franchise != null ? s.franchise + '%' : '-';
-      let capital;
-      if (d.id === 'catnat' || d.id === 'emeutes') capital = formatCurrency(vv >= 20000 ? 20000 : vv * 0.8);
-      else if (d.id === 'incendie' || d.id === 'vol') capital = formatCurrency(vv);
-      else capital = typeof s.capital === 'string' ? s.capital : formatCurrency(s.capital);
-      return `<tr><td>${escapeHtml(d.name)}</td><td>${franchise}</td><td>${capital}</td></tr>`;
+      return `<tr><td>${escapeHtml(d.name)}</td><td>${franchise}</td><td>${offerCapital(d, vv)}</td></tr>`;
     }).join('');
     $('#offrePrimeTotal').textContent = formatCurrency(q.primeFinale) + ' DT';
     renderMix($('#offreMix'), q, { force: true });
@@ -2787,6 +3093,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
     window.print();
   }
   function saveOffer() {
+    if ($('#saveOfferBtn').classList.contains('is-done')) return; // double clic : un seul devis
     const v = readVehicle();
     const offer = {
       id: Date.now(),
@@ -2812,7 +3119,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
     const offers = readOffers();
     offers.push(offer);
     writeOffers(offers);
-    toast('Offre enregistrée avec succès !');
+    confirmButton($('#saveOfferBtn'), 'Enregistré', 'Offre enregistrée dans Mes devis.');
   }
 
   /* Mes devis */
@@ -3335,7 +3642,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
       input.select();
       try { document.execCommand('copy'); } catch (err) { /* copie manuelle */ }
     }
-    toast('Lien copié.');
+    confirmButton($('#copyLinkBtn'), 'Copié', 'Lien copié.');
   }
   async function nativeShare() {
     const link = $('#shareLink').value;
@@ -3427,6 +3734,288 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
   }
 
   /* ------------------------------------------------------------------
+   * Accueil : exemple à essayer, calculé avec le même moteur que la simulation
+   * ------------------------------------------------------------------ */
+  const PREVIEW_VEHICLE = { places: 5, valeurCatalogue: 53480, valeurVenale: 53480, classBM: 1, fractionnement: 'annuel' };
+  const previewState = { cv: '5', options: new Set() };
+  let previewShown = 0;
+  let previewFrame = 0;
+  let previewDeltaTimer = 0;
+  function previewQuote() {
+    const G = Object.fromEntries(GUARANTEES.map(d => [d.id, {
+      enabled: BASIQUE_IDS.includes(d.id) || previewState.options.has(d.id), franchise: d.franchise, capital: d.capital,
+    }]));
+    return computeQuote({ ...PREVIEW_VEHICLE, cv: previewState.cv }, G, 0);
+  }
+  function renderPreview() {
+    const q = previewQuote();
+    const line = id => q.lines.find(l => l.id === id);
+    $('#previewLines').innerHTML = ['rc', 'incendie', 'vol'].map(id => `<li><span>${escapeHtml(DEF[id].name)}</span><span>${formatCurrency(line(id).primeTotal)}</span></li>`).join('')
+      + `<li class="preview-more"><span>+ ${q.lines.length - 3} autres garanties, frais et taxes</span><span></span></li>`;
+    $('#previewMeta').textContent = `${previewState.cv} CV · Classe 1 · Valeur 53,480 DT · Formule basique`;
+    const el = $('#previewPrime');
+    const from = previewShown;
+    const to = q.primeFinale;
+    previewShown = to;
+    cancelAnimationFrame(previewFrame);
+    if (!from || reduceMotion.matches) { el.textContent = formatCurrency(to); return; }
+    if (from === to) return;
+    // écart et reflet, comme sur le compteur de la simulation
+    const delta = $('#previewDelta');
+    delta.textContent = (to > from ? '+' : '−') + formatCurrency(Math.abs(to - from)) + NNBSP + 'DT';
+    delta.classList.toggle('is-down', to < from);
+    delta.hidden = false;
+    delta.classList.remove('is-show'); void delta.offsetWidth; delta.classList.add('is-show');
+    clearTimeout(previewDeltaTimer);
+    previewDeltaTimer = setTimeout(() => delta.classList.remove('is-show'), 2200);
+    const card = $('#previewCard');
+    card.classList.remove('is-sweep'); void card.offsetWidth; card.classList.add('is-sweep');
+    const start = performance.now();
+    const tick = now => {
+      const p = Math.min(1, (now - start) / 460);
+      const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      el.textContent = formatCurrency(p === 1 ? to : from + (to - from) * eased);
+      if (p < 1) previewFrame = requestAnimationFrame(tick);
+    };
+    previewFrame = requestAnimationFrame(tick);
+  }
+  function watchPreview() {
+    $$('input[name="previewCv"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { previewState.cv = r.value; renderPreview(); } }));
+    // Mêmes règles que la simulation : en formule basique, ces options s'ajoutent ;
+    // Dommages au véhicule et Dommages et collision ne se cumulent pas
+    $$('.preview-switch').forEach(btn => btn.addEventListener('click', () => {
+      const on = btn.getAttribute('aria-checked') !== 'true';
+      previewState.options.clear();
+      if (on) previewState.options.add(btn.dataset.g);
+      $$('.preview-switch').forEach(b => b.setAttribute('aria-checked', String(previewState.options.has(b.dataset.g))));
+      renderPreview();
+    }));
+    $('#previewCard').addEventListener('animationend', e => { if (e.animationName === 'sweepAgain') e.currentTarget.classList.remove('is-sweep'); });
+    renderPreview();
+  }
+
+  /* ------------------------------------------------------------------
+   * Présentation au client : plein écran, prime, garanties, répartition, code QR
+   * ------------------------------------------------------------------ */
+  let presentFrame = 0;
+  function countUp(el, to, duration = 900) {
+    cancelAnimationFrame(presentFrame);
+    if (reduceMotion.matches) { el.textContent = formatCurrency(to); return; }
+    const start = performance.now();
+    const tick = now => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      el.textContent = formatCurrency(p === 1 ? to : to * eased);
+      if (p < 1) presentFrame = requestAnimationFrame(tick);
+    };
+    el.textContent = formatCurrency(0);
+    presentFrame = requestAnimationFrame(tick);
+  }
+  function openPresent() {
+    if (!requireReady()) return;
+    const q = lastQuote || computeQuote();
+    const fd = readUserForm();
+    const v = q.vehicle;
+    const client = [fd.prenom, fd.nom].filter(x => x && String(x).trim()).join(' ');
+    $('#presentFor').textContent = client ? `Proposition pour ${client}` : "Proposition d'assurance automobile";
+    $('#presentTitle').textContent = state.formula === 'basique' ? 'Assurance automobile, formule basique' : 'Assurance automobile, formule personnalisée';
+    const car = [fd.marque, fd.modele].filter(x => x && String(x).trim()).join(' ');
+    const bm = $('#classBonusMalus');
+    $('#presentVehicle').textContent = [car, `${v.cv} CV`, bm.options[bm.selectedIndex] ? bm.options[bm.selectedIndex].text : '', `valeur vénale ${formatCurrency(v.valeurVenale)}${NNBSP}DT`].filter(Boolean).join(' · ');
+    $('#presentPeriod').textContent = v.fractionnement === 'semestriel' ? 'par semestre' : 'par an';
+    const facts = [['Formule', state.formula === 'basique' ? 'Basique' : 'Personnalisée'], ['Paiement', v.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel']];
+    if (state.reduction) facts.push(['Réduction', `${state.reduction}${NNBSP}%`]);
+    facts.push(['Garanties', String(q.lines.length)]);
+    $('#presentFacts').innerHTML = facts.map(([k, val]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(val)}</dd></div>`).join('');
+    const enabled = GUARANTEES.filter(d => state.g[d.id].enabled);
+    $('#presentCount').textContent = String(enabled.length);
+    $('#presentList').innerHTML = enabled.map(d => {
+      const capital = offerCapital(d, v.valeurVenale);
+      const s = state.g[d.id];
+      const detail = (/^[\d,.]+$/.test(capital) ? `${capital}${NNBSP}DT` : capital) + (d.hasFranchise && s.franchise ? ` · franchise ${s.franchise}${NNBSP}%` : '');
+      return `<li><i aria-hidden="true">${icon(d.icon)}</i><b>${escapeHtml(d.name)}</b><span>${escapeHtml(detail)}</span></li>`;
+    }).join('');
+    renderMix($('#presentMix'), q, { large: true });
+    const svg = qrSvg(simulationLink(), 'Code QR de la proposition');
+    $('#presentQr').closest('.present-qr').hidden = !svg;
+    $('#presentQr').innerHTML = svg;
+    const dlg = $('#presentModal');
+    const show = () => {
+      openDialog(dlg);
+      countUp($('#presentPrime'), q.primeFinale);
+      $('[data-close]', dlg).focus({ preventScroll: true });
+    };
+    // Plein écran d'abord : la fenêtre doit passer au-dessus de la page mise en plein écran
+    if (document.fullscreenEnabled && !document.fullscreenElement) document.documentElement.requestFullscreen().then(show, show);
+    else show();
+  }
+  function watchPresent() {
+    $('#openPresentBtn').addEventListener('click', openPresent);
+    $('#presentModal').addEventListener('close', () => {
+      cancelAnimationFrame(presentFrame);
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    });
+  }
+
+  /* ------------------------------------------------------------------
+   * Recherche rapide (Ctrl K ou ⌘ K) : actions, devis, garanties, cas du barème
+   * ------------------------------------------------------------------ */
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  // Affiche l'application (sans l'animation de l'accueil) dans la rubrique voulue
+  function enterApp(view) {
+    const fromIntro = !$('#homeIntro').hidden;
+    if (fromIntro) {
+      $('#homeIntro').hidden = true;
+      $('#app').hidden = false;
+    }
+    const current = $('#sinistreView').hidden ? 'devis' : 'sinistre';
+    if (fromIntro || current !== view || view === 'sinistre') showView(view);
+    if (fromIntro && view === 'devis') goToStep(state.step || 1, { focus: false, silent: true });
+  }
+  function flashGuarantee(id) {
+    const row = $(`.g-row[data-id="${id}"]`);
+    if (!row || $('#step2').hidden) return;
+    row.scrollIntoView({ block: 'center', behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    row.classList.remove('is-flash'); void row.offsetWidth; row.classList.add('is-flash');
+    const box = $('input[type="checkbox"]', row);
+    if (box) box.focus({ preventScroll: true });
+  }
+  function paletteCommands() {
+    const step = (n, title, sub, ic, kw) => ({ title, sub, icon: ic, kw, run: () => { enterApp('devis'); goToStep(n); } });
+    return [
+      step(1, 'Étape 1 · Véhicule', 'Places, valeurs, puissance fiscale, bonus-malus, date de PMEC', 'g-rc', 'vehicule voiture cv pmec valeur'),
+      step(2, 'Étape 2 · Garanties', 'Formule, franchises et capitaux', 'i-shield', 'garanties formule basique personnalisee franchise capital'),
+      step(3, 'Étape 3 · Résumé', 'Primes, taxes, réduction et répartition', 'i-list', 'resume prime taxes reduction tua'),
+      { title: "Voir l'offre", sub: "Document imprimable de l'offre", icon: 'i-receipt', kw: 'offre imprimer pdf document', run: () => { enterApp('devis'); voirOffre(); } },
+      { title: 'Formulaire proposant', sub: 'Nom, CIN, contact, véhicule', icon: 'i-user', kw: 'client assure proposant cin', run: () => { enterApp('devis'); openUserForm(); } },
+      { title: 'Mes devis', sub: 'Devis enregistrés, comparaison, export', icon: 'i-folder', kw: 'devis enregistres sauvegarde export csv comparer', run: () => { enterApp('devis'); openSavedOffers(); } },
+      { title: 'Nouveau devis', sub: 'Repartir d’une simulation vide', icon: 'i-plus', kw: 'nouveau vider reinitialiser', run: () => { enterApp('devis'); newQuote(); } },
+      { title: 'Présenter au client', sub: 'Plein écran : prime, garanties, répartition, code QR', icon: 'i-present', kw: 'presentation client ecran plein', run: () => { enterApp('devis'); openPresent(); } },
+      { title: 'Partager la simulation', sub: 'Lien, code QR, WhatsApp, e-mail', icon: 'i-share', kw: 'partager lien qr whatsapp email', run: () => { enterApp('devis'); openShare(); } },
+      { title: 'Propositions en 3 formules', sub: 'Comparer trois niveaux de couverture', icon: 'i-compare', kw: 'formules packs propositions comparer', run: () => { enterApp('devis'); openPacks(); } },
+      { title: 'Sinistre · Constat amiable', sub: 'Responsabilités selon le barème FTUSA', icon: 'i-warn', kw: 'sinistre constat accident responsabilite', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('constat'); } },
+      { title: 'Sinistre · Barème FTUSA', sub: 'Les 25 cas du barème de responsabilité', icon: 'i-info', kw: 'bareme ftusa cas', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('bareme'); } },
+      { title: 'Sinistre · Entraînement', sub: 'Exercices sur le barème', icon: 'i-check', kw: 'quiz entrainement exercice', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('quiz'); } },
+      { title: "Installer l'application", sub: 'Code QR et étapes Android, iPhone', icon: 'i-download', kw: 'installer application qr telephone mobile', run: openInstall, hidden: isStandalone() },
+      { title: 'Thème clair', sub: 'Affichage', icon: 'i-sun', kw: 'theme jour clair affichage', run: () => setTheme('light') },
+      { title: 'Thème sombre', sub: 'Affichage', icon: 'i-moon', kw: 'theme nuit sombre affichage', run: () => setTheme('dark') },
+      { title: 'Thème automatique', sub: "Suit le réglage de l'appareil", icon: 'i-auto', kw: 'theme auto systeme affichage', run: () => setTheme('auto') },
+      document.documentElement.dataset.text === 'large'
+        ? { title: 'Texte de taille normale', sub: 'Affichage', icon: 'i-text', kw: 'texte taille police normale petit', run: () => setTextScale('normal') }
+        : { title: 'Texte plus grand', sub: 'Affichage', icon: 'i-text', kw: 'texte taille police grande lisibilite', run: () => setTextScale('large') },
+    ].filter(c => !c.hidden);
+  }
+  // Tous les mots doivent être présents ; un nombre doit correspondre à un nombre entier (« 6 » ne trouve pas « 16 »)
+  function paletteMatch(query, hay) {
+    const words = fold(query).split(/[\s,;:·]+/).filter(Boolean);
+    if (!words.length) return true;
+    const h = fold(hay);
+    const nums = new Set(h.match(/\d+/g) || []);
+    return words.every(w => (/^\d+$/.test(w) ? nums.has(w) : h.includes(w)));
+  }
+  function paletteResults(query) {
+    const groups = [];
+    const cmds = paletteCommands().filter(c => paletteMatch(query, `${c.title} ${c.sub} ${c.kw}`));
+    if (cmds.length) groups.push({ label: query ? 'Actions' : 'Aller à', items: cmds });
+    const offers = readOffers().slice().reverse().filter(o => !query || offerMatches(o, query)).slice(0, query ? 6 : 3);
+    if (offers.length) groups.push({
+      label: query ? 'Devis enregistrés' : 'Devis récents',
+      items: offers.map(o => ({ title: offerTitle(o), sub: offerFacts(o).join(' · ') || o.date, hint: (o.data && o.data.primeTotal) || '', icon: 'i-folder', run: () => { enterApp('devis'); loadOffer(o.id); } })),
+    });
+    if (query) {
+      const gs = GUARANTEES.filter(d => paletteMatch(query, `${d.name} garantie`)).slice(0, 6);
+      if (gs.length) groups.push({
+        label: 'Garanties',
+        items: gs.map(d => ({ title: d.name, sub: state.g[d.id].enabled ? 'Incluse dans la simulation' : 'Non incluse', hint: 'Étape 2', icon: 'g-' + d.id, run: () => { enterApp('devis'); goToStep(2); setTimeout(() => flashGuarantee(d.id), reduceMotion.matches ? 0 : 320); } })),
+      });
+      const B = window.BAREME_FTUSA;
+      if (B && Array.isArray(B.cas)) {
+        const catTitle = Object.fromEntries((B.categories || []).map(c => [c.id, c.titre]));
+        const cases = B.cas.filter(c => paletteMatch(query, `cas n° ${c.n} bareme ${c.groupe || ''} ${c.texte} ${catTitle[c.cat] || ''}`)).slice(0, 8);
+        if (cases.length) groups.push({
+          label: 'Barème FTUSA',
+          items: cases.map(c => ({ title: `Cas n° ${c.n}`, sub: c.texte, hint: `X ${c.x} · Y ${c.y}`, badge: String(c.n), run: () => {
+            enterApp('sinistre');
+            if (!window.Sinistre) return;
+            window.Sinistre.showTab('bareme');
+            requestAnimationFrame(() => window.Sinistre.focusCase(c.n));
+          } })),
+        });
+      }
+    }
+    return groups;
+  }
+  let paletteItems = [];
+  let paletteActive = 0;
+  function renderPalette() {
+    const query = $('#paletteInput').value.trim();
+    const groups = paletteResults(query);
+    paletteItems = groups.flatMap(g => g.items);
+    paletteActive = Math.min(paletteActive, Math.max(0, paletteItems.length - 1));
+    let n = 0;
+    $('#paletteList').innerHTML = paletteItems.length ? groups.map((g, gi) => `
+      <div role="group" aria-labelledby="pg${gi}">
+        <p class="palette-group-label" id="pg${gi}" role="presentation">${escapeHtml(g.label)}</p>
+        ${g.items.map(it => { const i = n++; return `<div class="palette-item" role="option" id="po${i}" data-i="${i}" aria-selected="false">
+          <i aria-hidden="true">${it.badge ? `<b>${escapeHtml(it.badge)}</b>` : icon(it.icon)}</i>
+          <span class="palette-text"><span class="palette-title">${escapeHtml(it.title)}</span>${it.sub ? `<span class="palette-sub">${escapeHtml(it.sub)}</span>` : ''}</span>
+          ${it.hint ? `<span class="palette-hint">${escapeHtml(it.hint)}</span>` : ''}
+        </div>`; }).join('')}
+      </div>`).join('') : `<p class="palette-empty">Aucun résultat pour « ${escapeHtml(query)} ».</p>`;
+    setPaletteActive(paletteActive, false);
+  }
+  function setPaletteActive(i, scroll = true) {
+    const input = $('#paletteInput');
+    if (!paletteItems.length) { input.removeAttribute('aria-activedescendant'); return; }
+    paletteActive = (i + paletteItems.length) % paletteItems.length;
+    $$('.palette-item', $('#paletteList')).forEach(el => el.setAttribute('aria-selected', String(Number(el.dataset.i) === paletteActive)));
+    input.setAttribute('aria-activedescendant', 'po' + paletteActive);
+    if (scroll) $('#po' + paletteActive).scrollIntoView({ block: 'nearest' });
+  }
+  function runPaletteItem(i) {
+    const item = paletteItems[i];
+    if (!item) return;
+    closeDialog($('#paletteModal'));
+    item.run();
+  }
+  function openPalette() {
+    $$('dialog[open]').forEach(closeDialog);
+    if (hasPopover && $('#displayMenu').matches(':popover-open')) $('#displayMenu').hidePopover();
+    $('#paletteInput').value = '';
+    paletteActive = 0;
+    renderPalette();
+    openDialog($('#paletteModal'));
+    $('#paletteInput').focus();
+  }
+  function watchPalette() {
+    $$('[data-kbd-k]').forEach(k => { k.textContent = isMac ? '⌘ K' : 'Ctrl K'; });
+    $('#openPaletteBtn').addEventListener('click', openPalette);
+    const input = $('#paletteInput');
+    input.addEventListener('input', () => { paletteActive = 0; renderPalette(); $('#paletteList').scrollTop = 0; });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setPaletteActive(paletteActive + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setPaletteActive(paletteActive - 1); }
+      else if (e.key === 'Enter') { e.preventDefault(); runPaletteItem(paletteActive); }
+    });
+    const list = $('#paletteList');
+    list.addEventListener('pointermove', e => {
+      const el = e.target.closest('.palette-item');
+      if (el && Number(el.dataset.i) !== paletteActive) setPaletteActive(Number(el.dataset.i), false);
+    });
+    list.addEventListener('click', e => {
+      const el = e.target.closest('.palette-item');
+      if (el) runPaletteItem(Number(el.dataset.i));
+    });
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if ($('#paletteModal').open) closeDialog($('#paletteModal'));
+        else openPalette();
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------
    * Application installable, utilisable hors connexion
    * ------------------------------------------------------------------ */
   let installPrompt = null;
@@ -3477,7 +4066,7 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
     $('#copyInstallBtn').addEventListener('click', async () => {
       const input = $('#installLink');
       try { await navigator.clipboard.writeText(input.value); } catch (e) { input.select(); try { document.execCommand('copy'); } catch (err) { /* copie manuelle */ } }
-      toast('Adresse copiée.');
+      confirmButton($('#copyInstallBtn'), 'Copié', 'Adresse copiée.');
     });
     window.addEventListener('offline', () => toast('Hors connexion : la simulation reste disponible ; le partage par WhatsApp ou e-mail attendra le réseau.', 'warn'));
     window.addEventListener('online', () => toast('Connexion rétablie.'));
@@ -3490,6 +4079,10 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
 
   function init() {
     watchInstall();
+    watchDisplay();
+    watchPalette();
+    watchPresent();
+    watchPreview();
     applyThemeUi();
     buildSelects();
     $('#pmec').max = todayIso(); // vide par défaut : la date se lit sur la carte grise
