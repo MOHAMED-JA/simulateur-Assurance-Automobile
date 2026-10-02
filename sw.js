@@ -1,7 +1,7 @@
 /* Simulateur Assurance Automobile : fonctionnement hors connexion.
    Réseau d'abord (la version en ligne reste toujours la référence), le cache sert de
    secours hors connexion. Changer VERSION quand la liste des fichiers évolue. */
-const VERSION = '2026-10-02';
+const VERSION = '2026-10-02b';
 const CACHE = 'simulateur-' + VERSION;
 const SHELL = [
   './',
@@ -9,6 +9,7 @@ const SHELL = [
   './manifest.webmanifest',
   './assets/css/sinistre.css',
   './assets/js/sinistre.js',
+  './assets/js/declaration.js',
   './assets/js/bareme-ftusa.js',
   './assets/js/qrcode.js',
   './assets/js/vendor/modern-screenshot.js',

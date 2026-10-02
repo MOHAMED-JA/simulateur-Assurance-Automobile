@@ -282,6 +282,10 @@ A switch (40 × 24px), an icon on a Cobalt Mist tile (Tile Off when off or unava
 ### Constat amiable (Sinistre)
 A paper document that stays light at night: yellow A column, green B column, the 17 numbered circumstances in the middle, square boxes that receive a drawn cross, and the count of ticked boxes at the foot. Verdict badges follow state colors (green non fautif, red fautif, amber partagé); the split bar uses the vehicle colors; case numbers sit on Cobalt Mist tiles.
 
+### Sinistre tools
+- **Training:** a mode chooser (Cobalt Mist icon tiles, family buttons with a thin cobalt mastery meter) beside "Ma progression" (four figures on Surface 2 tiles, a one-series column chart of the last ten scores with a hover title and a screen-reader list, cases to review as small buttons). A question shows a ten-segment progress row (green right, red wrong, cobalt ring current); "Contre la montre" adds a cobalt countdown bar that turns danger red in the last 5 seconds, with the seconds always written.
+- **Guided declaration:** a seven-step bar (number discs, success check when complete, Cobalt Mist current step; on phones only the current label shows and the bar scrolls). Each step is one panel with a numbered title and Précédent / Suivant at its foot. The sketch is an editable barème scene: cars and the impact star move by drag, arrow keys or the arrow pad, cars rotate by 15°, the selected item wears a dashed cobalt halo. Damaged zones sit around a top-view car as toggle buttons (danger mist when on) and appear on the car as a red hatch, so they read without color and in print. The summary is a document card that follows the theme on screen and always prints on white paper, with the vehicles in their constat colors.
+
 ### Printed offer
 A white A4 document in either theme: shield mark and date over a 2px cobalt rule, key-value grids with hairlines, the coverage table, a cobalt total panel, the assistance note on Cobalt Mist, the QR code. Fits one page. Empty insured fields print as dotted lines to complete by hand, never as dashes; on screen a quiet note offers to fill the proposant form. The dialog footer has one primary action, Imprimer.
 

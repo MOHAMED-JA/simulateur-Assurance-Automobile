@@ -2558,6 +2558,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
 <script src="assets/js/qrcode.js"></script>
 <script src="assets/js/bareme-ftusa.js"></script>
 <script src="assets/js/sinistre.js"></script>
+<script src="assets/js/declaration.js"></script>
 <script>
 (() => {
   'use strict';
@@ -5210,8 +5211,9 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
       { title: 'Partager la simulation', sub: 'Lien, code QR, WhatsApp, e-mail', icon: 'i-share', kw: 'partager lien qr whatsapp email', run: () => { enterApp('devis'); openShare(); } },
       { title: 'Propositions en 3 formules', sub: 'Comparer trois niveaux de couverture', icon: 'i-compare', kw: 'formules packs propositions comparer', run: () => { enterApp('devis'); openPacks(); } },
       { title: 'Sinistre · Constat amiable', sub: 'Responsabilités selon le barème FTUSA', icon: 'i-warn', kw: 'sinistre constat accident responsabilite', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('constat'); } },
+      { title: 'Sinistre · Déclaration d’accident', sub: 'Préparer le constat : véhicules, croquis, chocs, photos', icon: 'i-pen', kw: 'declaration accident croquis photos chocs constat', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('declaration'); } },
       { title: 'Sinistre · Barème FTUSA', sub: 'Les 25 cas du barème de responsabilité', icon: 'i-info', kw: 'bareme ftusa cas', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('bareme'); } },
-      { title: 'Sinistre · Entraînement', sub: 'Exercices sur le barème', icon: 'i-check', kw: 'quiz entrainement exercice', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('quiz'); } },
+      { title: 'Sinistre · Entraînement', sub: 'Série, contre la montre, révision des erreurs', icon: 'i-check', kw: 'quiz entrainement exercice chrono revision', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('quiz'); } },
       { title: "Installer l'application", sub: 'Code QR et étapes Android, iPhone', icon: 'i-download', kw: 'installer application qr telephone mobile', run: openInstall, hidden: isStandalone() },
       { title: 'Thème clair', sub: 'Affichage', icon: 'i-sun', kw: 'theme jour clair affichage', run: () => setTheme('light') },
       { title: 'Thème sombre', sub: 'Affichage', icon: 'i-moon', kw: 'theme nuit sombre affichage', run: () => setTheme('dark') },

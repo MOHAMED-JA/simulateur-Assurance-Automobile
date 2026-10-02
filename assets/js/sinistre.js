@@ -1349,7 +1349,7 @@
       q('#' + panel).hidden = !on;
     });
     if (name === 'quiz' && (!quiz || !q('#quizBox').firstElementChild)) renderQuiz();
-    if (name === 'declaration' && window.Declaration) window.Declaration.mount(q('#declMount'));
+    if (name === 'declaration' && window.Declaration) { window.Declaration.refresh(); window.Declaration.mount(q('#declMount')); }
     const bar = document.getElementById('sinMobileBar');
     if (bar) bar.dataset.tab = name;
     setHash(TABS[name][2]);
@@ -1433,5 +1433,6 @@
     syncHash: () => { if (!root) return; const cur = Object.keys(TABS).find(k => q('#' + TABS[k][0]).getAttribute('aria-selected') === 'true'); setHash(TABS[cur || 'constat'][2]); },
     // pour la déclaration : croquis et constat en cours
     carSvg, roadSvg, star, COL, CIRC, describe: inp => describe(inp), current: () => clone(st), verdict: () => determine(st),
+    layout: n => (SCENES[n] ? clone(SCENES[n]) : null),
   };
 })();
