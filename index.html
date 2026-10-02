@@ -1084,6 +1084,50 @@ html.vt-offer::view-transition-new(root) { animation: fadeIn .3s ease both; }
 @keyframes dialogIn { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
 .dialog > form { display: contents; }
 
+/* Signature du proposant (offre et fenêtre de signature) */
+.doc-sign { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; align-items: stretch; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--doc-line); }
+.doc-sign h3 { font-size: 1rem; font-weight: 650; color: var(--doc-accent); }
+.doc-sign-text p { margin-top: 4px; font-size: .9rem; color: var(--doc-muted); }
+.doc-sign-date { font-variant-numeric: tabular-nums; }
+.doc-blank { display: inline-block; width: 120px; height: 1em; vertical-align: -2px; border-bottom: 1px dotted #9aa3b2; }
+.doc-sign-box { position: relative; display: grid; place-items: center; min-height: 104px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--doc-line); background: repeating-linear-gradient(0deg, transparent 0 calc(100% - 26px), transparent calc(100% - 26px)); }
+.doc-sign-box::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 24px; border-bottom: 1px dashed #cdd2db; pointer-events: none; }
+.doc-sign-box img { position: relative; z-index: 1; max-width: 92%; max-height: 96px; }
+.doc-sign-box.is-signed { box-shadow: inset 0 0 0 1px var(--doc-line); }
+.doc-sign-box.is-signed::after { display: none; }
+.doc-sign-clear { position: absolute; z-index: 2; top: 6px; right: 6px; min-height: 30px; font-size: .78rem; }
+.doc-sign-box:not(.is-signed) #signOfferBtn { position: relative; z-index: 2; }
+.dialog--sign { width: min(640px, calc(100vw - 32px)); }
+.sign-pad-wrap { position: relative; margin-top: 14px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px var(--line-strong); overflow: hidden; }
+.sign-pad { display: block; width: 100%; height: 220px; touch-action: none; cursor: crosshair; }
+.sign-pad-hint { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); font-size: 1.1rem; font-weight: 500; color: #a3abb9; pointer-events: none; transition: opacity .2s ease; }
+.sign-pad-wrap.has-ink .sign-pad-hint { opacity: 0; }
+.sign-pad-line { position: absolute; left: 24px; right: 24px; bottom: 46px; border-bottom: 1px dashed #cdd2db; pointer-events: none; }
+.sign-typed { margin-top: 14px; }
+@media (max-width: 560px) { .doc-sign { grid-template-columns: 1fr; } .sign-pad { height: 200px; } }
+
+/* Optimiseur de budget */
+.budget-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px; padding-top: 18px; }
+.budget-form + .hint { margin-top: 10px; }
+.budget-results { display: grid; gap: 12px; margin-top: 18px; }
+.budget-results:empty { display: none; }
+.budget-best { position: relative; padding: 20px 22px; border-radius: 16px; background: var(--ink-card); color: #fff; box-shadow: 0 16px 36px -22px rgb(16 24 40 / .6); animation: rowIn .45s var(--ease-out) backwards; }
+.budget-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: rgb(255 255 255 / .1); box-shadow: inset 0 0 0 1px var(--on-ink-line); font-size: .76rem; font-weight: 600; }
+.budget-badge .icon { width: 14px; height: 14px; color: #7fe0b7; }
+.budget-name { margin-top: 10px; font-size: 1.15rem; font-weight: 650; letter-spacing: -.01em; }
+.budget-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-top: 4px; }
+.budget-price strong { font-size: 2rem; font-weight: 650; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.budget-price span { color: var(--on-ink-muted); font-size: .9rem; }
+.budget-items { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 16px; }
+.budget-items li { padding: 4px 10px; border-radius: 999px; background: rgb(255 255 255 / .07); box-shadow: inset 0 0 0 1px var(--on-ink-line); font-size: .8rem; color: #fff; }
+.budget-alt-title { margin-top: 6px; font-size: .86rem; font-weight: 600; color: var(--muted); }
+.budget-alt { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+.budget-alt-name { font-weight: 600; font-size: .92rem; }
+.budget-alt-sub { font-size: .78rem; color: var(--muted); }
+.budget-alt-price { font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.budget-none { padding: 14px 16px; border-radius: 12px; background: var(--warning-soft); color: var(--warning-text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warning) 35%, transparent); font-size: .9rem; line-height: 1.5; }
+@media (max-width: 560px) { .budget-form { grid-template-columns: minmax(0, 1fr); } .budget-alt { grid-template-columns: minmax(0, 1fr) auto; } .budget-alt .btn { grid-column: 1 / -1; } }
+
 /* Présentation au client (plein écran) */
 .dialog.dialog--present { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; background: var(--bg); box-shadow: none; }
 .present-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 32px; padding: 14px clamp(16px, 4vw, 56px); background: var(--surface); border-bottom: 1px solid var(--line); }
@@ -1686,6 +1730,11 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
   #printRoot .mix-pct { font-size: 8pt; }
   #printRoot .doc-total strong { font-size: 16pt; }
   #printRoot .doc-assist { margin-top: 0; padding: 12px 16px; }
+  #printRoot .doc-sign-action { display: none !important; }
+  #printRoot .doc-sign { margin-top: 10px; padding-top: 8px; gap: 12px; }
+  #printRoot .doc-sign-box { min-height: 74px; }
+  #printRoot .doc-sign-box img { max-height: 66px; }
+  #printRoot .doc-sign-text p { font-size: 8.5pt; }
   #printRoot .doc-foot { margin-top: 12px; grid-template-columns: minmax(0, 1fr) auto; }
   #printRoot .doc-qr { width: auto; flex-direction: row; gap: 10px; padding: 8px 10px; text-align: left; font-size: 8pt; }
   #printRoot .doc-qr span { max-width: 70px; }
@@ -1725,6 +1774,8 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5.2 3.5h10.6l3.7 3.7v11.6c0 .9-.8 1.7-1.7 1.7H5.2c-.9 0-1.7-.8-1.7-1.7V5.2c0-.9.8-1.7 1.7-1.7z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.8h16M9.3 6.8V4.2h5.4v2.6M6.3 6.8l.9 13.2h9.6l.9-13.2M10 10.8v5.4M14 10.8v5.4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M14.5 5.5l4 4L8 20H4v-4z"/><path d="M12.5 7.5l4 4"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4.5 19.5h15"/><path d="M7.5 16v-5M12 16V7M16.5 16v-8"/></symbol>
   <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><path d="M12 13v3.5M10.3 14.8h3.4"/></symbol>
   <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v3.2h3.2"/><path d="M12 8v4.3l2.8 1.7"/></symbol>
@@ -2023,6 +2074,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
           <div class="tools-bar">
             <button type="button" class="btn btn--ghost" id="openPacksBtn"><svg class="icon"><use href="#i-compare"/></svg> Propositions en 3 formules</button>
             <button type="button" class="btn btn--ghost" id="openShareBtn"><svg class="icon"><use href="#i-share"/></svg> Partager la simulation</button>
+            <button type="button" class="btn btn--ghost" id="openBudgetBtn"><svg class="icon"><use href="#i-target"/></svg> Meilleure couverture pour un budget</button>
             <button type="button" class="btn btn--ghost" id="openPresentBtn"><svg class="icon"><use href="#i-present"/></svg> Présenter au client</button>
           </div>
           <div class="step-nav">
@@ -2205,6 +2257,18 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
         </div>
         <div class="doc-qr" id="offerQr" hidden></div>
       </div>
+      <section class="doc-sign" aria-labelledby="docSignTitle">
+        <div class="doc-sign-text">
+          <h3 id="docSignTitle">Signature du proposant</h3>
+          <p>Lu et approuvé<span id="offreSignName"></span></p>
+          <p class="doc-sign-date" id="offreSignDate"></p>
+        </div>
+        <div class="doc-sign-box" id="offreSignBox">
+          <img id="offreSignImg" alt="Signature du proposant" hidden>
+          <button type="button" class="btn btn--ghost btn--sm doc-sign-action" id="signOfferBtn"><svg class="icon"><use href="#i-pen"/></svg> Faire signer le client</button>
+          <button type="button" class="btn btn--ghost btn--sm doc-sign-action doc-sign-clear" id="clearSignBtn" hidden><svg class="icon"><use href="#i-reset"/></svg> Effacer la signature</button>
+        </div>
+      </section>
     </article>
   </div>
   <footer class="dialog-foot">
@@ -2332,6 +2396,48 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     </div>
   </fieldset>
 </div>
+
+<dialog class="dialog dialog--sign" id="signModal" aria-labelledby="signTitle" aria-describedby="signLead">
+  <header class="dialog-head">
+    <h2 id="signTitle">Signature du client</h2>
+    <button type="button" class="icon-btn" data-close aria-label="Fermer"><svg class="icon"><use href="#i-close"/></svg></button>
+  </header>
+  <div class="dialog-scroll">
+    <p class="hint" id="signLead">Le client signe au doigt, au stylet ou à la souris dans le cadre. La signature figure sur l'offre imprimée et dans le PDF, et elle est gardée avec le devis enregistré.</p>
+    <div class="sign-pad-wrap">
+      <canvas class="sign-pad" id="signPad" aria-label="Zone de signature : dessinez votre signature" role="img"></canvas>
+      <p class="sign-pad-hint" id="signPadHint" aria-hidden="true">Signez ici</p>
+      <span class="sign-pad-line" aria-hidden="true"></span>
+    </div>
+    <div class="field sign-typed">
+      <label for="signTyped">Ou tapez le nom du signataire</label>
+      <input class="input" type="text" id="signTyped" name="signTyped" autocomplete="off" placeholder="Ex. Amel Ben Salah">
+    </div>
+  </div>
+  <footer class="dialog-foot">
+    <button type="button" class="btn btn--ghost" id="signClearPad"><svg class="icon"><use href="#i-reset"/></svg> Recommencer</button>
+    <span class="spacer"></span>
+    <button type="button" class="btn btn--blue" id="signConfirm" disabled><svg class="icon"><use href="#i-check"/></svg> Valider la signature</button>
+  </footer>
+</dialog>
+
+<dialog class="dialog" id="budgetModal" aria-labelledby="budgetTitle">
+  <header class="dialog-head">
+    <h2 id="budgetTitle">Meilleure couverture pour un budget</h2>
+    <button type="button" class="icon-btn" data-close aria-label="Fermer"><svg class="icon"><use href="#i-close"/></svg></button>
+  </header>
+  <div class="dialog-scroll">
+    <form class="budget-form" id="budgetForm" novalidate>
+      <div class="field">
+        <label for="budgetInput">Budget du client, prime totale TTC <span class="label-optional" id="budgetPeriod">par an</span></label>
+        <div class="affix"><input class="input" type="text" id="budgetInput" name="budget" inputmode="decimal" placeholder="Ex. 1 200" autocomplete="off" aria-describedby="budgetHint"><span class="affix-unit">DT</span></div>
+      </div>
+      <button type="submit" class="btn btn--blue">Trouver la couverture</button>
+    </form>
+    <p class="hint" id="budgetHint">Même véhicule, même fractionnement et même réduction (<b id="budgetRate">0 %</b>). La formule basique reste la base ; les options s'ajoutent dans le respect des règles (ancienneté, valeur catalogue, garanties non cumulables).</p>
+    <div class="budget-results" id="budgetResults" aria-live="polite"></div>
+  </div>
+</dialog>
 
 <dialog class="dialog" id="installModal" aria-labelledby="installTitle" aria-describedby="installLead">
   <header class="dialog-head">
@@ -3507,6 +3613,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
   }
   function populateOffer() {
     resetButton($('#saveOfferBtn')); // nouvelle ouverture : un nouvel enregistrement est possible
+    renderSignature();
     const fd = readUserForm();
     // champ vide : une ligne à compléter à la main plutôt qu'un tiret
     const set = (id, v) => { const el = $('#' + id); el.textContent = v || ''; el.classList.toggle('is-blank', !v); };
@@ -3562,6 +3669,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
         },
         guarantees: GUARANTEES.map(d => ({ id: d.id, enabled: state.g[d.id].enabled, franchise: state.g[d.id].franchise, capital: state.g[d.id].capital })),
         primeTotal: $('#offrePrimeTotal').textContent,
+        ...(signature && signature.key === signatureKey() ? { signature: { img: signature.img, at: signature.at, name: signature.name } } : {}),
       },
     };
     const offers = readOffers();
@@ -4044,6 +4152,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     refresh();
     closeDialog($('#savedOffersModal'));
     goToStep(3, { focus: false });
+    signature = data.signature && data.signature.img ? { ...data.signature, key: signatureKey() } : null;
     if (isReady()) openOffer();
   }
 
@@ -4541,6 +4650,260 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     watchIntroMotion();
   }
 
+
+
+  /* ------------------------------------------------------------------
+   * Signature du client : tracé au doigt, au stylet ou à la souris, ou nom tapé
+   * ------------------------------------------------------------------ */
+  let signature = null; // { img, at, name, key }
+  const signatureKey = () => simulationParams() + '|' + JSON.stringify(readUserForm());
+  let pad = null;
+  function setupPad() {
+    const canvas = $('#signPad');
+    const wrap = canvas.parentElement;
+    const ctx = canvas.getContext('2d');
+    let strokes = [];
+    let current = null;
+    let typed = '';
+    const size = () => {
+      const r = canvas.getBoundingClientRect();
+      const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+      canvas.width = Math.round(r.width * dpr);
+      canvas.height = Math.round(r.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    };
+    const drawStroke = st => {
+      if (st.length === 1) { ctx.beginPath(); ctx.arc(st[0].x, st[0].y, 1.4, 0, Math.PI * 2); ctx.fill(); return; }
+      for (let i = 1; i < st.length; i++) {
+        const a = st[i - 1]; const b = st[i];
+        ctx.lineWidth = b.w;
+        ctx.beginPath();
+        const m0 = i > 1 ? { x: (st[i - 2].x + a.x) / 2, y: (st[i - 2].y + a.y) / 2 } : a;
+        const m1 = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        ctx.moveTo(m0.x, m0.y);
+        ctx.quadraticCurveTo(a.x, a.y, m1.x, m1.y);
+        ctx.stroke();
+      }
+    };
+    function draw() {
+      const r = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, r.width, r.height);
+      ctx.strokeStyle = '#0f1522'; ctx.fillStyle = '#0f1522'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      if (typed) {
+        ctx.font = `italic 600 ${Math.min(44, r.width / Math.max(8, typed.length) * 1.6)}px Geist, "Segoe UI", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(typed, r.width / 2, r.height - 58);
+      }
+      strokes.forEach(drawStroke);
+      wrap.classList.toggle('has-ink', Boolean(strokes.length || typed));
+      $('#signConfirm').disabled = !(strokes.length || typed);
+    }
+    const point = e => {
+      const r = canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() };
+    };
+    canvas.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      const p = point(e);
+      current = [{ ...p, w: 2.4 }];
+      strokes.push(current);
+      draw();
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (!current) return;
+      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+      events.forEach(ev => {
+        const p = point(ev);
+        const last = current[current.length - 1];
+        const dist = Math.hypot(p.x - last.x, p.y - last.y);
+        if (dist < 0.8) return;
+        const speed = dist / Math.max(1, p.t - last.t);
+        const w = Math.max(1.1, Math.min(3.2, 3.4 - speed * 1.1)); // trait plus fin quand la main va vite
+        current.push({ ...p, w: last.w * 0.6 + w * 0.4 });
+      });
+      draw();
+    });
+    const end = () => { current = null; };
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    $('#signTyped').addEventListener('input', e => { typed = e.target.value.trim(); draw(); });
+    window.addEventListener('resize', () => { if ($('#signModal').open) size(); });
+    return {
+      reset() { strokes = []; current = null; typed = ''; $('#signTyped').value = ''; size(); },
+      clear() { strokes = []; typed = ''; $('#signTyped').value = ''; draw(); },
+      size,
+      // image recadrée sur le tracé, fond transparent
+      image() {
+        const r = canvas.getBoundingClientRect();
+        const dpr = canvas.width / r.width;
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let x0 = canvas.width; let y0 = canvas.height; let x1 = 0; let y1 = 0;
+        for (let y = 0; y < canvas.height; y += 2) for (let x = 0; x < canvas.width; x += 2) {
+          if (data[(y * canvas.width + x) * 4 + 3] > 10) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+        }
+        if (x1 <= x0 || y1 <= y0) return null;
+        const pad2 = Math.round(8 * dpr);
+        x0 = Math.max(0, x0 - pad2); y0 = Math.max(0, y0 - pad2); x1 = Math.min(canvas.width, x1 + pad2); y1 = Math.min(canvas.height, y1 + pad2);
+        const out = document.createElement('canvas');
+        const scale = Math.min(1, 520 / (x1 - x0));
+        out.width = Math.round((x1 - x0) * scale); out.height = Math.round((y1 - y0) * scale);
+        out.getContext('2d').drawImage(canvas, x0, y0, x1 - x0, y1 - y0, 0, 0, out.width, out.height);
+        return out.toDataURL('image/png');
+      },
+      typedName: () => typed,
+    };
+  }
+  function openSign() {
+    if (!pad) pad = setupPad();
+    openDialog($('#signModal'));
+    pad.reset();
+    const fd = readUserForm();
+    $('#signTyped').placeholder = [fd.prenom, fd.nom].filter(Boolean).join(' ') || 'Ex. Amel Ben Salah';
+  }
+  function confirmSign() {
+    const img = pad && pad.image();
+    if (!img) return;
+    const fd = readUserForm();
+    signature = { img, at: Date.now(), name: pad.typedName() || [fd.prenom, fd.nom].filter(x => x && String(x).trim()).join(' '), key: signatureKey() };
+    closeDialog($('#signModal'));
+    renderSignature();
+    toast('Signature ajoutée à l’offre.');
+  }
+  function renderSignature() {
+    const box = $('#offreSignBox');
+    if (signature && signature.key !== signatureKey()) signature = null; // la simulation a changé depuis la signature
+    const signed = Boolean(signature);
+    box.classList.toggle('is-signed', signed);
+    $('#offreSignImg').hidden = !signed;
+    if (signed) $('#offreSignImg').src = signature.img;
+    else $('#offreSignImg').removeAttribute('src');
+    $('#signOfferBtn').hidden = signed;
+    $('#clearSignBtn').hidden = !signed;
+    $('#offreSignName').textContent = signed && signature.name ? ` · ${signature.name}` : '';
+    const at = signed ? new Date(signature.at) : null;
+    $('#offreSignDate').innerHTML = signed
+      ? escapeHtml(`Signé le ${new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).format(at)} à ${at.getHours()} h ${String(at.getMinutes()).padStart(2, '0')}`)
+      : 'Date : <span class="doc-blank"></span>';
+  }
+  function watchSign() {
+    $('#signOfferBtn').addEventListener('click', openSign);
+    $('#signClearPad').addEventListener('click', () => pad && pad.clear());
+    $('#signConfirm').addEventListener('click', confirmSign);
+    $('#clearSignBtn').addEventListener('click', () => {
+      const before = signature;
+      signature = null;
+      renderSignature();
+      toast('Signature effacée.', null, { label: 'Annuler', run: () => { signature = before; renderSignature(); } });
+    });
+    $('#signModal').addEventListener('close', () => { if (!$('#offreAssuranceModal').open) return; $('#signOfferBtn').hidden || $('#signOfferBtn').focus(); });
+  }
+
+  /* ------------------------------------------------------------------
+   * Optimiseur de budget : la couverture la plus complète dont la prime TTC tient dans le budget
+   * ------------------------------------------------------------------ */
+  const BUDGET_TIERS = ['Formule basique seule', 'Bris de glaces', 'Dommages et collision', 'Dommages et collision + Bris de glaces', 'Dommages au véhicule'];
+  function budgetCandidates() {
+    const v = readVehicle();
+    const age = vehicleAgeYears();
+    const make = (tier, opts) => {
+      const G = Object.fromEntries(GUARANTEES.map(d => [d.id, { enabled: BASIQUE_IDS.includes(d.id), franchise: state.g[d.id].franchise, capital: state.g[d.id].capital }]));
+      G.indacc.capital = opts.ic;
+      if (opts.bc) { G.brisglace.enabled = true; G.brisglace.capital = opts.bc; }
+      if (opts.cc) { G.collision.enabled = true; G.collision.capital = opts.cc; }
+      if (opts.df != null) { G.dommages.enabled = true; G.dommages.franchise = opts.df; }
+      const q = computeQuote(v, G, state.reduction);
+      // rang : niveau de couverture, puis capitaux (ou franchise basse), puis capital Individuel Accident
+      const rank = [tier, opts.df != null ? -DOMMAGES_FRANCHISES.indexOf(opts.df) : (opts.cc || 0), opts.bc || 0, opts.ic];
+      return { tier, opts, rank, prime: q.primeFinale };
+    };
+    const list = [];
+    const coll = DEF.collision.capitalOptions.filter(x => x > 0);
+    const bris = DEF.brisglace.capitalOptions.filter(x => x > 0);
+    DEF.indacc.capitalOptions.forEach(ic => {
+      list.push(make(0, { ic }));
+      bris.forEach(bc => list.push(make(1, { ic, bc })));
+      if (age <= 10) coll.forEach(cc => { list.push(make(2, { ic, cc })); bris.forEach(bc => list.push(make(3, { ic, cc, bc }))); });
+      if (age <= 5 && v.valeurCatalogue > 0) DOMMAGES_FRANCHISES.forEach(df => list.push(make(4, { ic, df })));
+    });
+    const cmp = (a, b) => { for (let i = 0; i < a.rank.length; i++) if (a.rank[i] !== b.rank[i]) return b.rank[i] - a.rank[i]; return a.prime - b.prime; };
+    return list.sort(cmp);
+  }
+  function budgetItems(c) {
+    const items = [];
+    if (c.opts.df != null) items.push(`Dommages au véhicule, franchise ${c.opts.df}${NNBSP}%`);
+    if (c.opts.cc) items.push(`Dommages et collision ${formatCurrency(c.opts.cc).replace(/\.000$/, '')}${NNBSP}DT`);
+    if (c.opts.bc) items.push(`Bris de glaces ${formatCurrency(c.opts.bc).replace(/\.000$/, '')}${NNBSP}DT`);
+    items.push(`Individuel Accident ${formatCurrency(c.opts.ic).replace(/\.000$/, '')}${NNBSP}DT`);
+    return items;
+  }
+  let budgetShown = [];
+  function runBudget(e) {
+    if (e) e.preventDefault();
+    const out = $('#budgetResults');
+    const budget = parseFloat(String($('#budgetInput').value).replace(/\s/g, '').replace(',', '.'));
+    if (!(budget > 0)) { out.innerHTML = '<p class="budget-none">Saisissez un budget en dinars, par exemple 1 200.</p>'; $('#budgetInput').focus(); return; }
+    const all = budgetCandidates();
+    const fit = all.filter(c => c.prime <= budget + 1e-9);
+    const per = readVehicle().fractionnement === 'semestriel' ? 'par semestre' : 'par an';
+    if (!fit.length) {
+      const cheapest = all.reduce((a, b) => (b.prime < a.prime ? b : a), all[0]);
+      out.innerHTML = `<p class="budget-none">Le budget de <b>${formatCurrency(budget)}${NNBSP}DT</b> est inférieur à la formule basique, la moins chère (<b>${formatCurrency(cheapest.prime)}${NNBSP}DT</b> ${per}, avec une réduction de ${state.reduction}${NNBSP}%). Il manque ${formatCurrency(cheapest.prime - budget)}${NNBSP}DT : augmentez le budget, ou cherchez le taux de réduction nécessaire avec « Trouver le taux pour une prime cible ».</p>`;
+      budgetShown = [];
+      return;
+    }
+    const best = fit[0];
+    const alts = [];
+    for (let t = best.tier - 1; t >= 0 && alts.length < 2; t--) {
+      const c = fit.find(x => x.tier === t);
+      if (c) alts.push(c);
+    }
+    budgetShown = [best, ...alts];
+    const left = c => `${formatCurrency(budget - c.prime)}${NNBSP}DT sous le budget`;
+    out.innerHTML = `
+      <section class="budget-best" aria-labelledby="budgetBestName">
+        <span class="budget-badge">${icon('i-check')}Meilleure couverture dans le budget</span>
+        <p class="budget-name" id="budgetBestName">${escapeHtml(BUDGET_TIERS[best.tier])}</p>
+        <p class="budget-price"><strong translate="no">${formatCurrency(best.prime)}${NNBSP}DT</strong><span>${per} · ${left(best)}</span></p>
+        <ul class="budget-items">${budgetItems(best).map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+        <button type="button" class="btn btn--blue" data-budget="0">Appliquer à la simulation</button>
+      </section>
+      ${alts.length ? `<p class="budget-alt-title">Autres possibilités, moins couvrantes</p>${alts.map((c, i) => `
+      <div class="budget-alt"><div><p class="budget-alt-name">${escapeHtml(BUDGET_TIERS[c.tier])}</p><p class="budget-alt-sub">${escapeHtml(budgetItems(c).join(' · '))}</p></div>
+        <span class="budget-alt-price" translate="no">${formatCurrency(c.prime)}${NNBSP}DT</span>
+        <button type="button" class="btn btn--ghost btn--sm" data-budget="${i + 1}">Appliquer</button></div>`).join('')}` : ''}`;
+  }
+  function applyBudget(i) {
+    const c = budgetShown[i];
+    if (!c) return;
+    state.formula = 'basique';
+    syncFormulaRadios();
+    GUARANTEES.forEach(d => { state.g[d.id].enabled = BASIQUE_IDS.includes(d.id); });
+    state.g.indacc.capital = c.opts.ic;
+    if (c.opts.bc) { state.g.brisglace.enabled = true; state.g.brisglace.capital = c.opts.bc; }
+    if (c.opts.cc) { state.g.collision.enabled = true; state.g.collision.capital = c.opts.cc; }
+    if (c.opts.df != null) { state.g.dommages.enabled = true; state.g.dommages.franchise = c.opts.df; }
+    refresh();
+    closeDialog($('#budgetModal'));
+    goToStep(3, { focus: false });
+    toast(`Couverture appliquée : ${formatCurrency(lastQuote.primeFinale)} DT.`);
+  }
+  function openBudget() {
+    if (!requireReady()) return;
+    $('#budgetRate').textContent = `${state.reduction}${NNBSP}%`;
+    $('#budgetPeriod').textContent = readVehicle().fractionnement === 'semestriel' ? 'par semestre' : 'par an';
+    $('#budgetResults').innerHTML = '';
+    openDialog($('#budgetModal'));
+    $('#budgetInput').focus();
+    if ($('#budgetInput').value) runBudget();
+  }
+  function watchBudget() {
+    $('#openBudgetBtn').addEventListener('click', openBudget);
+    $('#budgetForm').addEventListener('submit', runBudget);
+    $('#budgetResults').addEventListener('click', e => { const b = e.target.closest('[data-budget]'); if (b) applyBudget(Number(b.dataset.budget)); });
+  }
+
   /* ------------------------------------------------------------------
    * Présentation au client : plein écran, prime, garanties, répartition, code QR
    * ------------------------------------------------------------------ */
@@ -4639,6 +5002,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
       { title: 'Annuler la dernière modification', sub: 'Ctrl Z', icon: 'i-undo', kw: 'annuler retour arriere defaire undo', run: () => { enterApp('devis'); stepHistory(-1); }, hidden: !canUndo() },
       { title: 'Rétablir la modification', sub: 'Ctrl Y', icon: 'i-redo', kw: 'retablir refaire redo', run: () => { enterApp('devis'); stepHistory(1); }, hidden: !canRedo() },
       { title: 'Nouveau devis', sub: 'Repartir d’une simulation vide', icon: 'i-plus', kw: 'nouveau vider reinitialiser', run: () => { enterApp('devis'); newQuote(); } },
+      { title: 'Meilleure couverture pour un budget', sub: 'La couverture la plus complète sous un budget TTC', icon: 'i-target', kw: 'budget optimiser optimiseur couverture moins cher maximum', run: () => { enterApp('devis'); openBudget(); } },
       { title: 'Présenter au client', sub: 'Plein écran : prime, garanties, répartition, code QR', icon: 'i-present', kw: 'presentation client ecran plein', run: () => { enterApp('devis'); openPresent(); } },
       { title: 'Partager la simulation', sub: 'Lien, code QR, WhatsApp, e-mail', icon: 'i-share', kw: 'partager lien qr whatsapp email', run: () => { enterApp('devis'); openShare(); } },
       { title: 'Propositions en 3 formules', sub: 'Comparer trois niveaux de couverture', icon: 'i-compare', kw: 'formules packs propositions comparer', run: () => { enterApp('devis'); openPacks(); } },
@@ -4841,6 +5205,8 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     watchDisplay();
     watchPalette();
     watchPresent();
+    watchBudget();
+    watchSign();
     watchPreview();
     watchHistory();
     applyThemeUi();
