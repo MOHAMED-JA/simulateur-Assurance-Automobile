@@ -418,7 +418,7 @@
       <button type="button" role="tab" class="sin-tab" id="sinTabConstat" aria-controls="sinPanelConstat" aria-selected="true">${icon('i-list')}<span class="tab-long">Constat interactif</span><span class="tab-short">Constat</span></button>
       <button type="button" role="tab" class="sin-tab" id="sinTabDecl" aria-controls="sinPanelDecl" aria-selected="false">${icon('i-pen')}<span class="tab-long">Déclaration</span><span class="tab-short">Déclarer</span></button>
       <button type="button" role="tab" class="sin-tab" id="sinTabBareme" aria-controls="sinPanelBareme" aria-selected="false">${icon('i-receipt')}<span class="tab-long">Barème FTUSA · 25 cas</span><span class="tab-short">Barème</span></button>
-      <button type="button" role="tab" class="sin-tab" id="sinTabQuiz" aria-controls="sinPanelQuiz" aria-selected="false">${icon('i-check')}Entraînement</button>
+      <button type="button" role="tab" class="sin-tab" id="sinTabQuiz" aria-controls="sinPanelQuiz" aria-selected="false">${icon('i-check')}<span class="tab-long">Entraînement</span><span class="tab-short">Quiz</span></button>
     </div>
 
     <div class="sin-panel" id="sinPanelConstat" role="tabpanel" aria-labelledby="sinTabConstat">
@@ -987,14 +987,12 @@
 
   /* ---------- Entraînement ---------- */
   const ANSWERS = [
-    { k: 'A0', resp: { A: 0, B: 1 }, label: 'A non fautif · B 100 %' },
-    { k: 'A1', resp: { A: 1, B: 0 }, label: 'A 100 % · B non fautif' },
+    { k: 'A0', resp: { A: 0, B: 1 }, label: `A non fautif · B 100${NNBSP}%` },
+    { k: 'A1', resp: { A: 1, B: 0 }, label: `A 100${NNBSP}% · B non fautif` },
     { k: 'AB', resp: { A: 0.5, B: 0.5 }, label: 'Partagée 50 / 50' },
-    { k: 'A25', resp: { A: 0.25, B: 0.75 }, label: 'A 25 % · B 75 %' },
-    { k: 'A75', resp: { A: 0.75, B: 0.25 }, label: 'A 75 % · B 25 %' },
+    { k: 'A25', resp: { A: 0.25, B: 0.75 }, label: `A 25${NNBSP}% · B 75${NNBSP}%` },
+    { k: 'A75', resp: { A: 0.75, B: 0.25 }, label: `A 75${NNBSP}% · B 25${NNBSP}%` },
   ];
-  let quiz = null;
-
   function describe(inp) {
     const lines = [];
     if (inp.config) lines.push(`<li><strong>Configuration :</strong> ${esc(CONFIGS[inp.config].toLowerCase())}.</li>`);
@@ -1012,66 +1010,320 @@
     return `<ul class="quiz-facts">${lines.join('')}</ul>`;
   }
 
-  function newQuiz() {
-    const pool = Object.keys(PRESETS).map(Number);
-    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
-    quiz = { items: pool.slice(0, 10).map(n => ({ n, swap: Math.random() < 0.5 })), i: 0, score: 0, answered: false };
-    renderQuiz();
+  /* L'entraînement : plusieurs modes, une progression gardée sur l'appareil (clé sinTraining) */
+  const QUIZ_LEN = 10;
+  const CHRONO = 20; // secondes par question, contre la montre
+  const TRAIN_KEY = 'sinTraining';
+  const MODES = {
+    serie: { label: 'Série de 10', ic: 'i-list' },
+    chrono: { label: 'Contre la montre', ic: 'i-history' },
+    erreurs: { label: 'Révision des erreurs', ic: 'i-undo' },
+  };
+  let quiz = null; // null : écran de choix du mode
+  let tick = null;
+  let training = null;
+
+  function shuffle(a) {
+    const s = a.slice();
+    for (let i = s.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [s[i], s[j]] = [s[j], s[i]]; }
+    return s;
+  }
+  // familles du barème, limitées aux cas que le constat sait reproduire
+  const families = () => B.categories
+    .map(c => ({ id: c.id, cases: Object.keys(PRESETS).map(Number).filter(n => CAS[n] && CAS[n].cat === c.id) }))
+    .filter(f => f.cases.length);
+
+  function loadTraining() {
+    const out = { cases: {}, sessions: [] };
+    try {
+      const t = JSON.parse(store.get(TRAIN_KEY));
+      if (!t || typeof t !== 'object') return out;
+      Object.entries(t.cases || {}).forEach(([n, r]) => {
+        if (PRESETS[n] && r && typeof r === 'object') out.cases[n] = { ok: Math.max(0, r.ok | 0), ko: Math.max(0, r.ko | 0), last: r.last ? 1 : 0 };
+      });
+      out.sessions = (Array.isArray(t.sessions) ? t.sessions : [])
+        .filter(s => s && typeof s.mode === 'string' && s.total > 0 && s.score >= 0 && s.score <= s.total && Number.isFinite(s.t))
+        .slice(-30);
+    } catch (e) { /* progression illisible : on repart de zéro */ }
+    return out;
+  }
+  const tr = () => training || (training = loadTraining());
+  const saveTraining = () => store.set(TRAIN_KEY, JSON.stringify(tr()));
+  const toReview = () => Object.keys(tr().cases).filter(n => tr().cases[n].last === 0).map(Number).sort((a, b) => a - b);
+  const sessionMode = () => (quiz.mode === 'famille' ? 'famille:' + quiz.fam : quiz.mode);
+  const modeName = m => (m.startsWith('famille:') ? 'Famille ' + (shortCat(m.slice(8)) || '').split(' · ')[0].toLowerCase() : (MODES[m] || MODES.serie).label);
+
+  function startQuiz(mode, fam, list) {
+    let pool;
+    if (list) pool = list;
+    else if (mode === 'famille') pool = (families().find(f => f.id === fam) || {}).cases || [];
+    else if (mode === 'erreurs') pool = toReview();
+    else pool = Object.keys(PRESETS).map(Number);
+    pool = shuffle(pool.filter(n => PRESETS[n])).slice(0, QUIZ_LEN);
+    if (!pool.length) return;
+    quiz = { mode, fam: fam || null, items: pool.map(n => ({ n, swap: Math.random() < 0.5, ok: null })), i: 0, score: 0, answered: false, missed: [] };
+    renderQuiz(true);
   }
 
-  function renderQuiz() {
+  function renderQuiz(focus) {
+    stopTimer();
     const box = q('#quizBox');
-    if (!quiz) { newQuiz(); return; }
-    if (quiz.i >= quiz.items.length) {
-      const s = quiz.score;
-      box.innerHTML = `<div class="panel quiz-card quiz-end"><span class="case-plate case-plate--xl">${s}/${quiz.items.length}</span><h3>${s >= 8 ? 'Excellent, le barème n\'a plus de secret pour vous.' : s >= 5 ? 'Bon résultat : revoyez les cas manqués dans le barème.' : 'Continuez à vous entraîner avec l\'onglet « Barème ».'}</h3><button type="button" class="btn btn--green" id="quizRestart">${icon('i-reset')} Nouvelle série</button></div>`;
-      box.querySelector('#quizRestart').addEventListener('click', newQuiz);
-      return;
-    }
+    if (!quiz) box.innerHTML = trainHome();
+    else if (quiz.i >= quiz.items.length) box.innerHTML = trainEnd();
+    else renderQuestion(box);
+    if (!focus) return;
+    const h = box.querySelector('h3');
+    if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
+    if (box.getBoundingClientRect().top < 72) box.scrollIntoView({ behavior: behavior(), block: 'start' });
+  }
+
+  const modeBtn = (mode, text, off) => `
+    <button type="button" class="quiz-mode" data-mode="${mode}"${off ? ' disabled' : ''}>
+      <span class="quiz-mode-ic">${icon(MODES[mode].ic)}</span>
+      <span class="quiz-mode-txt"><strong>${MODES[mode].label}</strong><span>${text}</span></span>
+      ${icon('i-arrow-right')}
+    </button>`;
+
+  function histChart(ses) {
+    const last = ses.slice(-10);
+    if (last.length < 2) return '';
+    const day = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
+    return `
+      <figure class="quiz-hist">
+        <figcaption>${last.length} dernières séries</figcaption>
+        <ol>${last.map(s => {
+          const lab = `${day.format(s.t)} · ${modeName(s.mode)} : ${s.score} sur ${s.total}`;
+          return `<li title="${esc(lab)}"><span class="quiz-hist-bar" style="height:${Math.max(6, Math.round(s.score / s.total * 100))}%"></span><span class="sr-only">${esc(lab)}</span></li>`;
+        }).join('')}</ol>
+      </figure>`;
+  }
+
+  function trainHome() {
+    const t = tr();
+    const review = toReview();
+    const ses = t.sessions;
+    const total = Object.keys(PRESETS).length;
+    const mastered = Object.values(t.cases).filter(r => r.last === 1).length;
+    const ratios = ses.map(s => s.score / s.total);
+    const best = ratios.length ? Math.max(...ratios) : null;
+    const avg = ratios.length ? ratios.reduce((a, b) => a + b, 0) / ratios.length : null;
+    const any = ses.length || Object.keys(t.cases).length;
+    return `
+      <div class="quiz-home">
+        <section class="panel quiz-pane" aria-labelledby="quizModesTitle">
+          <h3 class="quiz-h" id="quizModesTitle">Choisissez un entraînement</h3>
+          <div class="quiz-modes">
+            ${modeBtn('serie', `${QUIZ_LEN} situations tirées au hasard parmi les ${total} cas simulables.`)}
+            ${modeBtn('chrono', `${CHRONO} secondes par question ; le temps écoulé compte comme une erreur.`)}
+            ${modeBtn('erreurs', review.length ? `${review.length} cas manqué${review.length > 1 ? 's' : ''} à retravailler.` : 'Aucune erreur à revoir pour l’instant.', !review.length)}
+          </div>
+          <h4 class="quiz-h4">Par famille du barème</h4>
+          <div class="quiz-fams">
+            ${families().map(f => {
+              const m = f.cases.filter(n => (t.cases[n] || {}).last === 1).length;
+              return `
+              <button type="button" class="quiz-fam" data-mode="famille" data-fam="${f.id}">
+                <span class="quiz-fam-name">${esc(shortCat(f.id))}</span>
+                <span class="quiz-fam-meta">${m} cas maîtrisé${m > 1 ? 's' : ''} sur ${f.cases.length}</span>
+                <span class="quiz-meter" aria-hidden="true"><span style="width:${m / f.cases.length * 100}%"></span></span>
+              </button>`;
+            }).join('')}
+          </div>
+        </section>
+        <section class="panel quiz-pane quiz-stats" aria-labelledby="quizStatsTitle">
+          <h3 class="quiz-h" id="quizStatsTitle">Ma progression</h3>
+          ${any ? `
+          <dl class="quiz-kpis">
+            <div><dt>Séries</dt><dd>${ses.length}</dd></div>
+            <div><dt>Meilleur score</dt><dd>${best == null ? '—' : pct(best)}</dd></div>
+            <div><dt>Moyenne</dt><dd>${avg == null ? '—' : pct(avg)}</dd></div>
+            <div><dt>Cas maîtrisés</dt><dd>${mastered}<small>/${total}</small></dd></div>
+          </dl>
+          ${histChart(ses)}
+          ${review.length ? `
+          <div class="quiz-review">
+            <h4 class="quiz-h4">Cas à revoir dans le barème</h4>
+            <div class="quiz-review-list">${review.map(n => `<button type="button" class="quiz-case" data-case="${n}" aria-label="Voir le cas ${n} dans le barème">Cas ${n}</button>`).join('')}</div>
+          </div>` : ''}
+          <button type="button" class="btn btn--ghost btn--sm quiz-wipe" data-act="wipe">${icon('i-trash')} Effacer ma progression</button>`
+          : '<p class="quiz-empty">Votre progression s’affichera ici dès la première réponse : scores, cas maîtrisés par famille et cas à revoir. Elle reste sur cet appareil.</p>'}
+        </section>
+      </div>`;
+  }
+
+  function renderQuestion(box) {
     const item = quiz.items[quiz.i];
     const inp = item.swap ? swapInput(PRESETS[item.n]) : PRESETS[item.n];
     const res = determine(inp);
-    const sceneHtml = scene(item.n, res.roles, { label: 'Croquis de la situation' });
+    quiz.res = res;
+    const chrono = quiz.mode === 'chrono';
     box.innerHTML = `
       <div class="panel quiz-card">
-        <div class="quiz-top"><span>Question ${quiz.i + 1} sur ${quiz.items.length}</span><span>Score : <strong>${quiz.score}</strong></span></div>
+        <div class="quiz-top">
+          <span class="quiz-tag">${icon(quiz.mode === 'famille' ? 'i-folder' : MODES[quiz.mode].ic)}${esc(modeName(sessionMode()))}</span>
+          <span class="quiz-count">Question ${quiz.i + 1} sur ${quiz.items.length}<span aria-hidden="true"> · </span>Score : <strong>${quiz.score}</strong></span>
+          <button type="button" class="btn btn--ghost btn--sm" data-act="quit">${icon('i-close')} Arrêter</button>
+        </div>
+        <ol class="quiz-steps" aria-hidden="true">${quiz.items.map((it, j) => `<li class="${it.ok === true ? 'is-ok' : it.ok === false ? 'is-ko' : j === quiz.i ? 'is-cur' : ''}"></li>`).join('')}</ol>
+        ${chrono ? `<div class="quiz-timer"><span class="quiz-timer-track"><span class="quiz-timer-bar"></span></span><span class="quiz-timer-txt" role="timer" id="quizClock">${CHRONO}${NNBSP}s</span></div>` : ''}
         <div class="quiz-body">
-          <figure class="quiz-scene">${sceneHtml}<button type="button" class="replay-btn" data-replay aria-label="Rejouer l'accident" title="Rejouer l'accident">${icon('i-play')}<span>Rejouer</span></button></figure>
+          <figure class="quiz-scene">${scene(item.n, res.roles, { label: 'Croquis de la situation' })}<button type="button" class="replay-btn" data-replay aria-label="Rejouer l'accident" title="Rejouer l'accident">${icon('i-play')}<span>Rejouer</span></button></figure>
           <div>
             <h3 class="quiz-q">Selon le barème FTUSA, comment se partage la responsabilité ?</h3>
             ${describe(inp)}
           </div>
         </div>
         <div class="quiz-answers" role="group" aria-label="Réponses">
-          ${ANSWERS.map(a => `<button type="button" class="quiz-answer" data-k="${a.k}">${a.label}</button>`).join('')}
+          ${ANSWERS.map((a, j) => `<button type="button" class="quiz-answer" data-k="${a.k}" aria-keyshortcuts="${j + 1}"><kbd aria-hidden="true">${j + 1}</kbd><span>${a.label}</span></button>`).join('')}
         </div>
+        <p class="quiz-keys">Touches 1 à 5 pour répondre, Entrée pour continuer.</p>
         <div class="quiz-feedback" id="quizFeedback" aria-live="polite"></div>
       </div>`;
-    box.querySelectorAll('.quiz-answer').forEach(btn => btn.addEventListener('click', () => answerQuiz(btn.dataset.k, res)));
+    requestAnimationFrame(() => replayScene(box.querySelector('svg.scene')));
+    if (chrono) startTimer();
   }
 
-  function answerQuiz(k, res) {
-    if (quiz.answered) return;
+  // Contre la montre : en pause dès que l'entraînement n'est plus à l'écran
+  function startTimer() {
+    let left = CHRONO;
+    const bar = q('#quizBox .quiz-timer-bar');
+    const txt = q('#quizClock');
+    const paint = () => {
+      txt.textContent = `${left}${NNBSP}s`;
+      bar.style.transform = `scaleX(${left / CHRONO})`;
+      bar.parentNode.parentNode.classList.toggle('is-low', left <= 5);
+    };
+    paint();
+    tick = setInterval(() => {
+      const view = document.getElementById('sinistreView');
+      if (document.hidden || q('#sinPanelQuiz').hidden || (view && view.hidden) || document.querySelector('dialog[open]')) return;
+      left--;
+      paint();
+      if (left === 5) announce('Plus que 5 secondes.');
+      if (left <= 0) { stopTimer(); answerQuiz(null); }
+    }, 1000);
+  }
+  function stopTimer() { clearInterval(tick); tick = null; }
+
+  function answerQuiz(k) {
+    if (!quiz || quiz.answered || quiz.i >= quiz.items.length) return;
+    stopTimer();
     quiz.answered = true;
+    const res = quiz.res;
+    const item = quiz.items[quiz.i];
     const good = ANSWERS.find(a => a.resp.A === res.resp.A && a.resp.B === res.resp.B);
-    const ok = good && good.k === k;
-    if (ok) quiz.score++;
-    q('#quizBox').querySelectorAll('.quiz-answer').forEach(b => {
+    const ok = !!(good && good.k === k);
+    item.ok = ok;
+    if (ok) quiz.score++; else quiz.missed.push(item.n);
+    const t = tr();
+    const rec = t.cases[item.n] || { ok: 0, ko: 0, last: 0 };
+    rec[ok ? 'ok' : 'ko']++;
+    rec.last = ok ? 1 : 0;
+    t.cases[item.n] = rec;
+    const lastOne = quiz.i + 1 >= quiz.items.length;
+    if (lastOne) recordSession(); else saveTraining();
+    const box = q('#quizBox');
+    box.querySelectorAll('.quiz-answer').forEach(b => {
       b.disabled = true;
       if (good && b.dataset.k === good.k) b.classList.add('is-good');
       else if (b.dataset.k === k) b.classList.add('is-bad');
     });
+    const dot = box.querySelectorAll('.quiz-steps li')[quiz.i];
+    if (dot) dot.className = ok ? 'is-ok' : 'is-ko';
+    box.querySelector('.quiz-count strong').textContent = quiz.score;
+    const timer = box.querySelector('.quiz-timer');
+    if (timer) timer.classList.add('is-done');
     const c = CAS[res.n];
     q('#quizFeedback').innerHTML = `
       <div class="quiz-result quiz-result--${ok ? 'ok' : 'ko'}">
-        <p class="quiz-result-title">${icon(ok ? 'i-check' : 'i-no')}${ok ? 'Bonne réponse' : 'Ce n\'est pas la bonne réponse'}</p>
+        <p class="quiz-result-title">${icon(ok ? 'i-check' : 'i-no')}${ok ? 'Bonne réponse' : k ? 'Ce n’est pas la bonne réponse' : 'Temps écoulé'}</p>
         <p><strong>Cas n° ${res.n} :</strong> ${esc(c.texte)}</p>
         ${res.variant ? `<p>${esc(res.variant)}</p>` : ''}
         ${res.why ? `<p class="hint">${esc(res.why)}</p>` : ''}
-        <button type="button" class="btn btn--blue" id="quizNext">${quiz.i + 1 < quiz.items.length ? 'Question suivante' : 'Voir mon score'} ${icon('i-arrow-right')}</button>
+        <button type="button" class="btn btn--blue" data-act="next">${lastOne ? 'Voir mon score' : 'Question suivante'} ${icon('i-arrow-right')}</button>
       </div>`;
-    q('#quizNext').addEventListener('click', () => { quiz.i++; quiz.answered = false; renderQuiz(); });
-    q('#quizNext').focus();
+    q('#quizFeedback [data-act="next"]').focus({ preventScroll: true });
+  }
+
+  function recordSession() {
+    const t = tr();
+    const m = sessionMode();
+    const ratio = quiz.score / quiz.items.length;
+    const prev = t.sessions.filter(s => s.mode === m).map(s => s.score / s.total);
+    quiz.newBest = (quiz.mode === 'serie' || quiz.mode === 'chrono') && prev.length > 0 && ratio > Math.max(...prev);
+    t.sessions.push({ t: Date.now(), mode: m, score: quiz.score, total: quiz.items.length });
+    t.sessions = t.sessions.slice(-30);
+    saveTraining();
+  }
+
+  function trainEnd() {
+    const s = quiz.score;
+    const n = quiz.items.length;
+    const r = s / n;
+    const missed = [...new Set(quiz.missed)];
+    const msg = r === 1 ? 'Sans faute : le barème n’a plus de secret pour vous.'
+      : r >= 0.8 ? 'Excellent résultat.'
+      : r >= 0.5 ? 'Bon résultat : revoyez les cas manqués ci-dessous.'
+      : 'Revoyez les cas manqués, puis relancez une série.';
+    return `
+      <div class="panel quiz-card quiz-end">
+        <span class="case-plate case-plate--xl">${s}/${n}</span>
+        <p class="quiz-end-mode">${esc(modeName(sessionMode()))} · ${pct(s / n)}${quiz.newBest ? ' · <strong>nouveau record</strong>' : ''}</p>
+        <h3>${msg}</h3>
+        <ol class="quiz-steps quiz-steps--end" aria-hidden="true">${quiz.items.map(it => `<li class="${it.ok ? 'is-ok' : 'is-ko'}"></li>`).join('')}</ol>
+        ${missed.length ? `
+        <div class="quiz-missed">
+          <h4 class="quiz-h4">Cas manqués</h4>
+          <ul>${missed.map(c => `
+            <li>
+              <span class="case-plate">${c}</span>
+              <span class="quiz-missed-txt">${esc(CAS[c].texte)}</span>
+              <button type="button" class="btn btn--ghost btn--sm" data-case="${c}">Voir dans le barème</button>
+            </li>`).join('')}</ul>
+        </div>` : ''}
+        <div class="quiz-end-actions">
+          ${missed.length ? `<button type="button" class="btn btn--blue" data-act="missed">${icon('i-undo')} Revoir ${missed.length > 1 ? `ces ${missed.length} cas` : 'ce cas'}</button>` : ''}
+          <button type="button" class="btn btn--green" data-act="again">${icon('i-reset')} Rejouer ce mode</button>
+          <button type="button" class="btn btn--ghost" data-act="home">${icon('i-arrow-left')} Tous les entraînements</button>
+        </div>
+      </div>`;
+  }
+
+  function onQuizClick(e) {
+    const b = e.target.closest('button');
+    if (!b || b.disabled || b.hasAttribute('data-replay')) return;
+    const act = b.dataset.act;
+    if (b.dataset.mode) startQuiz(b.dataset.mode, b.dataset.fam);
+    else if (b.dataset.k) answerQuiz(b.dataset.k);
+    else if (b.dataset.case) { showTab('bareme'); requestAnimationFrame(() => focusCase(Number(b.dataset.case))); }
+    else if (act === 'next') { quiz.i++; quiz.answered = false; renderQuiz(true); }
+    else if (act === 'again') startQuiz(quiz.mode, quiz.fam);
+    else if (act === 'missed') startQuiz('erreurs', null, [...new Set(quiz.missed)]);
+    else if (act === 'home') { quiz = null; renderQuiz(true); }
+    else if (act === 'quit') {
+      quiz = null;
+      renderQuiz(true);
+      toast('Série arrêtée : les réponses données restent dans votre progression.');
+    } else if (act === 'wipe') {
+      const before = JSON.stringify(tr());
+      training = { cases: {}, sessions: [] };
+      saveTraining();
+      renderQuiz(true);
+      toast('Progression effacée.', null, { label: 'Annuler', run: () => { training = JSON.parse(before); saveTraining(); if (!quiz) renderQuiz(); } });
+    }
+  }
+
+  // Touches 1 à 5 : répondre sans la souris
+  function onQuizKey(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey || !root || !quiz || quiz.answered || quiz.i >= quiz.items.length) return;
+    const view = document.getElementById('sinistreView');
+    if (q('#sinPanelQuiz').hidden || (view && view.hidden) || document.querySelector('dialog[open]')) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    const i = '12345'.indexOf(e.key);
+    if (e.key.length !== 1 || i < 0) return;
+    e.preventDefault();
+    answerQuiz(ANSWERS[i].k);
   }
 
   /* ---------- Onglets et montage ---------- */
@@ -1096,7 +1348,7 @@
       q('#' + tab).tabIndex = on ? 0 : -1;
       q('#' + panel).hidden = !on;
     });
-    if (name === 'quiz') renderQuiz();
+    if (name === 'quiz' && (!quiz || !q('#quizBox').firstElementChild)) renderQuiz();
     if (name === 'declaration' && window.Declaration) window.Declaration.mount(q('#declMount'));
     const bar = document.getElementById('sinMobileBar');
     if (bar) bar.dataset.tab = name;
@@ -1160,6 +1412,8 @@
         q('#' + TABS[order[j]][0]).focus();
       });
     });
+    q('#quizBox').addEventListener('click', onQuizClick);
+    document.addEventListener('keydown', onQuizKey);
     q('#sinShare').addEventListener('click', openShareConstat);
     q('#sinPresent').addEventListener('click', openPresent);
     q('#sinWhatIf').addEventListener('click', e => { const b = e.target.closest('[data-whatif]'); if (b) tryWhatIf(Number(b.dataset.whatif)); });
