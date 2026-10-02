@@ -309,8 +309,20 @@ The icon is the shield mark on flat Electric Cobalt (rounded square; full-bleed 
 ### Author credit
 "Application développée par Mohamed Aziz Jaouadi" sits in a framed link card on the home screen (under the three steps) and in the app footer: a 16px-radius white card whose 1px border is a soft cobalt-to-hairline gradient, a 42px cobalt monogram tile "MJ", the small Slate label above the name in Deep Cobalt (650), and a Cobalt Mist pill with the LinkedIn glyph and an outward arrow. The whole card is the link to the LinkedIn profile (new tab). On hover the border turns cobalt, the card lifts 1px, a faint cobalt light crosses it and the arrow nudges up-right. Under 420px it spans the width, the monogram shrinks to 36px and only the LinkedIn glyph remains.
 
+### Step transitions
+Moving between steps uses View Transitions when available: the step heading morphs (old one lifts and blurs out in 160ms, new one rises in over 460ms), the step body slides 28–32px in the direction of travel, the progress line stays in place and paints its fill, and the action bar cross-fades. Without support or with reduced motion, the original per-row slide applies.
+
+### Guarantee to total
+Checking a guarantee sends a small cobalt pill ("+481.600 DT") from its icon tile along a short arc to the total on screen (side meter, or the phone's premium bar) in 640ms; the meter waits 520ms, then rolls, sweeps and shows its +/- chip. Off under reduced motion.
+
+### Resume card
+On the home screen, under the two CTAs: a white card with a Cobalt Edge ring, a history tile, "Reprendre la simulation en cours" with the premium in Deep Cobalt, a Slate line (CV, class, value, "aujourd'hui à 10 h 42"), a small primary "Reprendre" and a close icon to discard.
+
+### Budget optimizer and signature
+"Meilleure couverture pour un budget" is a dialog: one budget field and a primary button; the answer is an ink card (badge "Meilleure couverture dans le budget", name, large TTC figure, Slate remainder, option pills, primary "Appliquer"), then up to two white rows for less complete alternatives; a shortfall is an amber note. The offer ends with "Signature du proposant": text block on the left, a hairline box on the right with a dashed baseline and "Faire signer le client"; the signing dialog is a white pad with a dashed baseline and "Signez ici", plus a typed-name field. Signature ink is always #0f1522 on white.
+
 ### Mes devis
-A wide dialog: search field with the primary "Nouveau devis" beside it, a one-line summary in Slate (count, average, range, formula split), secondary data actions (Exporter, Sauvegarder, Restaurer), then rows named by client with vehicle facts and date, the premium, secondary "Charger" and danger "Supprimer". The comparator marks every differing value in cobalt with a 2px cobalt rule and states the premium gap.
+A wide dialog with two views (segmented "Liste" / "Tableau de bord", remembered per device). List: status chips with counts (Tous, À envoyer, Envoyé, À relancer, Accepté, Refusé; a dot in the status color), and on each row a status pill select and a due-date badge (amber within 30 days, red when past). Dashboard: four KPI tiles (the first on Ink Card: accepted premiums), a single-series cobalt bar chart of premiums for the last six months (44px max bars, 4px rounded tops, value on the latest and highest bar, ink tooltip, screen-reader table), an "À traiter" list (due dates and follow-ups with calendar and "Ouvrir" buttons) and a status stacked bar with a counted legend. Status colors here are the state tokens (success, warning, danger), the accent for "Envoyé" and #8a93a3 for "À envoyer"; they always come with a label. Header: search field with the primary "Nouveau devis" beside it, a one-line summary in Slate (count, average, range, formula split), secondary data actions (Exporter, Sauvegarder, Restaurer), then rows named by client with vehicle facts and date, the premium, secondary "Charger" and danger "Supprimer". The comparator marks every differing value in cobalt with a 2px cobalt rule and states the premium gap.
 
 ## Do's and Don'ts
 

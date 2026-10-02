@@ -617,6 +617,29 @@ html[data-theme="dark"] .view-tab.is-active { background: var(--ink-card); }
 .step.is-shown > :nth-child(n+4) { animation-delay: 130ms; }
 .step[data-dir="back"].is-shown > :not(.step-nav) { animation-name: stepInBack; }
 @keyframes stepIn { from { opacity: 0; transform: translateX(26px); } }
+/* Passage d'une étape à l'autre (View Transitions) : le titre se transforme, le contenu glisse,
+   la barre de progression reste en place et peint sa progression */
+html[data-vt-step] .step:not([hidden]) { view-transition-name: step-body; }
+html[data-vt-step] .step:not([hidden]) .step-head { view-transition-name: step-head; }
+html[data-vt-step] .step:not([hidden]) .step-nav { view-transition-name: step-nav; }
+html[data-vt-step] .route { view-transition-name: route; }
+::view-transition-group(step-head), ::view-transition-group(step-body) { animation-duration: .46s; animation-timing-function: var(--ease-out); }
+::view-transition-old(step-head) { animation: vtHeadOut .16s ease both; }
+::view-transition-new(step-head) { animation: vtHeadIn .46s var(--ease-out) .08s both; }
+@keyframes vtHeadOut { to { opacity: 0; transform: translateY(-10px); filter: blur(3px); } }
+@keyframes vtHeadIn { from { opacity: 0; transform: translateY(12px); filter: blur(3px); } }
+::view-transition-old(step-body) { animation: vtBodyOut .16s ease both; }
+::view-transition-new(step-body) { animation: vtBodyIn .48s var(--ease-out) .12s both; }
+html[data-vt-step="back"]::view-transition-old(step-body) { animation-name: vtBodyOutBack; }
+html[data-vt-step="back"]::view-transition-new(step-body) { animation-name: vtBodyInBack; }
+@keyframes vtBodyOut { to { opacity: 0; transform: translateX(-28px); } }
+@keyframes vtBodyIn { from { opacity: 0; transform: translateX(32px); } }
+@keyframes vtBodyOutBack { to { opacity: 0; transform: translateX(28px); } }
+@keyframes vtBodyInBack { from { opacity: 0; transform: translateX(-32px); } }
+::view-transition-old(route) { animation: none; opacity: 0; }
+::view-transition-new(route) { animation: none; }
+::view-transition-old(step-nav), ::view-transition-new(step-nav) { animation-duration: .2s; }
+html[data-vt-step]::view-transition-old(root), html[data-vt-step]::view-transition-new(root) { animation: none; }
 @keyframes stepInBack { from { opacity: 0; transform: translateX(-26px); } }
 /* Listes (garanties, détail des primes) : arrivée ligne par ligne, une seule fois */
 .step.is-entering .g-row, .step.is-entering .results tbody tr { animation: rowIn .4s var(--ease-out) backwards; animation-delay: calc(110ms + var(--i, 0) * 18ms); }
@@ -1005,6 +1028,13 @@ html[data-theme="dark"] { --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; 
 }
 .sign--meter.is-sweep::after { animation: sweep 1s cubic-bezier(.45, 0, .2, 1); }
 @keyframes sweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
+.fly-chip {
+  position: fixed; z-index: 90; left: 0; top: 0; padding: 5px 11px; border-radius: 999px; pointer-events: none;
+  background: var(--accent); color: #fff; font-size: .86rem; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), 0 10px 24px -10px color-mix(in srgb, var(--accent) 75%, transparent);
+  will-change: transform, opacity;
+}
+.fly-chip.is-down { background: var(--ink-card); }
 .delta {
   display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px;
   font-size: .86rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap;
@@ -2954,6 +2984,33 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
   // Écart en direct : « +42.000 DT » quand une garantie, un capital ou la réduction change la prime
   let shownPremium = 0;
   let deltaTimer = 0;
+  let meterDelay = 0;
+  // Total visible à l'écran : le compteur du côté, ou la barre de prime du téléphone
+  function flyTarget() {
+    const inView = el => { if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight; };
+    const dock = $('#mobileMeter');
+    if (dock.classList.contains('is-visible') && !dock.classList.contains('is-off') && inView($('#mobilePrime'))) return $('#mobilePrime');
+    return inView($('#primeFinale')) ? $('#primeFinale') : null;
+  }
+  // Le montant d'une garantie cochée part de sa vignette et rejoint le total
+  function flyToTotal(fromEl, target, delta) {
+    if (!fromEl || !target) return;
+    const a = fromEl.getBoundingClientRect();
+    const b = target.getBoundingClientRect();
+    const chip = document.createElement('div');
+    chip.className = 'fly-chip' + (delta < 0 ? ' is-down' : '');
+    chip.setAttribute('aria-hidden', 'true');
+    chip.textContent = (delta > 0 ? '+' : '−') + formatCurrency(Math.abs(delta)) + NNBSP + 'DT';
+    document.body.appendChild(chip);
+    const x0 = a.left + a.width / 2; const y0 = a.top + a.height / 2;
+    const dx = b.left + b.width / 2 - x0; const dy = b.top + b.height / 2 - y0;
+    chip.style.left = x0 + 'px';
+    chip.style.top = y0 + 'px';
+    const lift = Math.min(90, Math.abs(dx) * 0.18 + 30); // trajectoire en arc
+    const at = (t, s, o) => ({ transform: `translate(-50%, -50%) translate(${(dx * t).toFixed(1)}px, ${(dy * t - lift * 4 * t * (1 - t)).toFixed(1)}px) scale(${s})`, opacity: o, offset: t });
+    const anim = chip.animate([at(0, .7, 0), at(.12, 1, 1), at(.35, 1, 1), at(.6, .95, 1), at(.85, .8, 1), at(1, .55, 0)], { duration: 640, easing: 'cubic-bezier(.45, 0, .25, 1)' });
+    anim.finished.then(() => chip.remove(), () => chip.remove());
+  }
   function showDelta(delta) {
     const els = [$('#meterDelta'), $('#dockDelta')];
     const up = delta > 0;
@@ -2999,9 +3056,12 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     }
     const to = q.primeFinale;
     const from = meterValue;
-    if (from !== to) sweepMeter();
+    const delay = meterDelay; // un montant vole vers le total : le compteur l'attend
+    meterDelay = 0;
+    const later = fn => (delay ? setTimeout(fn, delay) : fn());
+    if (from !== to) later(sweepMeter);
     const deltaMilli = Math.round(to * 1000) - Math.round(shownPremium * 1000);
-    if (shownPremium > 0 && deltaMilli !== 0) showDelta(deltaMilli / 1000);
+    if (shownPremium > 0 && deltaMilli !== 0) later(() => showDelta(deltaMilli / 1000));
     shownPremium = to;
     cancelAnimationFrame(meterFrame);
     const paint = v => targets.forEach(el => { el.textContent = formatCurrency(v); });
@@ -3009,10 +3069,10 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
       meterValue = to;
       paint(to);
     } else {
-      const start = performance.now();
+      const start = performance.now() + delay;
       const duration = 460;
       const tick = now => {
-        const p = Math.min(1, (now - start) / duration);
+        const p = Math.max(0, Math.min(1, (now - start) / duration));
         const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
         meterValue = from + (to - from) * eased;
         paint(p === 1 ? to : meterValue);
@@ -3287,12 +3347,20 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
 
   function toggleGuarantee(id, checked) {
     const d = DEF[id];
+    const before = lastQuote && lastQuote.ready ? lastQuote.primeFinale : null;
+    const target = checked && before != null && !reduceMotion.matches ? flyTarget() : null;
     if (state.formula === 'personnalisee') {
       if (id !== 'rc') state.g[id].enabled = checked;
     } else if (!d.mandatory) {
       state.g[id].enabled = checked;
     }
+    if (target) meterDelay = 520;
     refresh();
+    meterDelay = 0;
+    if (target && lastQuote.ready) {
+      const delta = lastQuote.primeFinale - before;
+      if (Math.abs(delta) >= 0.0005) flyToTotal($(`.g-row[data-id="${id}"] .g-tile`), target, delta);
+    }
   }
 
   /* ------------------------------------------------------------------
@@ -3300,6 +3368,16 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
    * ------------------------------------------------------------------ */
   function goToStep(step, opts = {}) {
     if (step > 1 && !opts.force && !isReady()) { requireReady(); return; }
+    // Titre, contenu et progression se transforment d'une étape à l'autre (si le navigateur le permet)
+    const morph = !opts.silent && !opts.morphing && document.startViewTransition && !reduceMotion.matches
+      && state.step && step !== state.step && !$('#app').hidden && !$('#devisView').hidden && !$$('dialog[open]').length;
+    if (morph) {
+      const root = document.documentElement;
+      root.dataset.vtStep = step < state.step ? 'back' : 'fwd';
+      const vt = document.startViewTransition(() => goToStep(step, { ...opts, force: true, morphing: true }));
+      vt.finished.finally(() => { delete root.dataset.vtStep; });
+      return;
+    }
     const dir = step < state.step ? 'back' : 'fwd';
     state.step = step;
     if (step > 1 && !state.guaranteesChosen) { state.guaranteesChosen = true; refresh(); }
@@ -3307,7 +3385,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
       const el = $('#step' + n);
       const show = n === step;
       el.hidden = !show;
-      el.classList.toggle('is-shown', show && !opts.silent);
+      el.classList.toggle('is-shown', show && !opts.silent && !opts.morphing);
       if (show && !opts.silent) {
         el.dataset.dir = dir;
         el.classList.add('is-entering');
@@ -3326,7 +3404,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     if (opts.focus !== false) {
       const heading = $('#step' + step + 'Title');
       const top = $('.shell').getBoundingClientRect().top + window.scrollY - 76;
-      if (window.scrollY > top) window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+      if (window.scrollY > top) window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion.matches || opts.morphing ? 'auto' : 'smooth' });
       heading.focus({ preventScroll: true });
     }
   }
