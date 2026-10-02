@@ -1505,6 +1505,15 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
 .share-link { display: flex; gap: 8px; }
 .share-link .input { flex: 1; min-width: 0; font-size: .9rem; color: var(--muted); }
 .share-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.share-pdf { display: grid; gap: 6px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
+.share-pdf .btn { justify-self: start; }
+.share-pdf .btn.is-busy { cursor: progress; }
+.share-pdf .btn.is-busy .icon { animation: pdfBusy 1s linear infinite; }
+@keyframes pdfBusy { 50% { opacity: .35; } }
+/* rendu du PDF : le document à la largeur d'une page A4 */
+.pdf-stage { position: fixed; left: -10000px; top: 0; width: 794px; pointer-events: none; }
+.pdf-stage .offer-doc { width: 794px; max-width: none; margin: 0; border-radius: 0; box-shadow: none; }
+.pdf-stage .doc-sign-action { display: none !important; }
 
 /* Installer l'application : code QR + étapes Android / iPhone */
 .install-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 24px; align-items: start; padding-top: 20px; }
@@ -2497,6 +2506,10 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
           <label class="sr-only" for="shareLink">Lien de la simulation</label>
           <input class="input" type="text" id="shareLink" readonly>
           <button type="button" class="btn btn--ghost" id="copyLinkBtn">Copier</button>
+        </div>
+        <div class="share-pdf">
+          <button type="button" class="btn btn--ghost" id="sharePdfBtn"><svg class="icon"><use href="#i-receipt"/></svg> <span>Envoyer l'offre en PDF</span></button>
+          <p class="hint">Le PDF reprend l'offre complète, avec les données du proposant et la signature : WhatsApp, e-mail ou autre application.</p>
         </div>
         <div class="share-actions">
           <a class="btn btn--green" id="shareWhatsapp" target="_blank" rel="noopener"><svg class="icon"><use href="#i-chat"/></svg> WhatsApp</a>
@@ -4404,6 +4417,9 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     $('#shareEmail').href = `mailto:${to}?subject=${encodeURIComponent("Offre d'assurance automobile")}&body=${encodeURIComponent(text)}`;
     $('#shareNative').hidden = !navigator.share;
     openDialog($('#shareModal'));
+    setPdfButton(pdfCache && pdfCache.key === pdfKey() ? 'ready' : 'idle');
+    const prepare = () => { if ($('#shareModal').open && !(pdfCache && pdfCache.key === pdfKey())) offerPdf().then(() => { if ($('#shareModal').open && !$('#sharePdfBtn').classList.contains('is-busy')) setPdfButton('ready'); }).catch(() => {}); };
+    if ('requestIdleCallback' in window) requestIdleCallback(prepare, { timeout: 800 }); else setTimeout(prepare, 300);
   }
   async function copyLink() {
     const input = $('#shareLink');
@@ -4800,6 +4816,112 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     $('#signModal').addEventListener('close', () => { if (!$('#offreAssuranceModal').open) return; $('#signOfferBtn').hidden || $('#signOfferBtn').focus(); });
   }
 
+
+  /* ------------------------------------------------------------------
+   * PDF de l'offre : le document est rendu en image puis placé sur une page A4
+   * ------------------------------------------------------------------ */
+  let pdfCache = null;
+  const pdfKey = () => signatureKey() + '|' + (signature ? signature.at : '');
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const el = document.createElement('script');
+      el.src = src;
+      el.onload = resolve;
+      el.onerror = () => reject(new Error('Chargement impossible : ' + src));
+      document.head.appendChild(el);
+    });
+  }
+  // PDF d'une page contenant une image JPEG (ajustée à la page, marges de 22 pt)
+  function jpegPdf(jpeg, width, height, title) {
+    const enc = new TextEncoder();
+    const W = 595.28, H = 841.89, M = 22;
+    const scale = Math.min((W - 2 * M) / width, (H - 2 * M) / height);
+    const w = width * scale, h = height * scale;
+    const x = (W - w) / 2, y = H - M - h;
+    const content = `q ${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
+    const asciiTitle = title.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\x20-\x7e]/g, '').replace(/[()\\]/g, '');
+    const parts = [];
+    const offsets = [];
+    let length = 0;
+    const push = chunk => { const bytes = typeof chunk === 'string' ? enc.encode(chunk) : chunk; parts.push(bytes); length += bytes.length; };
+    const obj = (n, body) => { offsets[n] = length; push(`${n} 0 obj\n`); body(); push('\nendobj\n'); };
+    push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'.replace(/[^\x00-\x7f]/g, '~'));
+    obj(1, () => push('<< /Type /Catalog /Pages 2 0 R >>'));
+    obj(2, () => push('<< /Type /Pages /Kids [3 0 R] /Count 1 >>'));
+    obj(3, () => push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`));
+    obj(4, () => { push(`<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>\nstream\n`); push(jpeg); push('\nendstream'); });
+    obj(5, () => push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`));
+    obj(6, () => push(`<< /Title (${asciiTitle}) /Producer (Simulateur Assurance Automobile) >>`));
+    const xref = length;
+    push(`xref\n0 7\n0000000000 65535 f \n${[1, 2, 3, 4, 5, 6].map(n => String(offsets[n]).padStart(10, '0') + ' 00000 n \n').join('')}`);
+    push(`trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+    const out = new Uint8Array(length);
+    let at = 0;
+    parts.forEach(b => { out.set(b, at); at += b.length; });
+    return out;
+  }
+  async function offerPdf() {
+    if (!$('#offreAssuranceModal').open) populateOffer();
+    const key = pdfKey();
+    if (pdfCache && pdfCache.key === key) return pdfCache.file;
+    if (!window.modernScreenshot) await loadScript('assets/js/vendor/modern-screenshot.js');
+    const stage = document.createElement('div');
+    stage.className = 'pdf-stage';
+    stage.setAttribute('aria-hidden', 'true');
+    const clone = $('#offerDoc').cloneNode(true);
+    clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    clone.removeAttribute('id');
+    stage.appendChild(clone);
+    document.body.appendChild(stage);
+    try {
+      await Promise.all([...clone.querySelectorAll('img')].filter(img => img.src).map(img => img.decode().catch(() => {})));
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      const canvas = await window.modernScreenshot.domToCanvas(clone, { scale: 2, backgroundColor: '#ffffff' });
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
+      const jpeg = new Uint8Array(await blob.arrayBuffer());
+      const fd = readUserForm();
+      const who = [fd.prenom, fd.nom].filter(x => x && String(x).trim()).join(' ');
+      const slug = fold(who || 'client').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'client';
+      const bytes = jpegPdf(jpeg, canvas.width, canvas.height, `Offre d'assurance automobile ${who}`.trim());
+      const file = new File([bytes], `offre-assurance-auto-${slug}-${fileDate()}.pdf`, { type: 'application/pdf' });
+      pdfCache = { key, file };
+      return file;
+    } finally {
+      stage.remove();
+    }
+  }
+  const canShareFiles = file => Boolean(navigator.canShare && navigator.share && navigator.canShare({ files: [file] }));
+  function setPdfButton(state) {
+    const btn = $('#sharePdfBtn');
+    const label = $('span', btn);
+    btn.classList.toggle('is-busy', state === 'busy');
+    btn.setAttribute('aria-busy', String(state === 'busy'));
+    label.textContent = state === 'busy' ? 'Préparation du PDF…' : state === 'ready' ? 'Envoyer le PDF prêt' : 'Envoyer l’offre en PDF';
+  }
+  async function sharePdf() {
+    if (!requireReady()) return;
+    const btn = $('#sharePdfBtn');
+    if (btn.classList.contains('is-busy')) return;
+    let file = pdfCache && pdfCache.key === pdfKey() ? pdfCache.file : null;
+    if (!file) {
+      setPdfButton('busy');
+      try { file = await offerPdf(); } catch (e) { setPdfButton('idle'); toast('Le PDF n’a pas pu être créé. Utilisez « Imprimer », puis « Enregistrer au format PDF ».', 'warn'); return; }
+    }
+    if (canShareFiles(file)) {
+      try {
+        await navigator.share({ files: [file], title: "Offre d'assurance automobile", text: shareText(simulationLink()) });
+        setPdfButton('idle');
+      } catch (e) {
+        if (e && e.name === 'NotAllowedError') { setPdfButton('ready'); toast('PDF prêt : touchez « Envoyer le PDF prêt ».'); }
+        else setPdfButton('idle'); // partage annulé
+      }
+      return;
+    }
+    downloadFile(file.name, file, 'application/pdf');
+    setPdfButton('idle');
+    toast('PDF téléchargé : joignez-le à votre message WhatsApp ou e-mail.');
+  }
+
   /* ------------------------------------------------------------------
    * Optimiseur de budget : la couverture la plus complète dont la prime TTC tient dans le budget
    * ------------------------------------------------------------------ */
@@ -5004,6 +5126,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
       { title: 'Nouveau devis', sub: 'Repartir d’une simulation vide', icon: 'i-plus', kw: 'nouveau vider reinitialiser', run: () => { enterApp('devis'); newQuote(); } },
       { title: 'Meilleure couverture pour un budget', sub: 'La couverture la plus complète sous un budget TTC', icon: 'i-target', kw: 'budget optimiser optimiseur couverture moins cher maximum', run: () => { enterApp('devis'); openBudget(); } },
       { title: 'Présenter au client', sub: 'Plein écran : prime, garanties, répartition, code QR', icon: 'i-present', kw: 'presentation client ecran plein', run: () => { enterApp('devis'); openPresent(); } },
+      { title: 'Envoyer l’offre en PDF', sub: 'WhatsApp, e-mail ou autre application', icon: 'i-receipt', kw: 'pdf offre envoyer whatsapp document', run: () => { enterApp('devis'); openShare(); } },
       { title: 'Partager la simulation', sub: 'Lien, code QR, WhatsApp, e-mail', icon: 'i-share', kw: 'partager lien qr whatsapp email', run: () => { enterApp('devis'); openShare(); } },
       { title: 'Propositions en 3 formules', sub: 'Comparer trois niveaux de couverture', icon: 'i-compare', kw: 'formules packs propositions comparer', run: () => { enterApp('devis'); openPacks(); } },
       { title: 'Sinistre · Constat amiable', sub: 'Responsabilités selon le barème FTUSA', icon: 'i-warn', kw: 'sinistre constat accident responsabilite', run: () => { enterApp('sinistre'); window.Sinistre && window.Sinistre.showTab('constat'); } },
@@ -5207,6 +5330,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     watchPresent();
     watchBudget();
     watchSign();
+    $('#sharePdfBtn').addEventListener('click', sharePdf);
     watchPreview();
     watchHistory();
     applyThemeUi();
