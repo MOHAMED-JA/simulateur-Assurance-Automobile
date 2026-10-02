@@ -850,7 +850,11 @@
     root.addEventListener('change', e => {
       if (e.target.closest('.sin-form')) { readForm(); renderConstat(); }
     });
-    q('#sinReset').addEventListener('click', () => { st = blank(); writeForm(); renderConstat(); });
+    q('#sinReset').addEventListener('click', () => {
+      const before = JSON.parse(JSON.stringify(st));
+      st = blank(); writeForm(); renderConstat();
+      if (window.appToast) window.appToast('Constat réinitialisé.', null, { label: 'Annuler', run: () => { st = before; writeForm(); renderConstat(); } });
+    });
     q('#sinCopy').addEventListener('click', async () => {
       const txt = resultText(determine(st));
       const btn = q('#sinCopy');
