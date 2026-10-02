@@ -1277,12 +1277,107 @@ html[data-text="large"] { font-size: 112.5%; }
 }
 .devis + .devis { border-top: 1px solid var(--line); }
 .devis:has(.checkbox:checked) { background: var(--accent-soft); }
-.devis-main { min-width: 0; cursor: pointer; }
+.devis-main { display: block; min-width: 0; cursor: pointer; }
+.devis-body { min-width: 0; }
 .devis-title { display: block; font-weight: 600; }
 .devis-sub { display: block; margin-top: 2px; font-size: .86rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .devis-date { display: block; margin-top: 1px; font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .devis-prime { font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .devis-actions { display: flex; gap: 8px; }
+/* Suivi des devis : statut, échéance, filtres */
+:root { --status-new: #8a93a3; }
+html[data-theme="dark"] { --status-new: #8d97ab; }
+.segmented.devis-switch { grid-template-columns: 1fr 1fr; flex: none; min-width: 300px; }
+.devis-switch span { display: flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; font-size: .86rem; }
+.devis-switch .icon { width: 16px; height: 16px; }
+.devis-filter { flex: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 22px; border-bottom: 1px solid var(--line); }
+.devis-filter[hidden] { display: none; }
+.status-chip {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 0 11px; border: 0; border-radius: 999px;
+  background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); font: inherit; font-size: .82rem; font-weight: 550; cursor: pointer;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+.status-chip b { font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.status-chip[aria-pressed="true"] { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent-line); color: var(--accent-text); }
+.status-chip[aria-pressed="true"] b { color: var(--accent-text); }
+@media (hover: hover) { .status-chip:not([aria-pressed="true"]):hover { background: var(--surface-2); } }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--status-new)); flex: none; }
+.devis-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.status-select {
+  appearance: none; -webkit-appearance: none; min-height: 28px; padding: 0 26px 0 24px; border: 0; border-radius: 999px; cursor: pointer;
+  font: inherit; font-size: .78rem; font-weight: 600; color: var(--ink);
+  background:
+    radial-gradient(circle at 12px 50%, var(--c) 4px, transparent 4.5px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b6474' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") right 7px center / 13px no-repeat,
+    var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.status-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.status-select option { background: var(--surface); color: var(--ink); }
+.due-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; font-size: .76rem; font-weight: 600; background: var(--surface-2); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); font-variant-numeric: tabular-nums; }
+.due-badge .icon { width: 13px; height: 13px; }
+.due-badge.is-soon { background: var(--warning-soft); color: var(--warning-text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warning) 40%, transparent); }
+.due-badge.is-late { background: var(--danger-soft); color: var(--danger-text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 35%, transparent); }
+.devis-actions .icon-only { width: 36px; padding: 0; }
+
+/* Tableau de bord des devis */
+.dash { display: grid; gap: 16px; padding-top: 18px; }
+.dash-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { padding: 14px 16px; border-radius: 14px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), var(--shadow-xs); }
+.kpi-label { font-size: .78rem; font-weight: 550; color: var(--muted); }
+.kpi-value { margin-top: 4px; font-size: 1.6rem; font-weight: 650; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi-value small { margin-left: 3px; font-size: .9rem; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.kpi-sub { margin-top: 4px; font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.kpi--ink { background: var(--ink-card); color: #fff; box-shadow: 0 12px 28px -18px rgb(16 24 40 / .6); }
+.kpi--ink .kpi-label, .kpi--ink .kpi-sub, .kpi--ink .kpi-value small { color: var(--on-ink-muted); }
+.dash-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.dash-card { padding: 18px 20px; border-radius: 16px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), var(--shadow-xs); min-width: 0; }
+.dash-card h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 14px; font-size: .98rem; font-weight: 650; }
+.dash-card h3 small { font-size: .78rem; font-weight: 500; color: var(--muted); }
+.dash-stack { display: grid; gap: 16px; }
+/* barres par mois : une seule série, cobalt, extrémité arrondie, info-bulle au survol */
+.month-chart { position: relative; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 8px; align-items: end; height: 168px; padding-top: 22px; border-bottom: 1px solid var(--line-strong); }
+.month-col { position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; outline: none; cursor: default; }
+.month-bar { align-self: center; width: min(100%, 44px); height: var(--h); min-height: 2px; border-radius: 4px 4px 0 0; background: var(--accent); opacity: .85; transition: opacity .15s ease, height .6s var(--ease-out); }
+.month-col.is-empty .month-bar { background: var(--line-strong); opacity: 1; }
+.month-col:hover .month-bar, .month-col:focus-visible .month-bar { opacity: 1; }
+.month-col:focus-visible { box-shadow: 0 0 0 2px var(--accent); border-radius: 6px; }
+.month-val { position: absolute; left: 50%; bottom: calc(var(--h) + 6px); transform: translateX(-50%); font-size: .72rem; font-weight: 600; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.month-axis { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 8px; margin-top: 6px; font-size: .74rem; color: var(--muted); text-align: center; text-transform: capitalize; }
+.month-tip { position: absolute; z-index: 3; bottom: calc(var(--h) + 8px); left: 50%; transform: translateX(-50%); display: grid; gap: 1px; padding: 7px 10px; border-radius: 10px; background: var(--ink-card); color: #fff; font-size: .78rem; white-space: nowrap; box-shadow: 0 10px 24px -10px rgb(16 24 40 / .5); pointer-events: none; opacity: 0; transition: opacity .12s ease; }
+.month-tip b { font-variant-numeric: tabular-nums; }
+.month-tip span { color: var(--on-ink-muted); }
+.month-col:hover .month-tip, .month-col:focus-visible .month-tip { opacity: 1; }
+.month-col:hover .month-val, .month-col:focus-visible .month-val { opacity: 0; }
+/* statuts : barre empilée + légende chiffrée */
+.status-bar { display: flex; gap: 2px; height: 14px; margin-bottom: 14px; }
+.status-bar span { flex-basis: 0; min-width: 4px; background: var(--c); }
+.status-bar span:first-child { border-radius: 2px 0 0 2px; }
+.status-bar span:last-child { border-radius: 0 4px 4px 0; }
+.status-legend { display: grid; gap: 8px; }
+.status-legend li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 3.2em; align-items: center; gap: 10px; font-size: .86rem; }
+.status-legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+.status-legend b { font-weight: 650; font-variant-numeric: tabular-nums; }
+.status-legend em { font-style: normal; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.todo-list { display: grid; }
+.todo-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.todo-list li:first-child { border-top: 0; padding-top: 0; }
+.todo-name { font-weight: 600; font-size: .9rem; }
+.todo-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 3px; font-size: .78rem; color: var(--muted); }
+.todo-actions { display: flex; gap: 6px; }
+.dash-empty { font-size: .86rem; color: var(--muted); }
+@media (max-width: 860px) { .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dash-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) {
+  .devis-filter { flex-wrap: nowrap; overflow-x: auto; padding: 10px 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .devis-filter::-webkit-scrollbar { display: none; }
+  .status-chip { flex: none; }
+  .kpi-value { font-size: 1.35rem; }
+  .segmented.devis-switch { flex: 1 1 100%; min-width: 0; }
+  .devis-stats { flex: 1 1 0; font-size: .8rem; }
+  .devis-data { flex-wrap: nowrap; }
+  .devis-data .btn { width: 38px; padding: 0; }
+  .devis-data .btn-label { display: none; }
+}
 .empty-state { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 40px 12px 28px; color: var(--muted); }
 .empty-state .step-tile { background: var(--tile-off); color: var(--tile-off-ink); box-shadow: inset 0 0 0 1px var(--line); }
 .empty-state strong { color: var(--ink); font-size: 1.05rem; font-weight: 650; }
@@ -1630,6 +1725,8 @@ html[data-text="large"] { font-size: 112.5%; }
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5.2 3.5h10.6l3.7 3.7v11.6c0 .9-.8 1.7-1.7 1.7H5.2c-.9 0-1.7-.8-1.7-1.7V5.2c0-.9.8-1.7 1.7-1.7z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.8h16M9.3 6.8V4.2h5.4v2.6M6.3 6.8l.9 13.2h9.6l.9-13.2M10 10.8v5.4M14 10.8v5.4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4.5 19.5h15"/><path d="M7.5 16v-5M12 16V7M16.5 16v-8"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><path d="M12 13v3.5M10.3 14.8h3.4"/></symbol>
   <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v3.2h3.2"/><path d="M12 8v4.3l2.8 1.7"/></symbol>
   <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4.5 9.5 9 5"/><path d="M4.5 9.5h9.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
   <symbol id="i-redo" viewBox="0 0 24 24"><path d="M15 14l4.5-4.5L15 5"/><path d="M19.5 9.5H10a5.5 5.5 0 0 0 0 11h3"/></symbol>
@@ -2132,15 +2229,20 @@ html[data-text="large"] { font-size: 112.5%; }
     <button type="button" class="btn btn--blue" id="newQuoteBtn"><svg class="icon"><use href="#i-plus"/></svg> Nouveau devis</button>
   </div>
   <div class="devis-meta">
+    <div class="segmented devis-switch" role="radiogroup" aria-label="Affichage des devis">
+      <label><input type="radio" name="devisView" value="list" checked><span><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg>Liste</span></label>
+      <label><input type="radio" name="devisView" value="dash"><span><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Tableau de bord</span></label>
+    </div>
     <p class="devis-stats" id="devisStats" aria-live="polite"></p>
     <div class="devis-data">
-      <button type="button" class="btn btn--ghost btn--sm" id="exportCsvBtn"><svg class="icon"><use href="#i-download"/></svg> Exporter (Excel)</button>
-      <button type="button" class="btn btn--ghost btn--sm" id="backupBtn"><svg class="icon"><use href="#i-save"/></svg> Sauvegarder</button>
-      <button type="button" class="btn btn--ghost btn--sm" id="restoreBtn"><svg class="icon"><use href="#i-upload"/></svg> Restaurer</button>
+      <button type="button" class="btn btn--ghost btn--sm" id="exportCsvBtn" aria-label="Exporter (Excel)" title="Exporter (Excel)"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span class="btn-label">Exporter (Excel)</span></button>
+      <button type="button" class="btn btn--ghost btn--sm" id="backupBtn" aria-label="Sauvegarder" title="Sauvegarder les devis"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg><span class="btn-label">Sauvegarder</span></button>
+      <button type="button" class="btn btn--ghost btn--sm" id="restoreBtn" aria-label="Restaurer" title="Restaurer une sauvegarde"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg><span class="btn-label">Restaurer</span></button>
       <input type="file" id="restoreInput" accept=".json,application/json" hidden>
     </div>
   </div>
-  <div class="dialog-scroll"><div id="savedOffersList"></div></div>
+  <div class="devis-filter" id="devisFilter" role="group" aria-label="Filtrer par statut"></div>
+  <div class="dialog-scroll"><div id="savedOffersList"></div><div id="devisDash" hidden></div></div>
   <footer class="dialog-foot" id="savedOffersFoot">
     <p class="compare-hint" id="compareHint" aria-live="polite">Cochez deux devis pour les comparer.</p>
     <span class="spacer"></span>
@@ -3521,22 +3623,230 @@ html[data-text="large"] { font-size: 112.5%; }
     ].filter(Boolean);
     el.textContent = parts.join(' · ');
   }
+
+  /* ------------------------------------------------------------------
+   * Suivi des devis : statut, échéance, rappel au calendrier, tableau de bord
+   * ------------------------------------------------------------------ */
+  const STATUSES = [
+    { id: 'nouveau', label: 'À envoyer', c: 'var(--status-new)' },
+    { id: 'envoye', label: 'Envoyé', c: 'var(--accent)' },
+    { id: 'relancer', label: 'À relancer', c: 'var(--warning)' },
+    { id: 'accepte', label: 'Accepté', c: 'var(--success)' },
+    { id: 'refuse', label: 'Refusé', c: 'var(--danger)' },
+  ];
+  const STATUS = Object.fromEntries(STATUSES.map(st => [st.id, st]));
+  const statusOf = o => (STATUS[o.status] ? o.status : 'nouveau');
+  let devisFilter = 'tous';
+  let devisView = store.get('devisView') === 'dash' ? 'dash' : 'list';
+  const startOfDay = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
+  function addMonths(d, n) {
+    const x = new Date(d);
+    const day = x.getDate();
+    x.setDate(1);
+    x.setMonth(x.getMonth() + n);
+    x.setDate(Math.min(day, new Date(x.getFullYear(), x.getMonth() + 1, 0).getDate()));
+    return x;
+  }
+  // Date d'enregistrement : l'identifiant est l'horodatage ; sinon la date affichée (jj/mm/aaaa)
+  function offerTime(o) {
+    if (o.id > 1e12) return o.id;
+    const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(o.date || '');
+    return m ? new Date(+m[3], +m[2] - 1, +m[1]).getTime() : 0;
+  }
+  // Prochaine échéance d'un contrat : date d'effet + 12 mois (6 en semestriel), reconduite tant qu'elle est passée
+  // (contrat renouvelable) ; un contrat ferme garde sa seule échéance
+  function offerDue(o) {
+    const u = userOf(o); const v = vehOf(o);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(u.dateEffet || '')) return null;
+    const [y, m, d] = u.dateEffet.split('-').map(Number);
+    const start = new Date(y, m - 1, d);
+    const months = v.fractionnement === 'semestriel' ? 6 : 12;
+    const today = startOfDay(Date.now());
+    let k = 1;
+    let due = addMonths(start, months);
+    if (u.typeContrat !== 'ferme') while (due < today && k < 400) { k++; due = addMonths(start, months * k); }
+    return due;
+  }
+  const daysUntil = d => Math.round((startOfDay(d) - startOfDay(Date.now())) / 864e5);
+  const shortDate = d => new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', ...(d.getFullYear() === new Date().getFullYear() ? {} : { year: 'numeric' }) }).format(d);
+  function dueInfo(o) {
+    if (statusOf(o) !== 'accepte') return null;
+    const due = offerDue(o);
+    if (!due) return null;
+    const n = daysUntil(due);
+    const text = n < 0 ? `échue le ${shortDate(due)}` : n === 0 ? 'échéance aujourd’hui' : n <= 30 ? `échéance dans ${n}${NNBSP}j · ${shortDate(due)}` : `échéance le ${shortDate(due)}`;
+    return { due, n, text, cls: n < 0 ? ' is-late' : n <= 30 ? ' is-soon' : '' };
+  }
+  const dueBadge = o => { const d = dueInfo(o); return d ? `<span class="due-badge${d.cls}">${icon('i-calendar')}${escapeHtml(d.text)}</span>` : ''; };
+  function statusSelect(o) {
+    const st = statusOf(o);
+    return `<select class="status-select" data-status-for="${o.id}" style="--c: ${STATUS[st].c}" aria-label="Statut du devis : ${escapeHtml(offerTitle(o))}">${STATUSES.map(x => `<option value="${x.id}"${x.id === st ? ' selected' : ''}>${escapeHtml(x.label)}</option>`).join('')}</select>`;
+  }
+  function setOfferStatus(id, status, select) {
+    const offers = readOffers();
+    const o = offers.find(x => x.id === id);
+    if (!o || !STATUS[status]) return;
+    o.status = status;
+    o.statusAt = Date.now();
+    writeOffers(offers);
+    if (select) select.style.setProperty('--c', STATUS[status].c);
+    const li = select && select.closest('.devis');
+    if (li) $('.devis-due', li).innerHTML = dueBadge(o);
+    renderDevisFilter(offers);
+    if (devisView === 'dash') renderDevisDash(offers.filter(x => offerMatches(x, $('#devisSearch').value.trim())));
+    if (status === 'accepte' && !userOf(o).dateEffet) announce('Statut : Accepté. Renseignez la date d’effet dans le formulaire proposant pour suivre l’échéance.');
+    else announce(`Statut : ${STATUS[status].label}.`);
+  }
+  function renderDevisFilter(offers) {
+    const el = $('#devisFilter');
+    el.hidden = devisView !== 'list' || !offers.length;
+    const counts = Object.fromEntries(STATUSES.map(st => [st.id, 0]));
+    offers.forEach(o => { counts[statusOf(o)] += 1; });
+    const chips = [{ id: 'tous', label: 'Tous', n: offers.length }, ...STATUSES.map(st => ({ ...st, n: counts[st.id] }))];
+    el.innerHTML = chips.map(ch => `<button type="button" class="status-chip" data-filter="${ch.id}" aria-pressed="${devisFilter === ch.id}">${ch.c ? `<i class="status-dot" style="--c: ${ch.c}" aria-hidden="true"></i>` : ''}${escapeHtml(ch.label)} <b>${ch.n}</b></button>`).join('');
+  }
+  // Rappel au calendrier (.ics) : l'échéance d'un contrat accepté, sinon une relance du client
+  const icsText = t => String(t).replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  const icsDay = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const icsFold = line => { const out = []; let rest = line; while (rest.length > 70) { out.push(rest.slice(0, 70)); rest = ' ' + rest.slice(70); } out.push(rest); return out.join('\r\n'); };
+  function offerReminder(id) {
+    const o = readOffers().find(x => x.id === id);
+    if (!o) return;
+    const u = userOf(o);
+    const name = offerTitle(o);
+    const info = dueInfo(o);
+    const desc = [offerFacts(o).join(' · '), `Prime totale TTC : ${(o.data && o.data.primeTotal) || ''}`, u.mobile ? `Mobile : ${u.mobile}` : '', u.email ? `E-mail : ${u.email}` : ''].filter(Boolean).join('\n');
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    let when; let summary; let alarm; let label;
+    if (info && info.n >= 0) {
+      const end = new Date(info.due); end.setDate(end.getDate() + 1);
+      when = [`DTSTART;VALUE=DATE:${icsDay(info.due)}`, `DTEND;VALUE=DATE:${icsDay(end)}`];
+      summary = `Échéance assurance auto : ${name}`;
+      alarm = ['TRIGGER:-P7D', 'DESCRIPTION:Échéance dans 7 jours'];
+      label = `Rappel d’échéance (${shortDate(info.due)}) téléchargé : ouvrez-le pour l’ajouter au calendrier.`;
+    } else {
+      const day = new Date(); day.setDate(day.getDate() + (statusOf(o) === 'relancer' ? 1 : 3));
+      when = [`DTSTART:${icsDay(day)}T090000`, `DTEND:${icsDay(day)}T093000`];
+      summary = `Relancer le client : ${name}`;
+      alarm = ['TRIGGER:-PT15M', 'DESCRIPTION:Relance du client'];
+      label = `Rappel de relance (${shortDate(day)}, 9 h) téléchargé : ouvrez-le pour l’ajouter au calendrier.`;
+    }
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Simulateur Assurance Automobile//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+      'BEGIN:VEVENT', `UID:devis-${o.id}-${stamp}@simulateur-assurance-automobile`, `DTSTAMP:${stamp}`, ...when,
+      `SUMMARY:${icsText(summary)}`, `DESCRIPTION:${icsText(desc)}`,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', ...alarm.map((l, i) => (i === 1 ? `DESCRIPTION:${icsText(l.replace(/^DESCRIPTION:/, ''))}` : l)), 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'];
+    const slug = fold(name).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'devis';
+    downloadFile(`rappel-${slug}.ics`, lines.map(icsFold).join('\r\n') + '\r\n', 'text/calendar;charset=utf-8');
+    toast(label);
+  }
+  // Pourcentages entiers dont la somme fait 100 (plus forts restes)
+  function wholePercents(values) {
+    const total = values.reduce((a, b) => a + b, 0);
+    if (!total) return values.map(() => 0);
+    const raw = values.map(v => v / total * 100);
+    const pct = raw.map(Math.floor);
+    raw.map((r, i) => [r - pct[i], i]).sort((a, b) => b[0] - a[0]).slice(0, 100 - pct.reduce((a, b) => a + b, 0)).forEach(([, i]) => { pct[i] += 1; });
+    return pct;
+  }
+  function renderDevisDash(offers) {
+    const el = $('#devisDash');
+    if (!offers.length) {
+      el.innerHTML = `<div class="empty-state"><span class="step-tile">${icon('i-chart')}</span><strong>Pas encore de chiffres.</strong><p>Le tableau de bord se remplit avec les devis enregistrés depuis « Voir l'offre ».</p></div>`;
+      return;
+    }
+    const sum = list => list.reduce((a, o) => a + primeOf(o), 0);
+    const counts = Object.fromEntries(STATUSES.map(st => [st.id, 0]));
+    offers.forEach(o => { counts[statusOf(o)] += 1; });
+    const accepted = offers.filter(o => statusOf(o) === 'accepte');
+    const decided = counts.accepte + counts.refuse;
+    const priced = offers.filter(o => primeOf(o) > 0);
+    const now = new Date();
+    const sameMonth = (t, y, m) => { const d = new Date(t); return d.getFullYear() === y && d.getMonth() === m; };
+    const thisMonth = offers.filter(o => sameMonth(offerTime(o), now.getFullYear(), now.getMonth())).length;
+    const kpi = (label, value, unit, sub, ink) => `<div class="kpi${ink ? ' kpi--ink' : ''}"><p class="kpi-label">${label}</p><p class="kpi-value" translate="no">${value}${unit ? `<small>${unit}</small>` : ''}</p><p class="kpi-sub">${sub}</p></div>`;
+    const kpis = [
+      kpi('Primes acceptées', formatCurrency(sum(accepted)), 'DT', accepted.length ? `${accepted.length} contrat${accepted.length > 1 ? 's' : ''} accepté${accepted.length > 1 ? 's' : ''}` : 'Aucun devis accepté', true),
+      kpi('Devis', String(offers.length), '', `dont ${thisMonth} ce mois-ci`),
+      kpi('Prime moyenne', priced.length ? formatCurrency(sum(priced) / priced.length) : '—', priced.length ? 'DT' : '', `sur ${priced.length} devis`),
+      kpi('Taux d’acceptation', decided ? String(Math.round(counts.accepte / decided * 100)) : '—', decided ? '%' : '', decided ? `${counts.accepte} accepté${counts.accepte > 1 ? 's' : ''} · ${counts.refuse} refusé${counts.refuse > 1 ? 's' : ''}` : 'Aucun devis accepté ni refusé'),
+    ].join('');
+    // Primes des 6 derniers mois (date d'enregistrement)
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const list = offers.filter(o => sameMonth(offerTime(o), d.getFullYear(), d.getMonth()));
+      months.push({ d, n: list.length, total: sum(list) });
+    }
+    const max = Math.max(...months.map(m => m.total), 1);
+    const peak = months.reduce((best, m) => (m.total > best.total ? m : best), months[0]);
+    const monthName = d => new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(d);
+    const monthShort = d => new Intl.DateTimeFormat('fr-FR', { month: 'short' }).format(d).replace('.', '');
+    const cols = months.map((m, i) => {
+      const h = m.total ? Math.max(3, m.total / max * 100) : 0;
+      const showVal = m.total && (i === months.length - 1 || m === peak);
+      return `<div class="month-col${m.total ? '' : ' is-empty'}" style="--h: ${h.toFixed(1)}%" role="listitem" tabindex="0" aria-label="${escapeHtml(`${monthName(m.d)} : ${m.n} devis, ${formatCurrency(m.total)} DT`)}">
+        ${showVal ? `<span class="month-val" aria-hidden="true">${formatCurrency(m.total).replace(/\.\d{3}$/, '')}</span>` : ''}
+        <span class="month-tip" aria-hidden="true"><b>${formatCurrency(m.total)}${NNBSP}DT</b><span>${m.n} devis · ${escapeHtml(monthName(m.d))}</span></span>
+        <span class="month-bar"></span></div>`;
+    }).join('');
+    const table = `<table class="sr-only"><caption>Primes des devis par mois</caption><thead><tr><th scope="col">Mois</th><th scope="col">Devis</th><th scope="col">Primes (DT)</th></tr></thead><tbody>${months.map(m => `<tr><th scope="row">${escapeHtml(monthName(m.d))}</th><td>${m.n}</td><td>${formatCurrency(m.total)}</td></tr>`).join('')}</tbody></table>`;
+    // Statuts
+    const present = STATUSES.filter(st => counts[st.id]);
+    const pcts = wholePercents(present.map(st => counts[st.id]));
+    const statusCard = `
+      <div class="status-bar" role="img" aria-label="${escapeHtml('Statuts : ' + present.map((st, i) => `${st.label} ${counts[st.id]} (${pcts[i]} %)`).join(', '))}">${present.map(st => `<span style="--c: ${st.c}; flex-grow: ${counts[st.id]}"></span>`).join('')}</div>
+      <ul class="status-legend">${present.map((st, i) => `<li><i style="--c: ${st.c}" aria-hidden="true"></i><span>${escapeHtml(st.label)}</span><b>${counts[st.id]}</b><em>${pcts[i]}${NNBSP}%</em></li>`).join('')}</ul>`;
+    // À traiter : échéances à 30 jours (ou dépassées) puis relances
+    const dues = offers.map(o => ({ o, info: dueInfo(o) })).filter(x => x.info && x.info.n <= 30).sort((a, b) => a.info.n - b.info.n);
+    const relances = offers.filter(o => statusOf(o) === 'relancer').sort((a, b) => offerTime(a) - offerTime(b));
+    const todoItem = (o, tag) => `<li><div><p class="todo-name">${escapeHtml(offerTitle(o))}</p><p class="todo-sub">${tag}<span>${escapeHtml(offerFacts(o).slice(0, 2).join(' · '))}</span></p></div>
+      <div class="todo-actions"><button type="button" class="btn btn--ghost btn--sm icon-only" data-remind="${o.id}" aria-label="Ajouter un rappel au calendrier : ${escapeHtml(offerTitle(o))}" title="Rappel au calendrier">${icon('i-calendar')}</button><button type="button" class="btn btn--ghost btn--sm" data-open="${o.id}">Ouvrir</button></div></li>`;
+    const todo = dues.length || relances.length
+      ? `<ul class="todo-list">${dues.map(x => todoItem(x.o, dueBadge(x.o))).join('')}${relances.map(o => todoItem(o, `<span class="due-badge is-soon"><i class="status-dot" style="--c: var(--warning)" aria-hidden="true"></i>À relancer</span>`)).join('')}</ul>`
+      : '<p class="dash-empty">Rien à traiter : aucune échéance dans les 30 jours ni relance en attente.</p>';
+    el.innerHTML = `<div class="dash">
+      <div class="dash-kpis">${kpis}</div>
+      <div class="dash-grid">
+        <section class="dash-card" aria-labelledby="dashMonths"><h3 id="dashMonths">Primes des devis par mois <small>6 derniers mois · DT</small></h3>
+          <div class="month-chart" style="--n: ${months.length}" role="list" aria-label="Primes des devis par mois">${cols}</div>
+          <div class="month-axis" style="--n: ${months.length}" aria-hidden="true">${months.map(m => `<span>${escapeHtml(monthShort(m.d))}</span>`).join('')}</div>${table}
+        </section>
+        <div class="dash-stack">
+          <section class="dash-card" aria-labelledby="dashTodo"><h3 id="dashTodo">À traiter <small>${dues.length + relances.length}</small></h3>${todo}</section>
+          <section class="dash-card" aria-labelledby="dashStatus"><h3 id="dashStatus">Statuts des devis <small>${offers.length} devis</small></h3>${statusCard}</section>
+        </div>
+      </div>
+    </div>`;
+  }
   function renderSavedOffers() {
     const offers = readOffers();
     const list = $('#savedOffersList');
     const query = $('#devisSearch').value.trim();
     selectedOfferIds = selectedOfferIds.filter(id => offers.some(o => o.id === id));
-    $('#savedOffersFoot').hidden = offers.length < 2;
     $$('#exportCsvBtn, #backupBtn').forEach(btn => { btn.disabled = !offers.length; });
-    const shown = offers.filter(o => offerMatches(o, query));
-    renderDevisStats(offers, shown);
+    $$('input[name="devisView"]').forEach(r => { r.checked = r.value === devisView; });
+    const searched = offers.filter(o => offerMatches(o, query));
+    const shown = searched.filter(o => devisFilter === 'tous' || statusOf(o) === devisFilter);
+    renderDevisStats(offers, searched);
+    renderDevisFilter(offers);
+    const dash = devisView === 'dash';
+    list.hidden = dash;
+    $('#devisDash').hidden = !dash;
+    $('#savedOffersFoot').hidden = dash || offers.length < 2;
+    if (dash) { renderDevisDash(searched); return; }
     if (!offers.length) {
       list.innerHTML = `<div class="empty-state"><span class="step-tile">${icon('i-folder')}</span><strong>Aucun devis enregistré.</strong><p>Ouvrez « Voir l'offre » à l'étape Résumé, puis choisissez « Enregistrer ». Vous pouvez aussi restaurer une sauvegarde.</p></div>`;
       updateCompareButton();
       return;
     }
-    if (!shown.length) {
+    if (!shown.length && !searched.length) {
       list.innerHTML = `<div class="empty-state"><span class="step-tile">${icon('i-search')}</span><strong>Aucun devis ne correspond à « ${escapeHtml(query)} ».</strong><p>Essayez un nom, un numéro de CIN ou de mobile, une marque ou une puissance (7 CV).</p></div>`;
+      updateCompareButton();
+      return;
+    }
+    if (!shown.length) {
+      list.innerHTML = `<div class="empty-state"><span class="step-tile">${icon('i-folder')}</span><strong>Aucun devis « ${escapeHtml(STATUS[devisFilter].label)} »${query ? ` pour « ${escapeHtml(query)} »` : ''}.</strong><p>Choisissez « Tous » pour revoir l'ensemble des devis.</p></div>`;
       updateCompareButton();
       return;
     }
@@ -3548,9 +3858,13 @@ html[data-text="large"] { font-size: 112.5%; }
       li.className = 'devis';
       li.innerHTML = `
         <input type="checkbox" class="checkbox" id="devis_${offer.id}" data-offer-id="${offer.id}" aria-label="Sélectionner pour comparer : ${escapeHtml(offerTitle(offer))}">
-        <label class="devis-main" for="devis_${offer.id}"><span class="devis-title">${escapeHtml(offerTitle(offer))}</span><span class="devis-sub">${escapeHtml(facts.join(' · '))}</span><span class="devis-date">${escapeHtml(offer.date || '')}</span></label>
-        <span class="devis-prime">${escapeHtml((offer.data && offer.data.primeTotal) || '')}</span>
+        <div class="devis-body">
+          <label class="devis-main" for="devis_${offer.id}"><span class="devis-title">${escapeHtml(offerTitle(offer))}</span><span class="devis-sub">${escapeHtml(facts.join(' · '))}</span><span class="devis-date">${escapeHtml(offer.date || '')}</span></label>
+          <div class="devis-tags">${statusSelect(offer)}<span class="devis-due">${dueBadge(offer)}</span></div>
+        </div>
+        <span class="devis-prime" translate="no">${escapeHtml((offer.data && offer.data.primeTotal) || '')}</span>
         <span class="devis-actions">
+          <button type="button" class="btn btn--ghost btn--sm icon-only" data-remind="${offer.id}" aria-label="Ajouter un rappel au calendrier : ${escapeHtml(offerTitle(offer))}" title="Rappel au calendrier">${icon('i-calendar')}</button>
           <button type="button" class="btn btn--ghost btn--sm" data-load>Charger</button>
           <button type="button" class="btn btn--danger btn--sm" data-delete aria-label="Supprimer le devis : ${escapeHtml(offerTitle(offer))}, ${escapeHtml(offer.date || '')}">${icon('i-trash')}<span>Supprimer</span></button>
         </span>`;
@@ -3558,6 +3872,7 @@ html[data-text="large"] { font-size: 112.5%; }
       cb.checked = selectedOfferIds.includes(offer.id);
       cb.addEventListener('change', () => toggleOfferSelection(offer.id, cb.checked));
       $('[data-load]', li).addEventListener('click', () => loadOffer(offer.id));
+      $('.status-select', li).addEventListener('change', e => setOfferStatus(offer.id, e.target.value, e.target));
       $('[data-delete]', li).addEventListener('click', () => deleteOffer(offer.id));
       ul.appendChild(li);
     });
@@ -3618,13 +3933,14 @@ html[data-text="large"] { font-size: 112.5%; }
     if (!offers.length) return;
     const cell = v => { const t = String(v == null ? '' : v); return /[";\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
     const dec = n => (Number(n) || 0).toFixed(3).replace('.', ',');
-    const head = ['Date', 'Client', 'CIN', 'Mobile', 'Email', 'Agence', 'Marque', 'Modèle', 'Puissance (CV)', 'Classe bonus-malus', 'Places', 'Valeur catalogue (DT)', 'Valeur vénale (DT)', 'PMEC', 'Formule', 'Fractionnement', 'Réduction (%)', 'Garanties', 'Prime totale TTC (DT)'];
+    const head = ['Date', 'Client', 'CIN', 'Mobile', 'Email', 'Agence', 'Marque', 'Modèle', 'Puissance (CV)', 'Classe bonus-malus', 'Places', 'Valeur catalogue (DT)', 'Valeur vénale (DT)', 'PMEC', 'Formule', 'Fractionnement', 'Réduction (%)', 'Garanties', 'Prime totale TTC (DT)', 'Statut', "Date d'effet", 'Prochaine échéance'];
     const rows = offers.map(o => {
       const u = userOf(o); const v = vehOf(o);
       const gs = ((o.data && o.data.guarantees) || []).filter(g => g.enabled).map(g => (DEF[g.id] ? DEF[g.id].name : g.id)).join(' + ');
       return [o.date, offerTitle(o) === 'Client non renseigné' ? '' : offerTitle(o), u.cin, u.mobile, u.email, u.agence, u.marque, u.modele, v.cv, v.classBonusMalus, v.places,
         dec(v.valeurCatalogue), dec(v.valeurVenale), v.pmec ? formatDateFr(v.pmec) : '', v.formula === 'personnalisee' ? 'Personnalisée' : 'Basique',
-        v.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel', parseFloat(v.tauxReduction) || 0, gs, dec(primeOf(o))].map(cell).join(';');
+        v.fractionnement === 'semestriel' ? 'Semestriel' : 'Annuel', parseFloat(v.tauxReduction) || 0, gs, dec(primeOf(o)),
+        STATUS[statusOf(o)].label, u.dateEffet ? formatDateFr(u.dateEffet) : '', (() => { const d = offerDue(o); return d ? d.toLocaleDateString('fr-FR') : ''; })()].map(cell).join(';');
     });
     downloadFile(`devis-${fileDate()}.csv`, '\ufeff' + [head.map(cell).join(';'), ...rows].join('\r\n'), 'text/csv;charset=utf-8');
     toast(`${offers.length} devis exportés pour Excel.`);
@@ -4599,6 +4915,26 @@ html[data-text="large"] { font-size: 112.5%; }
     // Mes devis & comparateur
     $('#openDevisBtn').addEventListener('click', openSavedOffers);
     $('#devisSearch').addEventListener('input', renderSavedOffers);
+    $$('input[name="devisView"]').forEach(r => r.addEventListener('change', () => {
+      if (!r.checked) return;
+      devisView = r.value;
+      store.set('devisView', devisView);
+      renderSavedOffers();
+    }));
+    $('#devisFilter').addEventListener('click', e => {
+      const chip = e.target.closest('[data-filter]');
+      if (!chip) return;
+      devisFilter = chip.dataset.filter;
+      renderSavedOffers();
+      const again = $(`#devisFilter [data-filter="${devisFilter}"]`);
+      if (again) again.focus();
+    });
+    $('#savedOffersModal').addEventListener('click', e => {
+      const remind = e.target.closest('[data-remind]');
+      if (remind) { offerReminder(Number(remind.dataset.remind)); return; }
+      const open = e.target.closest('[data-open]');
+      if (open) loadOffer(Number(open.dataset.open));
+    });
     $('#newQuoteBtn').addEventListener('click', newQuote);
     $('#exportCsvBtn').addEventListener('click', exportOffersCsv);
     $('#backupBtn').addEventListener('click', backupOffers);
