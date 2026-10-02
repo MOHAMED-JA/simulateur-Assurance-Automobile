@@ -24,6 +24,14 @@
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const icon = id => `<svg class="icon" aria-hidden="true"><use href="#${id}"/></svg>`;
   const two = n => String(n).padStart(2, '0');
+  const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const behavior = () => (reduceMotion() ? 'auto' : 'smooth');
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* stockage indisponible */ } },
+  };
+  const toast = (...args) => { if (window.appToast) window.appToast(...args); };
+  const announce = m => { if (window.appAnnounce) window.appAnnounce(m); };
 
   const SIGNALS = {
     agent: 'une signalisation d\'un agent de circulation',
@@ -146,14 +154,15 @@
     (s.extras || []).forEach(([k, ...a]) => { if (k !== 'pierres') body += EXTRA[k](...a); });
     (s.parked || []).forEach(([x, y, rot]) => { body += carSvg(x, y, rot, COL.park, ''); });
     if (s.night) body += EXTRA.nuit();
-    s.cars.filter(c => c.beams).forEach(c => { body += carSvg(c.x, c.y, c.rot, fillOf(c.r), mapLetter(c.r), c); });
-    s.cars.filter(c => !c.beams).forEach(c => { body += carSvg(c.x, c.y, c.rot, fillOf(c.r), mapLetter(c.r), c); });
+    const mover = c => `<g class="mover" data-r="${c.r}">${carSvg(c.x, c.y, c.rot, fillOf(c.r), mapLetter(c.r), c)}</g>`;
+    s.cars.filter(c => c.beams).forEach(c => { body += mover(c); });
+    s.cars.filter(c => !c.beams).forEach(c => { body += mover(c); });
     (s.extras || []).forEach(([k, ...a]) => { if (k === 'pierres') body += EXTRA.pierres(...a); });
     const arrowColor = s.night ? '#fff' : COL.ink;
-    (s.arrows || []).forEach(d => { body += `<path d="${d}" fill="none" stroke="${arrowColor}" stroke-width="1.8" ${s.dashedArrows ? 'stroke-dasharray="4 3"' : ''} marker-end="url(#${id})"/>`; });
-    (s.impacts || []).forEach(([x, y]) => { body += star(x, y); });
+    (s.arrows || []).forEach(d => { body += `<path class="trail" d="${d}" fill="none" stroke="${arrowColor}" stroke-width="1.8" ${s.dashedArrows ? 'stroke-dasharray="4 3"' : ''} marker-end="url(#${id})"/>`; });
+    (s.impacts || []).forEach(([x, y]) => { body += `<g class="impact">${star(x, y)}</g>`; });
     const label = opts.label || `Croquis du cas ${n}`;
-    return `<svg class="scene" viewBox="0 0 240 150" role="img" aria-label="${esc(label)}"><defs><marker id="${id}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="${arrowColor}"/></marker></defs>${body}</svg>`;
+    return `<svg class="scene" viewBox="0 0 240 150" data-case="${n}" role="img" aria-label="${esc(label)}"><defs><marker id="${id}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="${arrowColor}"/></marker></defs>${body}</svg>`;
   }
 
   // Accidents en chaîne (24) et chocs successifs (25)
@@ -407,6 +416,7 @@
     return `
     <div class="sin-tabs" role="tablist" aria-label="Rubrique sinistre">
       <button type="button" role="tab" class="sin-tab" id="sinTabConstat" aria-controls="sinPanelConstat" aria-selected="true">${icon('i-list')}<span class="tab-long">Constat interactif</span><span class="tab-short">Constat</span></button>
+      <button type="button" role="tab" class="sin-tab" id="sinTabDecl" aria-controls="sinPanelDecl" aria-selected="false">${icon('i-pen')}<span class="tab-long">Déclaration</span><span class="tab-short">Déclarer</span></button>
       <button type="button" role="tab" class="sin-tab" id="sinTabBareme" aria-controls="sinPanelBareme" aria-selected="false">${icon('i-receipt')}<span class="tab-long">Barème FTUSA · 25 cas</span><span class="tab-short">Barème</span></button>
       <button type="button" role="tab" class="sin-tab" id="sinTabQuiz" aria-controls="sinPanelQuiz" aria-selected="false">${icon('i-check')}Entraînement</button>
     </div>
@@ -478,23 +488,30 @@
           </section>
         </div>
 
-        <aside class="sin-aside" aria-live="polite" aria-label="Résultat selon le barème">
-          <div id="sinResult"></div>
+        <aside class="sin-aside" aria-label="Résultat selon le barème">
+          <div id="sinResult" aria-live="polite"></div>
+          <section class="panel sin-whatif" id="sinWhatIf" aria-labelledby="whatIfTitle" hidden></section>
           <div class="sin-aside-actions">
-            <button type="button" class="btn btn--ghost" id="sinReset">${icon('i-reset')} Nouveau constat</button>
+            <button type="button" class="btn btn--ghost" id="sinPresent">${icon('i-present')} Présenter au client</button>
+            <button type="button" class="btn btn--ghost" id="sinShare">${icon('i-share')} Partager</button>
             <button type="button" class="btn btn--ghost" id="sinCopy">${icon('i-save')} Copier le résultat</button>
+            <button type="button" class="btn btn--ghost" id="sinReset">${icon('i-reset')} Nouveau constat</button>
           </div>
         </aside>
       </div>
     </div>
 
+    <div class="sin-panel" id="sinPanelDecl" role="tabpanel" aria-labelledby="sinTabDecl" hidden>
+      <div id="declMount"></div>
+    </div>
+
     <div class="sin-panel" id="sinPanelBareme" role="tabpanel" aria-labelledby="sinTabBareme" hidden>
       <div class="bar-tools">
         <div class="bar-filters" role="group" aria-label="Filtrer par famille">
-          <button type="button" class="chip is-on" data-cat="">Tous les cas</button>
-          ${B.categories.map(c => `<button type="button" class="chip" data-cat="${c.id}">${esc(shortCat(c.id))}</button>`).join('')}
+          <button type="button" class="chip is-on" data-cat="" aria-pressed="true">Tous les cas</button>
+          ${B.categories.map(c => `<button type="button" class="chip" data-cat="${c.id}" aria-pressed="false">${esc(shortCat(c.id))}</button>`).join('')}
         </div>
-        <label class="bar-search"><span class="sr-only">Rechercher dans le barème</span><input class="input" type="search" id="barSearch" placeholder="Rechercher : stationnement, feu, portière…"></label>
+        <label class="bar-search"><span class="sr-only">Rechercher dans le barème</span><input class="input" type="search" id="barSearch" name="barSearch" autocomplete="off" spellcheck="false" placeholder="Rechercher : stationnement, feu, portière, 14…"></label>
       </div>
       <details class="panel bar-rules">
         <summary>Règles d'application du barème, définitions</summary>
@@ -521,8 +538,8 @@
   }
 
   function cfgIcon(k) {
-    const ar = (x1, y1, x2, y2) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" marker-end="url(#cfgHead)"/>`;
-    const base = '<svg viewBox="0 0 44 32" width="44" height="32"><defs><marker id="cfgHead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="currentColor"/></marker></defs>';
+    const ar = (x1, y1, x2, y2) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" marker-end="url(#cfgHead-${k})"/>`;
+    const base = `<svg viewBox="0 0 44 32" width="44" height="32"><defs><marker id="cfgHead-${k}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="currentColor"/></marker></defs>`;
     if (k === 'meme') return base + ar(6, 11, 34, 11) + ar(6, 22, 34, 22) + '</svg>';
     if (k === 'inverse') return base + ar(38, 10, 10, 10) + ar(6, 22, 34, 22) + '</svg>';
     return base + ar(38, 9, 12, 9) + ar(22, 30, 22, 14) + '</svg>';
@@ -561,6 +578,140 @@
     q('#sinDesaccord').checked = Boolean(st.specials.desaccord);
   }
 
+  // Constat repris d'un brouillon ou d'un lien : seules les valeurs connues sont gardées
+  function cleanState(src) {
+    const x = blank();
+    if (!src || typeof src !== 'object') return x;
+    const nums = a => (Array.isArray(a) ? [...new Set(a.map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 17))] : []);
+    x.boxes = { A: nums(src.boxes && src.boxes.A), B: nums(src.boxes && src.boxes.B) };
+    if (CONFIGS[src.config]) x.config = src.config;
+    if (STATIONNEMENT[src.stationnement]) x.stationnement = src.stationnement;
+    if (typeof src.axeProuve === 'boolean') x.axeProuve = src.axeProuve;
+    if (typeof src.agglo === 'boolean') x.agglo = src.agglo;
+    const sp = src.specials || {};
+    ['signal', 'demitour', 'portiere', 'jets', 'eclairage'].forEach(k => { if (sp[k] === 'A' || sp[k] === 'B') x.specials[k] = sp[k]; });
+    if (SIGNALS[sp.signalType]) x.specials.signalType = sp.signalType;
+    x.specials.desaccord = sp.desaccord === true;
+    return x;
+  }
+  const clone = o => JSON.parse(JSON.stringify(o));
+
+  /* ---------- Lien du constat : #sinistre/constat?a=…&b=… ---------- */
+  const SPK = { signal: 'si', demitour: 'dt', portiere: 'po', jets: 'je', eclairage: 'ec' };
+  function encodeConstat(x) {
+    const p = new URLSearchParams();
+    const mask = v => x.boxes[v].reduce((m, n) => m | (1 << (n - 1)), 0).toString(36);
+    p.set('a', mask('A'));
+    p.set('b', mask('B'));
+    if (x.config) p.set('c', x.config);
+    if (x.stationnement) p.set('s', x.stationnement);
+    if (x.axeProuve != null) p.set('x', x.axeProuve ? '1' : '0');
+    if (x.agglo != null) p.set('g', x.agglo ? '1' : '0');
+    Object.entries(SPK).forEach(([k, key]) => { if (x.specials[k]) p.set(key, x.specials[k]); });
+    if (x.specials.signal) p.set('st', x.specials.signalType);
+    if (x.specials.desaccord) p.set('d', '1');
+    return p.toString();
+  }
+  function decodeConstat(str) {
+    const p = new URLSearchParams(str);
+    const unmask = k => { const m = parseInt(p.get(k) || '0', 36) || 0; return Array.from({ length: 17 }, (_, i) => i + 1).filter(n => m & (1 << (n - 1))); };
+    const bool = k => (p.has(k) ? p.get(k) === '1' : null);
+    const specials = {};
+    Object.entries(SPK).forEach(([k, key]) => { specials[k] = p.get(key); });
+    specials.signalType = p.get('st');
+    specials.desaccord = p.get('d') === '1';
+    return cleanState({ boxes: { A: unmask('a'), B: unmask('b') }, config: p.get('c'), stationnement: p.get('s'), axeProuve: bool('x'), agglo: bool('g'), specials });
+  }
+  const pageUrl = () => window.location.href.split('#')[0];
+  const constatLink = () => `${pageUrl()}#sinistre/constat?${encodeConstat(st)}`;
+
+  /* ---------- Analyse « Et si… » : les cases qui, seules, changeraient le verdict ---------- */
+  function whatIf(base) {
+    const cur = determine(base);
+    const key = r => (r.status === 'ok' ? `${r.n}|${r.resp.A}` : r.status);
+    const out = [];
+    ['A', 'B'].forEach(v => B.circonstances.forEach(c => {
+      const t = clone(base);
+      const list = t.boxes[v];
+      const i = list.indexOf(c.n);
+      const add = i < 0;
+      if (add) list.push(c.n); else list.splice(i, 1);
+      const r = determine(t);
+      if (r.status !== 'ok' || (cur.status === 'ok' && key(r) === key(cur))) return;
+      out.push({ v, n: c.n, add, r, delta: cur.status === 'ok' ? Math.abs(r.resp.A - cur.resp.A) : 1 });
+    }));
+    return out.sort((a, b) => b.delta - a.delta || a.n - b.n || a.v.localeCompare(b.v));
+  }
+  let whatIfItems = [];
+  function renderWhatIf(res) {
+    const box = q('#sinWhatIf');
+    qa('.cst-box.is-pivot').forEach(b => b.classList.remove('is-pivot'));
+    if (res.status === 'empty') { box.hidden = true; box.innerHTML = ''; whatIfItems = []; return; }
+    const list = whatIf(st);
+    list.forEach(it => {
+      const cb = q(`.cst-rows input[data-v="${it.v}"][data-n="${it.n}"]`);
+      if (cb) cb.closest('.cst-box').classList.add('is-pivot');
+    });
+    whatIfItems = list.slice(0, 5);
+    box.hidden = false;
+    const head = `<div class="whatif-head"><h3 class="whatif-title" id="whatIfTitle">${icon('i-compare')}Et si…</h3>`;
+    if (!list.length) {
+      box.innerHTML = `${head}<p class="hint">Aucune case seule ne change ce verdict : il tient au regard des circonstances cochées.</p></div>`;
+      return;
+    }
+    box.innerHTML = `${head}<p class="hint">${res.status === 'ok' ? 'Cases qui, à elles seules, changeraient le verdict' : 'Cases qui, à elles seules, mèneraient à un cas du barème'} ; elles sont repérées d'un point sur le constat.</p></div>
+      <ul class="whatif-list">${whatIfItems.map((it, i) => `<li>
+        <span class="veh-tag veh-tag--${it.v.toLowerCase()}" aria-hidden="true">${it.v}</span>
+        <div class="whatif-text"><p><span class="sr-only">Véhicule ${it.v} : </span>${it.add ? 'Cocher' : 'Décocher'} la case ${it.n} <span class="whatif-circ">« ${esc(CIRC[it.n])} »</span></p>
+          <p class="whatif-out">Cas ${it.r.n} · A ${pct(it.r.resp.A)} · B ${pct(it.r.resp.B)}</p></div>
+        <button type="button" class="btn btn--ghost btn--sm" data-whatif="${i}" aria-label="Essayer : ${it.add ? 'cocher' : 'décocher'} la case ${it.n} pour ${it.v}">Essayer</button></li>`).join('')}</ul>
+      ${list.length > 5 ? `<p class="hint">Et ${list.length - 5} autre${list.length - 5 > 1 ? 's' : ''} sur le constat.</p>` : ''}`;
+  }
+  function tryWhatIf(i) {
+    const it = whatIfItems[i];
+    if (!it) return;
+    const before = clone(st);
+    const list = st.boxes[it.v];
+    if (it.add) list.push(it.n); else list.splice(list.indexOf(it.n), 1);
+    writeForm();
+    renderConstat();
+    toast(`Case ${it.n} ${it.add ? 'cochée' : 'décochée'} pour ${it.v} : cas ${it.r.n}.`, null, { label: 'Annuler', run: () => { st = before; writeForm(); renderConstat(); } });
+  }
+
+  /* ---------- Rejouer l'accident : les véhicules rejoignent le point de choc ---------- */
+  // Distance parcourue par X et Y avant le choc (0 : immobile ; négatif : marche arrière)
+  const MOVES = {
+    1: { X: 22, Y: 60 }, 2: { X: 50, Y: 50 }, 3: { X: 50, Y: 50 }, 4: { X: 40, Y: 50 }, 5: { X: 60, Y: 15 },
+    6: { X: 45, Y: 45 }, 7: { X: 45, Y: 45 }, 8: { X: 45, Y: 45 }, 9: { X: 45, Y: 45 }, 10: { X: 0, Y: 55 },
+    11: { X: 0, Y: 55 }, 12: { X: 0, Y: 55 }, 13: { X: 0, Y: 60 }, 14: { X: 45, Y: 30 }, 15: { X: 40, Y: -35 },
+    16: { X: 50, Y: 25 }, 17: { X: 40, Y: 50 }, 18: { X: 40, Y: 50 }, 19: { X: 55, Y: 0 }, 20: { X: 50, Y: 50 },
+    21: { X: 55, Y: 25 }, 22: { X: 55, Y: 25 }, 23: { X: 45, Y: 45 },
+  };
+  function replayScene(svg) {
+    if (!svg || reduceMotion() || !svg.animate) return;
+    const n = Number(svg.dataset.case);
+    const sc = SCENES[n];
+    if (!sc) return;
+    const mv = MOVES[n] || {};
+    svg.getAnimations({ subtree: true }).forEach(a => a.cancel());
+    svg.querySelectorAll('.mover').forEach(g => {
+      const car = sc.cars.find(c => c.r === g.dataset.r);
+      const d = mv[g.dataset.r] == null ? 45 : mv[g.dataset.r];
+      if (!car || !d) return;
+      const a = car.rot * Math.PI / 180;
+      g.animate([{ transform: `translate(${(-Math.cos(a) * d).toFixed(1)}px, ${(-Math.sin(a) * d).toFixed(1)}px)` }, { transform: 'translate(0px, 0px)' }],
+        { duration: 1100, easing: 'cubic-bezier(.3, .1, .25, 1)', fill: 'backwards' });
+    });
+    svg.querySelectorAll('.trail').forEach(p => p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 150, fill: 'backwards' }));
+    svg.querySelectorAll('.impact').forEach(g => {
+      g.style.transformBox = 'fill-box';
+      g.style.transformOrigin = 'center';
+      g.animate([{ transform: 'scale(0)', opacity: 0 }, { transform: 'scale(1.4)', opacity: 1, offset: 0.6 }, { transform: 'scale(1)', opacity: 1 }],
+        { duration: 420, delay: 1000, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
+    });
+  }
+  let lastCase = null;
+
   function renderConstat() {
     const res = determine(st);
     q('#cstCountA').textContent = st.boxes.A.length;
@@ -591,13 +742,19 @@
     if (jump) jump.addEventListener('click', () => {
       const target = jump.dataset.jump === 'config' ? q('.cfg-choice') : q(`.prec[data-prec="${jump.dataset.jump}"]`);
       if (!target) return;
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.scrollIntoView({ behavior: behavior(), block: 'center' });
       const first = target.querySelector('input');
       if (first) first.focus({ preventScroll: true });
     });
     const goto = q('#sinResult [data-goto-case]');
     if (goto) goto.addEventListener('click', () => { showTab('bareme'); focusCase(Number(goto.dataset.gotoCase)); });
     updateMobileBar(res);
+    renderWhatIf(res);
+    store.set('sinConstat', JSON.stringify(st));
+    // nouveau verdict : le croquis se rejoue une fois
+    const n = res.status === 'ok' ? res.n : null;
+    if (n && n !== lastCase) requestAnimationFrame(() => replayScene(q('#sinResult svg.scene')));
+    lastCase = n;
     return res;
   }
 
@@ -626,7 +783,7 @@
         </ul>
         ${res.why ? `<p class="sin-why"><strong>Pourquoi ?</strong> ${esc(res.why)}</p>` : ''}
         <p class="sin-roles">Dans le barème : X = véhicule ${res.roles.X}, Y = véhicule ${res.roles.Y}.</p>
-        ${SCENES[res.n] ? `<figure class="sin-scene">${scene(res.n, res.roles, { label: `Croquis du cas ${res.n} avec les véhicules A et B` })}</figure>` : ''}
+        ${SCENES[res.n] ? `<figure class="sin-scene">${scene(res.n, res.roles, { label: `Croquis du cas ${res.n} avec les véhicules A et B` })}<button type="button" class="replay-btn" data-replay aria-label="Rejouer l'accident" title="Rejouer l'accident">${icon('i-play')}<span>Rejouer</span></button></figure>` : ''}
         ${checks.length ? `<div class="sin-checks"><p class="label">À vérifier sur le constat</p><ul>${checks.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}
         <button type="button" class="btn btn--ghost btn--sm" data-goto-case="${res.n}">${icon('i-receipt')} Voir le cas ${res.n} dans le barème</button>
       </div>`;
@@ -645,6 +802,7 @@
     if (res.status === 'ok') bar.innerHTML = `<span>Cas n° ${res.n}</span><strong>A ${pct(res.resp.A)} · B ${pct(res.resp.B)}</strong>`;
     else if (res.status === 'empty') bar.innerHTML = '<span>Constat</span><strong>Cochez les circonstances</strong>';
     else bar.innerHTML = '<span>Barème</span><strong>Précision nécessaire</strong>';
+    bar.setAttribute('aria-label', `Voir le résultat : ${bar.textContent.replace(/\s+/g, ' ').trim()}`);
   }
 
   function loadPreset(n, swap) {
@@ -662,7 +820,91 @@
     showTab('constat');
     renderConstat();
     const top = root.getBoundingClientRect().top + window.scrollY - 120;
-    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    window.scrollTo({ top: Math.max(0, top), behavior: behavior() });
+  }
+
+  /* ---------- Partager le constat : lien et code QR ---------- */
+  let shareDlg = null;
+  function makeDialog(id, cls, labelledby) {
+    const dlg = document.createElement('dialog');
+    dlg.className = cls;
+    dlg.id = id;
+    dlg.setAttribute('aria-labelledby', labelledby);
+    dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+    document.body.appendChild(dlg);
+    return dlg;
+  }
+  function openShareConstat() {
+    const res = determine(st);
+    if (res.status === 'empty') { toast('Cochez d’abord les circonstances du constat à partager.', 'warn'); return; }
+    if (!shareDlg) shareDlg = makeDialog('sinShareModal', 'dialog', 'sinShareTitle');
+    const link = constatLink();
+    const summary = res.status === 'ok' ? `Cas n° ${res.n} · A ${pct(res.resp.A)} · B ${pct(res.resp.B)}` : 'Constat à compléter';
+    const text = `Constat amiable, barème FTUSA : ${summary}. Ouvrir le constat : ${link}`;
+    shareDlg.innerHTML = `
+      <header class="dialog-head"><h2 id="sinShareTitle">Partager le constat</h2><button type="button" class="icon-btn" data-close aria-label="Fermer">${icon('i-close')}</button></header>
+      <div class="dialog-scroll"><div class="share-grid">
+        <figure class="share-qr">${window.appQr ? window.appQr(link, 'Code QR du constat') : ''}</figure>
+        <div class="share-body">
+          <p class="share-total">Barème FTUSA<strong>${esc(summary)}</strong></p>
+          <p class="hint">Ce lien et ce code QR rouvrent le constat à l'identique : cases cochées, configuration, précisions et circonstances particulières. Ils ne contiennent aucune donnée personnelle.</p>
+          <div class="share-link"><label class="sr-only" for="sinShareLink">Lien du constat</label><input class="input" type="text" id="sinShareLink" readonly value="${esc(link)}"><button type="button" class="btn btn--ghost" id="sinShareCopy">Copier</button></div>
+          <div class="share-actions">
+            <a class="btn btn--green" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${icon('i-chat')} WhatsApp</a>
+            ${navigator.share ? `<button type="button" class="btn btn--ghost" id="sinShareNative">${icon('i-share')} Autre application</button>` : ''}
+          </div>
+        </div>
+      </div></div>`;
+    const copyBtn = shareDlg.querySelector('#sinShareCopy');
+    copyBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(link); } catch (err) { shareDlg.querySelector('#sinShareLink').select(); try { document.execCommand('copy'); } catch (er) { /* copie manuelle */ } }
+      if (window.appConfirmButton) window.appConfirmButton(copyBtn, 'Copié', 'Lien du constat copié.'); else announce('Lien du constat copié.');
+    });
+    const nat = shareDlg.querySelector('#sinShareNative');
+    if (nat) nat.addEventListener('click', async () => { try { await navigator.share({ title: 'Constat amiable', text, url: link }); } catch (err) { /* partage annulé */ } });
+    shareDlg.showModal();
+  }
+
+  /* ---------- Présentation du verdict au client (plein écran) ---------- */
+  let presentDlg = null;
+  function openPresent() {
+    const res = determine(st);
+    if (res.status !== 'ok') { toast('Pas encore de verdict à présenter : complétez le constat jusqu’à obtenir un cas du barème.', 'warn'); return; }
+    if (!presentDlg) {
+      presentDlg = makeDialog('sinPresentModal', 'dialog dialog--present sin-present', 'sinPresentTitle');
+      presentDlg.addEventListener('close', () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); });
+    }
+    const c = CAS[res.n];
+    const vA = verdictLabel(res.resp.A);
+    const vB = verdictLabel(res.resp.B);
+    const verdict = (v, lab) => `<li class="sinp-v sinp-v--${v.toLowerCase()}"><span class="veh-tag veh-tag--${v.toLowerCase()}">${v}</span><div><b>${lab.txt}</b><span class="badge badge--${lab.cls}">${pct(res.resp[v])}</span></div></li>`;
+    presentDlg.innerHTML = `
+      <header class="present-head">
+        <p class="present-brand"><span class="brand-glyph" aria-hidden="true">${icon('i-shield')}</span><span class="present-brand-name">Analyse du constat · Barème FTUSA</span></p>
+        <button type="button" class="btn btn--ghost btn--sm" data-close aria-label="Quitter la présentation">${icon('i-close')}<span>Quitter<span class="present-quit-long"> la présentation</span></span></button>
+      </header>
+      <div class="present-body sinp-body">
+        <section class="sinp-main">
+          <p class="present-eyebrow present-anim" style="--i: 0">Barème de responsabilité FTUSA · ${esc(B.date)}</p>
+          <div class="sinp-case present-anim" style="--i: 1"><span class="sinp-plate" aria-hidden="true">${two(res.n)}</span><div><p class="sinp-label">Cas n° ${res.n}</p><h2 class="sinp-title" id="sinPresentTitle">${esc(c.texte)}</h2></div></div>
+          <div class="sinp-resp present-anim" style="--i: 2">${respBar(res.resp)}</div>
+          <ul class="sinp-verdicts present-anim" style="--i: 3">${verdict('A', vA)}${verdict('B', vB)}</ul>
+          ${res.why ? `<p class="sinp-why present-anim" style="--i: 4"><strong>Pourquoi ?</strong> ${esc(res.why)}</p>` : ''}
+          ${res.variant ? `<p class="sinp-why present-anim" style="--i: 5">${esc(res.variant)}</p>` : ''}
+        </section>
+        <aside class="sinp-side">
+          ${SCENES[res.n] ? `<figure class="sin-scene sinp-scene present-anim" style="--i: 2">${scene(res.n, res.roles, { label: `Croquis du cas ${res.n} avec les véhicules A et B` })}${`<button type="button" class="replay-btn" data-replay aria-label="Rejouer l'accident" title="Rejouer l'accident">${icon('i-play')}<span>Rejouer</span></button>`}</figure>` : ''}
+          <section class="present-card present-anim" style="--i: 3"><h3>Circonstances déclarées</h3>${describe(st)}</section>
+          <p class="sinp-note present-anim" style="--i: 4">${icon('i-info')}<span>Aide à la décision fondée sur le barème FTUSA : la décision revient à l'assureur, au vu du constat complet.</span></p>
+        </aside>
+      </div>`;
+    const show = () => {
+      presentDlg.showModal();
+      presentDlg.querySelector('[data-close]').focus({ preventScroll: true });
+      setTimeout(() => replayScene(presentDlg.querySelector('svg.scene')), 450);
+    };
+    if (document.fullscreenEnabled && !document.fullscreenElement) document.documentElement.requestFullscreen().then(show, show);
+    else show();
   }
 
   /* ---------- Barème ---------- */
@@ -672,7 +914,7 @@
     const notes = c.notes ? `<div class="case-notes">${c.notes.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
     const art = c.chaine
       ? `<div class="chain-sim" data-chain="${c.n}"><div class="chain-controls"><label for="chainN${c.n}">Véhicules impliqués</label><select class="select" id="chainN${c.n}">${[3, 4, 5, 6].map(k => `<option value="${k}"${k === (c.n === 24 ? 4 : 3) ? ' selected' : ''}>${k}</option>`).join('')}</select></div><div class="chain-out"></div></div>`
-      : `<figure class="case-scene">${scene(c.n, null)}</figure>`;
+      : `<figure class="case-scene">${scene(c.n, null)}<button type="button" class="replay-btn" data-replay aria-label="Rejouer l'accident" title="Rejouer l'accident">${icon('i-play')}<span>Rejouer</span></button></figure>`;
     return `
       <article class="case-card" id="cas-${c.n}" data-cat="${c.cat}" data-search="${esc((c.texte + ' ' + (c.liste || []).join(' ') + ' ' + (c.notes || []).join(' ') + ' ' + (c.groupe || '')).toLowerCase())}">
         <header class="case-head">${caseNoHtml(c.n)}<div class="case-title"><h4>${esc(c.texte)}</h4>${c.groupe ? `<p class="case-group">${esc(c.groupe)}</p>` : ''}</div></header>
@@ -727,16 +969,20 @@
     q('#barEmpty').hidden = shown > 0;
   }
 
+  function setChip(cat) {
+    qa('.chip').forEach(c => { const on = c.dataset.cat === cat; c.classList.toggle('is-on', on); c.setAttribute('aria-pressed', String(on)); });
+  }
   function focusCase(n) {
-    qa('.chip').forEach(c => c.classList.toggle('is-on', c.dataset.cat === ''));
+    setChip('');
     q('#barSearch').value = '';
     filterBareme();
     const card = q('#cas-' + n);
     if (!card) return;
+    setHash('cas-' + n);
     card.classList.add('is-flash');
     setTimeout(() => card.classList.remove('is-flash'), 1600);
     const top = card.getBoundingClientRect().top + window.scrollY - 130;
-    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    window.scrollTo({ top: Math.max(0, top), behavior: behavior() });
   }
 
   /* ---------- Entraînement ---------- */
@@ -790,7 +1036,7 @@
       <div class="panel quiz-card">
         <div class="quiz-top"><span>Question ${quiz.i + 1} sur ${quiz.items.length}</span><span>Score : <strong>${quiz.score}</strong></span></div>
         <div class="quiz-body">
-          <figure class="quiz-scene">${sceneHtml}</figure>
+          <figure class="quiz-scene">${sceneHtml}<button type="button" class="replay-btn" data-replay aria-label="Rejouer l'accident" title="Rejouer l'accident">${icon('i-play')}<span>Rejouer</span></button></figure>
           <div>
             <h3 class="quiz-q">Selon le barème FTUSA, comment se partage la responsabilité ?</h3>
             ${describe(inp)}
@@ -829,17 +1075,51 @@
   }
 
   /* ---------- Onglets et montage ---------- */
+  // onglet : [bouton, panneau, chemin dans l'adresse]
+  const TABS = {
+    constat: ['sinTabConstat', 'sinPanelConstat', ''],
+    declaration: ['sinTabDecl', 'sinPanelDecl', 'declaration'],
+    bareme: ['sinTabBareme', 'sinPanelBareme', 'bareme'],
+    quiz: ['sinTabQuiz', 'sinPanelQuiz', 'entrainement'],
+  };
+  // L'adresse reflète l'onglet (#sinistre/bareme…) : un lien rouvre la même vue
+  function setHash(path) {
+    const view = document.getElementById('sinistreView');
+    if (view && view.hidden) return;
+    history.replaceState(null, '', `${pageUrl()}#sinistre${path ? '/' + path : ''}`);
+  }
   function showTab(name) {
-    const map = { constat: ['sinTabConstat', 'sinPanelConstat'], bareme: ['sinTabBareme', 'sinPanelBareme'], quiz: ['sinTabQuiz', 'sinPanelQuiz'] };
-    Object.entries(map).forEach(([k, [tab, panel]]) => {
+    if (!TABS[name]) name = 'constat';
+    Object.entries(TABS).forEach(([k, [tab, panel]]) => {
       const on = k === name;
       q('#' + tab).setAttribute('aria-selected', String(on));
       q('#' + tab).tabIndex = on ? 0 : -1;
       q('#' + panel).hidden = !on;
     });
-    if (name === 'quiz' && !quiz) newQuiz();
+    if (name === 'quiz') renderQuiz();
+    if (name === 'declaration' && window.Declaration) window.Declaration.mount(q('#declMount'));
     const bar = document.getElementById('sinMobileBar');
     if (bar) bar.dataset.tab = name;
+    setHash(TABS[name][2]);
+  }
+  // Ouverture par une adresse : #sinistre/bareme, #sinistre/cas-14, #sinistre/constat?a=…
+  function route(hash) {
+    const h = String(hash || '').replace(/^#sinistre\/?/, '');
+    if (!h) return;
+    if (h.startsWith('constat?')) {
+      const before = clone(st);
+      st = decodeConstat(h.slice(8));
+      writeForm();
+      showTab('constat');
+      renderConstat();
+      setHash('');
+      toast('Constat ouvert depuis un lien partagé.', null, { label: 'Annuler', run: () => { st = before; writeForm(); renderConstat(); } });
+      return;
+    }
+    const m = /^cas-(\d+)$/.exec(h);
+    if (m && CAS[m[1]]) { showTab('bareme'); requestAnimationFrame(() => focusCase(Number(m[1]))); return; }
+    const tab = Object.keys(TABS).find(k => TABS[k][2] === h);
+    if (tab) showTab(tab);
   }
 
   function mount(el) {
@@ -858,30 +1138,46 @@
     q('#sinCopy').addEventListener('click', async () => {
       const txt = resultText(determine(st));
       const btn = q('#sinCopy');
-      if (!txt) { btn.classList.add('is-shake'); setTimeout(() => btn.classList.remove('is-shake'), 400); return; }
+      if (!txt) {
+        btn.classList.add('is-shake'); setTimeout(() => btn.classList.remove('is-shake'), 400);
+        toast('Rien à copier : cochez les circonstances jusqu’à obtenir un cas du barème.', 'warn');
+        return;
+      }
       try { await navigator.clipboard.writeText(txt); } catch (e) { /* presse-papiers indisponible */ }
+      announce('Résultat copié.');
       btn.innerHTML = `${icon('i-check')} Résultat copié`;
       setTimeout(() => { btn.innerHTML = `${icon('i-save')} Copier le résultat`; }, 1800);
     });
-    const tabs = [['sinTabConstat', 'constat'], ['sinTabBareme', 'bareme'], ['sinTabQuiz', 'quiz']];
-    tabs.forEach(([id, name], i) => {
-      const t = q('#' + id);
+    const order = Object.keys(TABS);
+    order.forEach((name, i) => {
+      const t = q('#' + TABS[name][0]);
       t.addEventListener('click', () => showTab(name));
       t.addEventListener('keydown', e => {
-        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-        const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
-        showTab(next[1]);
-        q('#' + next[0]).focus();
+        const j = { ArrowRight: (i + 1) % order.length, ArrowLeft: (i + order.length - 1) % order.length, Home: 0, End: order.length - 1 }[e.key];
+        if (j == null) return;
+        e.preventDefault();
+        showTab(order[j]);
+        q('#' + TABS[order[j]][0]).focus();
       });
     });
-    qa('.chip').forEach(ch => ch.addEventListener('click', () => { qa('.chip').forEach(c => c.classList.toggle('is-on', c === ch)); filterBareme(); }));
+    q('#sinShare').addEventListener('click', openShareConstat);
+    q('#sinPresent').addEventListener('click', openPresent);
+    q('#sinWhatIf').addEventListener('click', e => { const b = e.target.closest('[data-whatif]'); if (b) tryWhatIf(Number(b.dataset.whatif)); });
+    root.addEventListener('click', e => { const b = e.target.closest('[data-replay]'); if (b) replayScene(b.closest('figure').querySelector('svg.scene')); });
+    qa('.chip').forEach(ch => ch.addEventListener('click', () => { setChip(ch.dataset.cat); filterBareme(); }));
     q('#barSearch').addEventListener('input', filterBareme);
     const bar = document.getElementById('sinMobileBar');
-    if (bar) bar.addEventListener('click', () => q('#sinResult').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    if (bar) bar.addEventListener('click', () => { q('#sinResult').scrollIntoView({ behavior: behavior(), block: 'start' }); const t = q('#sinResult .sin-sign, #sinResult .sin-alert, #sinResult .sin-empty'); if (t) { t.tabIndex = -1; t.focus({ preventScroll: true }); } });
+    try { const saved = JSON.parse(store.get('sinConstat')); if (saved) st = cleanState(saved); } catch (e) { /* brouillon illisible */ }
     showTab('constat');
     writeForm();
     renderConstat();
   }
 
-  window.Sinistre = { mount, determine, PRESETS, swapInput, scene, CAS, loadPreset, showTab, focusCase };
+  window.Sinistre = {
+    mount, determine, PRESETS, swapInput, scene, CAS, loadPreset, showTab, focusCase, route,
+    syncHash: () => { if (!root) return; const cur = Object.keys(TABS).find(k => q('#' + TABS[k][0]).getAttribute('aria-selected') === 'true'); setHash(TABS[cur || 'constat'][2]); },
+    // pour la déclaration : croquis et constat en cours
+    carSvg, roadSvg, star, COL, CIRC, describe: inp => describe(inp), current: () => clone(st), verdict: () => determine(st),
+  };
 })();

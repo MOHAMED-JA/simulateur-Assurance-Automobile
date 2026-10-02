@@ -1813,6 +1813,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5.2 3.5h10.6l3.7 3.7v11.6c0 .9-.8 1.7-1.7 1.7H5.2c-.9 0-1.7-.8-1.7-1.7V5.2c0-.9.8-1.7 1.7-1.7z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.8h16M9.3 6.8V4.2h5.4v2.6M6.3 6.8l.9 13.2h9.6l.9-13.2M10 10.8v5.4M14 10.8v5.4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M14.5 5.5l4 4L8 20H4v-4z"/><path d="M12.5 7.5l4 4"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4.5 19.5h15"/><path d="M7.5 16v-5M12 16V7M16.5 16v-8"/></symbol>
@@ -2165,7 +2166,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
       </header>
       <div id="sinistreMount"></div>
     </div>
-    <div class="sin-mobile-bar" id="sinMobileBar" aria-hidden="true"></div>
+    <button type="button" class="sin-mobile-bar" id="sinMobileBar"></button>
   </section>
 
   <footer class="site-footer">
@@ -3439,6 +3440,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     syncThemeColor();
     if (!sin) rewatchMeter();
     history.replaceState(null, '', window.location.href.split('#')[0] + (sin ? '#sinistre' : ''));
+    if (sin && window.Sinistre && window.Sinistre.syncHash) window.Sinistre.syncHash(); // onglet en cours (#sinistre/bareme…)
     window.scrollTo(0, 0);
   }
 
@@ -5391,7 +5393,11 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
       else target = $('#step' + (state.step || 1) + 'Title');
       if (target) { target.focus({ preventScroll: true }); target.scrollIntoView({ block: 'start' }); }
     });
-    window.appToast = toast; // messages (et « Annuler ») depuis la rubrique Sinistre
+    // services partagés avec la rubrique Sinistre et la déclaration
+    window.appToast = toast;
+    window.appAnnounce = announce;
+    window.appQr = qrSvg;
+    window.appConfirmButton = confirmButton;
     window.addEventListener('offline', () => toast('Hors connexion : la simulation reste disponible ; le partage par WhatsApp ou e-mail attendra le réseau.', 'warn'));
     window.addEventListener('online', () => toast('Connexion rétablie.'));
     const secure = location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname);
@@ -5517,10 +5523,12 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     });
 
     watchMeter();
-    if (window.location.hash === '#sinistre') {
+    if (/^#sinistre(\/|$)/.test(window.location.hash)) {
+      const route = window.location.hash; // #sinistre/bareme, #sinistre/cas-14, #sinistre/constat?…
       $('#homeIntro').hidden = true;
       $('#app').hidden = false;
       showView('sinistre');
+      if (window.Sinistre && window.Sinistre.route) window.Sinistre.route(route);
     } else if (window.location.hash === '#installer') {
       // Ouvert en scannant le code QR : l'adresse est nettoyée (l'iPhone installe l'adresse affichée)
       history.replaceState(null, '', window.location.href.split('#')[0]);
@@ -5528,6 +5536,16 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
     } else {
       loadFromLink();
     }
+    // Lien de la rubrique Sinistre ouvert alors que l'application est déjà affichée
+    window.addEventListener('hashchange', () => {
+      const h = window.location.hash;
+      if (!/^#sinistre(\/|$)/.test(h)) return;
+      $$('dialog[open]').forEach(closeDialog);
+      $('#homeIntro').hidden = true;
+      $('#app').hidden = false;
+      showView('sinistre');
+      if (window.Sinistre && window.Sinistre.route) window.Sinistre.route(h);
+    });
     // Brouillon : proposé sur l'accueil ; l'historique d'annulation part de l'état affiché
     if (!$('#homeIntro').hidden) showResumeCard();
     resetHistory();
