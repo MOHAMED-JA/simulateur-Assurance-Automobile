@@ -880,7 +880,7 @@
     const verdict = (v, lab) => `<li class="sinp-v sinp-v--${v.toLowerCase()}"><span class="veh-tag veh-tag--${v.toLowerCase()}">${v}</span><div><b>${lab.txt}</b><span class="badge badge--${lab.cls}">${pct(res.resp[v])}</span></div></li>`;
     presentDlg.innerHTML = `
       <header class="present-head">
-        <p class="present-brand"><span class="brand-glyph" aria-hidden="true">${icon('i-shield')}</span><span class="present-brand-name">Analyse du constat · Barème FTUSA</span></p>
+        <p class="present-brand"><span class="brand-glyph" aria-hidden="true">${icon('i-car')}</span><span class="present-brand-name">Analyse du constat · Barème FTUSA</span></p>
         <button type="button" class="btn btn--ghost btn--sm" data-close aria-label="Quitter la présentation">${icon('i-close')}<span>Quitter<span class="present-quit-long"> la présentation</span></span></button>
       </header>
       <div class="present-body sinp-body">

@@ -1,7 +1,7 @@
 /* Simulateur Assurance Automobile : fonctionnement hors connexion.
    Réseau d'abord (la version en ligne reste toujours la référence), le cache sert de
    secours hors connexion. Changer VERSION quand la liste des fichiers évolue. */
-const VERSION = '2026-10-02b';
+const VERSION = '2026-10-03a';
 const CACHE = 'simulateur-' + VERSION;
 const SHELL = [
   './',
