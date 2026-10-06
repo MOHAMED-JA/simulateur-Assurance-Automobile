@@ -1789,6 +1789,35 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
   .doc-section h3 { break-after: avoid; }
 }
 
+/* ---- Signature commune aux simulateurs de Mohamed Aziz Jaouadi (bloc identique dans les quatre applications) ---- */
+.mj-sig { box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px;
+  width: 100%; margin: 16px 0 0; padding: 12px 14px; border-radius: 18px; border: 1px solid rgba(255, 255, 255, .1);
+  background: linear-gradient(120deg, #0b1024, #111a3a 60%, #0b1024); color: #e8ecff; font-size: 14px; line-height: 1.4; text-align: start; }
+.mj-sig *, .mj-sig *::before { box-sizing: border-box; }
+.mj-sig__auteur { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 4px 10px 4px 4px; border-radius: 14px;
+  color: inherit; text-decoration: none; transition: background-color .2s ease; }
+.mj-sig__mono { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 12px; color: #fff;
+  font-size: 14px; font-weight: 800; letter-spacing: .02em; background: linear-gradient(135deg, #14b8a6, #6366f1 55%, #c026d3);
+  box-shadow: 0 6px 14px -8px rgba(0, 0, 0, .5); }
+.mj-sig__txt { display: grid; gap: 1px; min-width: 0; }
+.mj-sig__lab { font-size: 12px; font-weight: 500; color: #b4bde0; }
+.mj-sig__nom { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+.mj-sig__in { width: 20px; height: 20px; flex: none; color: #8ab8ff; }
+.mj-sig__nav { min-width: 0; }
+.mj-sig__apps { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.mj-sig__app { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .16); color: #dfe5ff; font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: border-color .2s ease, background-color .2s ease; }
+.mj-sig__app::before { content: ""; width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--mj-c, #94a3b8); }
+.mj-sig__app[aria-current="page"] { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .34); color: #fff; }
+.mj-sig a:focus-visible { outline: 2px solid #a5b4fc; outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .mj-sig__auteur:hover { background: rgba(255, 255, 255, .06); }
+  .mj-sig__app:hover { border-color: var(--mj-c, #94a3b8); background: rgba(255, 255, 255, .06); }
+}
+@media (max-width: 600px) { .mj-sig { flex-direction: column; align-items: stretch; } .mj-sig__apps { justify-content: flex-start; } }
+@media (prefers-reduced-motion: reduce) { .mj-sig__auteur, .mj-sig__app { transition: none; } }
+@media print { .mj-sig { display: none !important; } }
 /* ---- Les autres simulateurs (bloc commun aux trois applications) ---- */
 @property --xs-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 .xsim { position: relative; isolation: isolate; margin: 30px 0 10px; padding: 26px; border-radius: 28px; color: #eef2ff; overflow: hidden;
@@ -1861,6 +1890,7 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
 @media print { .xsim { display: none !important; } }
 .xsim-zone { max-width: 1240px; width: 100%; margin: 0 auto; padding: 0 var(--gutter); }
 .xsim-zone .xsim { margin: 8px 0 0; }
+.xsim-zone--signature { padding-bottom: 28px; }
 .xsim-zone--intro { max-width: 1200px; padding: 0; }
 .xsim-zone--intro .xsim { margin: 4px 0 8px; }
 </style>
@@ -2020,6 +2050,24 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
         </a>
       </div>
     </section>
+  </div>
+  <div class="xsim-zone xsim-zone--signature">
+    <!-- Signature commune aux simulateurs de Mohamed Aziz Jaouadi -->
+    <div class="mj-sig">
+      <a class="mj-sig__auteur" href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%D9%85%D8%AD%D9%85%D8%AF-%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AC%D9%88%D8%A7%D8%AF%D9%8A-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener" aria-label="Application développée par Mohamed Aziz Jaouadi : profil LinkedIn (nouvel onglet)">
+        <span class="mj-sig__mono" aria-hidden="true">MJ</span>
+        <span class="mj-sig__txt" aria-hidden="true"><span class="mj-sig__lab">Application développée par</span><span class="mj-sig__nom" translate="no">Mohamed Aziz Jaouadi</span></span>
+        <svg class="mj-sig__in" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+      </a>
+      <nav class="mj-sig__nav" aria-label="Simulateurs du même auteur">
+        <ul class="mj-sig__apps">
+          <li><a class="mj-sig__app" style="--mj-c: #a855f7" href="https://mohamed-ja.github.io/simulateur-credit/" target="_blank" rel="noopener">Crédit</a></li>
+          <li><a class="mj-sig__app" style="--mj-c: #6366f1" href="https://mohamed-ja.github.io/simulateur-assurance-vie/" target="_blank" rel="noopener">Assurance vie</a></li>
+          <li><a class="mj-sig__app" style="--mj-c: #3b82f6" href="https://mohamed-ja.github.io/simulateur-Assurance-Automobile/" aria-current="page">Assurance auto</a></li>
+          <li><a class="mj-sig__app" style="--mj-c: #14b8a6" href="https://mohamed-ja.github.io/portail-rh/calculateur-salaire/" target="_blank" rel="noopener">Salaire brut ⇄ net</a></li>
+        </ul>
+      </nav>
+    </div>
   </div>
 </section>
 
@@ -2299,11 +2347,22 @@ html[data-theme="dark"] { --status-new: #8d97ab; }
   </div>
 
   <footer class="site-footer">
-    <a class="credit credit--footer" href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%D9%85%D8%AD%D9%85%D8%AF-%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AC%D9%88%D8%A7%D8%AF%D9%8A-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener" aria-label="Application développée par Mohamed Aziz Jaouadi : profil LinkedIn (nouvel onglet)">
-        <span class="credit-mono" aria-hidden="true">MJ</span>
-        <span class="credit-text" aria-hidden="true"><span class="credit-label">Application développée par</span><span class="credit-name" translate="no">Mohamed Aziz Jaouadi</span></span>
-        <span class="credit-go" aria-hidden="true"><svg class="icon credit-in"><use href="#i-linkedin"/></svg><svg class="icon credit-arrow"><use href="#i-arrow-out"/></svg></span>
+    <!-- Signature commune aux simulateurs de Mohamed Aziz Jaouadi -->
+    <div class="mj-sig">
+      <a class="mj-sig__auteur" href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%D9%85%D8%AD%D9%85%D8%AF-%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AC%D9%88%D8%A7%D8%AF%D9%8A-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener" aria-label="Application développée par Mohamed Aziz Jaouadi : profil LinkedIn (nouvel onglet)">
+        <span class="mj-sig__mono" aria-hidden="true">MJ</span>
+        <span class="mj-sig__txt" aria-hidden="true"><span class="mj-sig__lab">Application développée par</span><span class="mj-sig__nom" translate="no">Mohamed Aziz Jaouadi</span></span>
+        <svg class="mj-sig__in" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
       </a>
+      <nav class="mj-sig__nav" aria-label="Simulateurs du même auteur">
+        <ul class="mj-sig__apps">
+          <li><a class="mj-sig__app" style="--mj-c: #a855f7" href="https://mohamed-ja.github.io/simulateur-credit/" target="_blank" rel="noopener">Crédit</a></li>
+          <li><a class="mj-sig__app" style="--mj-c: #6366f1" href="https://mohamed-ja.github.io/simulateur-assurance-vie/" target="_blank" rel="noopener">Assurance vie</a></li>
+          <li><a class="mj-sig__app" style="--mj-c: #3b82f6" href="https://mohamed-ja.github.io/simulateur-Assurance-Automobile/" aria-current="page">Assurance auto</a></li>
+          <li><a class="mj-sig__app" style="--mj-c: #14b8a6" href="https://mohamed-ja.github.io/portail-rh/calculateur-salaire/" target="_blank" rel="noopener">Salaire brut ⇄ net</a></li>
+        </ul>
+      </nav>
+    </div>
   </footer>
 
   <div class="mobile-meter" id="mobileMeter" aria-hidden="true" translate="no">
